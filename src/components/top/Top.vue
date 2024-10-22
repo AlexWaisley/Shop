@@ -1,11 +1,11 @@
 <script setup lang="ts">
-
+defineEmits(['back-to-home']);
 </script>
 
 <template>
     <div class="top-container">
         <div class="section">
-            <div class="logo-container">
+            <div @click="$emit('back-to-home')" class="logo-container">
                 <img src="/logo.jpg" alt="logo" class="logo-img">
             </div>
         </div>
@@ -39,7 +39,8 @@
     background-color: skyblue;
     align-items: center;
     justify-content: space-between;
-    padding: 15px;
+    padding: 10px;
+    position: fixed;
 
     & .section {
         height: 80px;
@@ -47,8 +48,8 @@
         align-items: center;
 
         & .logo-container {
-            max-height: 70px;
-            max-width: 70px;
+            max-height: 60px;
+            max-width: 60px;
             overflow: hidden;
 
             & .logo-img {
