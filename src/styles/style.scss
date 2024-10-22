@@ -1,6 +1,37 @@
-*{
+* {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;  
+  box-sizing: border-box;
   font-family: "Sora", sans-serif;
+}
+
+.text-default {
+  font-size: 16px;
+  line-height: 16px;
+  font-weight: 400;
+  text-align: left;
+}
+
+.text-bold {
+  @extend .text-default;
+  font-weight: 700;
+}
+
+.text-large {
+  @extend .text-default;
+  line-height: 24px;
+  font-size: 24pxc;
+}
+
+.text-large-bold {
+  @extend .text-bold;
+  line-height: 24px;
+  font-size: 24px;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
 }
