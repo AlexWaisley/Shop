@@ -4,21 +4,15 @@
 <template>
     <div class="subcategory-card-container">
         <div class="image-container">
-            <img src="/logo.jpg" alt="Item image" class="subcategory-image">
+            <img src="/logo.jpg" alt="Subcategory image" class="subcategory-image">
         </div>
         <div class="info-container">
             <div class="info">
                 <div class="name">
-                    <span class="text-large">
-                        some stuff
+                    <span class="text-large-bold">
+                        NAME
                     </span>
                 </div>
-            </div>
-            <div class="info">
-                <div class="cost">
-                    <span class="text-large-bold">69.69$</span>
-                </div>
-                <div class="buy-button">Buy</div>
             </div>
         </div>
     </div>
@@ -39,7 +33,7 @@
     transition: all .5s ease;
 
     & .image-container {
-        max-height: 150px;
+        max-height: 200px;
         max-width: 200px;
         overflow: hidden;
 

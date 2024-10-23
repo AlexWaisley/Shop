@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import Catalog from './Catalog.vue';
 import Main from './Main.vue';
+import SubCategories from './Subcategories.vue';
 
 import { shallowRef } from 'vue';
 
-const currMain = shallowRef(Main);
+const currMain = shallowRef(SubCategories);
 
 </script>
 <template>
@@ -27,6 +28,7 @@ const currMain = shallowRef(Main);
         max-width: 100%;
         height: 100%;
         overflow: hidden;
+        padding: 20px;
     }
 }
 </style>

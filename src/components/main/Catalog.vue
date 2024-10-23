@@ -1,10 +1,25 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from 'vue';
+
+
+const showCategories = ref<boolean>(true);
+
+const changeCategoriesShowStatus = () => {
+    showCategories.value = !showCategories.value;
+}
+
+</script>
 <template>
     <div class="catalog">
-        <div v-for="_ in 11" class="category-container">
-            <div class="catalog-over"></div>
-            <div class="over">
-                <span class="text-default">category</span>
+        <div @click="changeCategoriesShowStatus" class="head">
+            <span class="text-large-bold">Catalog</span>
+        </div>
+        <div v-if="showCategories" class="category-container">
+            <div v-for="_ in 11" class="category">
+                <div class="catalog-over"></div>
+                <div class="over">
+                    <span class="text-default">categorycategorycategorycategorycategorycategory</span>
+                </div>
             </div>
         </div>
     </div>
@@ -12,49 +27,69 @@
 <style scoped lang="scss">
 .catalog {
     padding: 20px;
-    background-color: rgb(82, 189, 232);
-    height: 100%;
-    width: 100%;
-    min-width: 300px;
+    max-width: 250px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
 
-    & .category-container {
-        width: 90%;
-        height: 100%;
-        min-height: 40px;
-        max-width: 300px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        position: relative;
-
-        & .over {
-            position: absolute;
-            z-index: 3;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 40px;
-            padding-left: 15px;
-        }
-
-        & .catalog-over {
-            z-index: 2;
-            position: absolute;
-            background-color: aliceblue;
-            border-bottom-right-radius: 30px 40px;
-            width: 90%;
-            height: 40px;
-            transition: all .5s ease;
-            transform: translateX(-300px);
-        }
+    & .head {
+        background-color: blue;
+        max-width: 250px;
+        border-top-right-radius: 15px;
+        padding: 10px;
+        transition: all .5s ease;
 
         &:hover {
-            cursor: pointer;
+            box-shadow: 3px 3px 3px blue;
+        }
+
+    }
+
+    & .category-container {
+        max-width: 250px;
+        background-color: rgb(82, 189, 232);
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        padding: 10px 0 10px 0;
+        border-bottom-right-radius: 15px;
+
+
+        & .category {
+            display: flex;
+            flex-direction: column;
+            max-width: 200px;
+            min-height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            position: relative;
+
+            & .over {
+                position: absolute;
+                z-index: 3;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 40px;
+                padding-left: 15px;
+            }
 
             & .catalog-over {
-                transform: translateX(0);
+                z-index: 2;
+                position: absolute;
+                background-color: aliceblue;
+                border-bottom-right-radius: 30px 40px;
+                width: 90%;
+                height: 40px;
+                transition: all .5s ease;
+                transform: translateX(-300px);
+            }
+
+            &:hover {
+                cursor: pointer;
+
+                & .catalog-over {
+                    transform: translateX(0);
+                }
             }
         }
     }
