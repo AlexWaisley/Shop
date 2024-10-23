@@ -18,7 +18,7 @@ const changeCategoriesShowStatus = () => {
             <div v-for="_ in 11" class="category">
                 <div class="catalog-over"></div>
                 <div class="over">
-                    <span class="text-default">categorycategorycategorycategorycategorycategory</span>
+                    <span class="text-default">category</span>
                 </div>
             </div>
         </div>
@@ -26,20 +26,20 @@ const changeCategoriesShowStatus = () => {
 </template>
 <style scoped lang="scss">
 .catalog {
-    padding: 20px;
     max-width: 250px;
     display: flex;
     flex-direction: column;
+    user-select: none;
 
     & .head {
-        background-color: blue;
+        background-color: rgb(110, 168, 231);
         max-width: 250px;
         border-top-right-radius: 15px;
         padding: 10px;
         transition: all .5s ease;
 
         &:hover {
-            box-shadow: 3px 3px 3px blue;
+            box-shadow: 3px 3px 3px rgb(87, 142, 200);
         }
 
     }
@@ -66,8 +66,9 @@ const changeCategoriesShowStatus = () => {
             & .over {
                 position: absolute;
                 z-index: 3;
+                width: 150px;
+                overflow: hidden;
                 display: flex;
-                justify-content: center;
                 align-items: center;
                 height: 40px;
                 padding-left: 15px;

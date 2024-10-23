@@ -28,7 +28,7 @@
     background-color: aliceblue;
     border-radius: 15px;
     box-shadow: 3px 3px 3px rgb(216, 237, 255);
-    width: 700px;
+    width: 750px;
     padding: 20px;
     align-items: center;
 
@@ -42,20 +42,22 @@
         & .switches {
             position: absolute;
             width: 100%;
-            height: 100%;
+            height: 600px;
             display: flex;
             justify-content: space-between;
 
             & .switch {
                 display: flex;
                 align-items: center;
+                margin: 0 -50px;
                 justify-content: center;
                 width: 50px;
-                background-color: white;
+                background-color: rgba(255, 255, 255, 0.627);
                 opacity: .2;
                 transition: all .5s ease;
 
-                &:first-child {
+
+                &:last-child {
                     transform: rotate(180deg);
                 }
 
@@ -67,9 +69,11 @@
         }
 
         & .image-container {
+            position: absolute;
             max-height: 100%;
             max-width: 100%;
             overflow: hidden;
+            z-index: 5;
 
             & .preview {
                 max-width: 100%;

@@ -11,6 +11,9 @@
   font-weight: 400;
   text-align: left;
   padding: 4px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .text-bold {

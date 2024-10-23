@@ -5,7 +5,7 @@ import SubCategories from './Subcategories.vue';
 
 import { shallowRef } from 'vue';
 
-const currMain = shallowRef(SubCategories);
+const currMain = shallowRef(Main);
 
 </script>
 <template>
@@ -22,13 +22,13 @@ const currMain = shallowRef(SubCategories);
 .home-container {
     display: grid;
 
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 250px 1fr;
+    gap: 20px;
 
     & .main-container {
         max-width: 100%;
         height: 100%;
         overflow: hidden;
-        padding: 20px;
     }
 }
 </style>

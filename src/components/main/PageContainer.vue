@@ -6,8 +6,6 @@ import Item from './Item.vue';
 import { shallowRef } from 'vue';
 
 const currPage = shallowRef(Item);
-
-
 </script>
 
 <template>

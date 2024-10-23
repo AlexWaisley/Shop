@@ -7,7 +7,7 @@ import Catalog from './Catalog.vue';
     <div class="products-container">
         <div class="side-panel">
             <Catalog></Catalog>
-            <div class="flter-container"></div>
+            <div class="filter-container"></div>
         </div>
         <div class="products">
             <ItemCard v-for="_ in 20"></ItemCard>
@@ -18,6 +18,13 @@ import Catalog from './Catalog.vue';
 .products-container {
     display: flex;
     width: 100%;
+
+    & .side-panel {
+        min-width: 200px;
+        display: flex;
+        flex-direction: column;
+
+    }
 
     & .products {
         padding: 20px;
