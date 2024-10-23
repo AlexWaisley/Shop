@@ -9,9 +9,9 @@
                 <div class="info">
                     <div class="tag"><span class="text-large-bold">Contact</span></div>
                     <div class="content">
-                        <span class="text-standart-bold">+7 (852) 852-85-28 </span>
-                        <span class="text-standart-bold">+7 (852) 852-85-28</span>
-                        <span class="text-standart-bold">+7 (852) 852-85-28</span>
+                        <span class="text-default">+38 (095) 00-00-428 </span>
+                        <span class="text-default">+38 (067) 00-00-428</span>
+                        <span class="text-default">+38 (093) 00-00-428</span>
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
             </div>
         </div>
         <div class="rights">
-            <span class="rights-reserved">© ak.la 2004-2024. All Rights Reserved.</span>
+            <span class="text-small">© ak.la 2004-2024. All Rights Reserved.</span>
         </div>
     </div>
 </template>
@@ -58,7 +58,6 @@
     flex-direction: column;
     background-color: skyblue;
     gap: 15px;
-
 
     & .bottom {
         display: flex;

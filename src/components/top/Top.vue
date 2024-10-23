@@ -33,6 +33,7 @@ defineEmits(['back-to-home']);
 
 <style scoped lang="scss">
 .top-container {
+    z-index: 5555;
     width: 100%;
     height: 80px;
     display: flex;

@@ -1,16 +1,22 @@
 <script setup lang="ts">
+import Home from './Home.vue';
+
+import { shallowRef } from 'vue';
+
+const currPage = shallowRef(Home);
+
 
 </script>
 
 <template>
     <div class="page-container">
-        <span>smth</span>
+        <component :is="currPage" />
     </div>
 </template>
 
 <style scoped lang="scss">
 .page-container {
-    height: 500px;
+    min-height: 500px;
     width: 100%;
     display: flex;
     margin-top: 80px;
