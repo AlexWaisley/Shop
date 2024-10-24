@@ -3,7 +3,18 @@ import Catalog from './Catalog.vue';
 import Main from './Main.vue';
 import SubCategories from './Subcategories.vue';
 
-import { shallowRef } from 'vue';
+import { shallowRef, watch } from 'vue';
+import { useSessionStore } from '@storage';
+
+const sessionStore = useSessionStore();
+
+watch(() => sessionStore.pickedCategory, (newVal) => {
+    if (newVal !== null) {
+        currMain.value = SubCategories;
+        return;
+    }
+    currMain.value = Main;
+});
 
 const currMain = shallowRef(Main);
 

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import ImageBlock from './Item/ImageBlock.vue';
 import SpecsBlock from './Item/SpecsBlock.vue';
+import { useSessionStore } from '@storage';
+const sessionStore = useSessionStore();
+
 </script>
 <template>
     <div class="item-container">
@@ -10,11 +13,11 @@ import SpecsBlock from './Item/SpecsBlock.vue';
             </div>
             <div class="fast-info">
                 <div class="name-container">
-                    <span class="text-large">stuff</span>
+                    <span class="text-large">{{ sessionStore.pickedItem?.name }}</span>
                 </div>
                 <div class="bucket-container">
                     <div class="price-container">
-                        <span class="text-large">69.69$</span>
+                        <span class="text-large">{{ sessionStore.pickedItem?.cost }}$</span>
                     </div>
                     <div class="buy-button">
                         <span class="text-large-bold">Buy</span>

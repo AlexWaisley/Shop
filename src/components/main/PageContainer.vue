@@ -2,10 +2,34 @@
 import Home from './Home.vue';
 import Products from './Products.vue';
 import Item from './Item.vue';
+import { useSessionStore } from '@storage';
+const sessionStore = useSessionStore();
 
-import { shallowRef } from 'vue';
+import { shallowRef, watch } from 'vue';
 
-const currPage = shallowRef(Item);
+const currPage = shallowRef(Home);
+
+watch(() => sessionStore.pickedItem, (newVal) => {
+    if (newVal !== null) {
+        currPage.value = Item;
+        return;
+    }
+}, { immediate: true });
+
+watch(() => sessionStore.pickedSubcategory, (newVal) => {
+    if (newVal !== null) {
+        currPage.value = Products;
+        return;
+    }
+}, { immediate: true });
+
+watch(() => sessionStore.pickedCategory, (newVal) => {
+    if (newVal === null) {
+        currPage.value = Home;
+        return;
+    }
+}, { immediate: true });
+
 </script>
 
 <template>

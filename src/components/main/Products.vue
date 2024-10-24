@@ -1,6 +1,26 @@
 <script setup lang="ts">
 import ItemCard from './ItemCard.vue';
 import Catalog from './Catalog.vue';
+import { useSessionStore, useHardStore } from '@storage';
+import { Item } from '@models';
+import { ref, watch } from 'vue';
+
+const sessionStore = useSessionStore();
+const hardStore = useHardStore();
+
+
+const items = ref<Item[] | null>(null);
+
+watch(() => sessionStore.pickedSubcategory, () => {
+    if (sessionStore.pickedSubcategory === null) {
+        return;
+    }
+    const id = sessionStore.pickedSubcategory.id;
+    console
+    const subcategoriesList = hardStore.itemList.filter(x => x.subCategoryId === id);
+    items.value = subcategoriesList;
+}, { immediate: true });
+
 
 </script>
 <template>
@@ -10,7 +30,7 @@ import Catalog from './Catalog.vue';
             <div class="filter-container"></div>
         </div>
         <div class="products">
-            <ItemCard v-for="_ in 20"></ItemCard>
+            <ItemCard v-for="value in items" :info="value" @click="sessionStore.pickItem(value)"></ItemCard>
         </div>
     </div>
 </template>

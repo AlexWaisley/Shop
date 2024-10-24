@@ -1,14 +1,33 @@
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 import ItemCard from './ItemCard.vue';
+import { useSessionStore } from '@storage';
+import { Item } from '@models';
+
+const sessionStore = useSessionStore();
+
+const history = ref<Item[] | null>(null);
+
+watch(() => sessionStore.history, (newVal) => {
+    if (newVal !== null) {
+        history.value = newVal.reverse();
+        return
+    }
+}, { immediate: true });
+
+const isNeededToShow = computed<boolean>(() => {
+    return sessionStore.history !== null;
+});
+
 </script>
 <template>
-    <div class="history-container">
+    <div v-if="isNeededToShow" class="history-container">
         <div class="history">
             <div class="label">
                 <span class="text-large-bold">History</span>
             </div>
             <div class="items-container">
-                <ItemCard v-for="_ in 6"></ItemCard>
+                <ItemCard v-for="value in history" :info="value"></ItemCard>
             </div>
         </div>
     </div>

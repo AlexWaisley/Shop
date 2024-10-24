@@ -3,14 +3,11 @@ import PageContainer from '@main/PageContainer.vue';
 import Top from '@top/Top.vue';
 import Bottom from '@bottom/Bottom.vue';
 
-const backToHome = () => {
-    console.log("back home");
-}
 </script>
 
 <template>
     <div class="container">
-        <Top @back-to-home="backToHome"></Top>
+        <Top></Top>
         <PageContainer></PageContainer>
         <Bottom></Bottom>
     </div>

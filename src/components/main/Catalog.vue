@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useHardStore, useSessionStore } from '@storage';
+
+const hardStore = useHardStore();
+const sessionStore = useSessionStore();
 
 
 const showCategories = ref<boolean>(true);
@@ -15,10 +19,10 @@ const changeCategoriesShowStatus = () => {
             <span class="text-large-bold">Catalog</span>
         </div>
         <div v-if="showCategories" class="category-container">
-            <div v-for="_ in 11" class="category">
+            <div v-for="value in hardStore.categoryList" @click="sessionStore.pickCategory(value)" class="category">
                 <div class="catalog-over"></div>
                 <div class="over">
-                    <span class="text-default">category</span>
+                    <span class="text-default">{{ value.name }}</span>
                 </div>
             </div>
         </div>
@@ -66,7 +70,7 @@ const changeCategoriesShowStatus = () => {
             & .over {
                 position: absolute;
                 z-index: 3;
-                width: 150px;
+                width: 170px;
                 overflow: hidden;
                 display: flex;
                 align-items: center;

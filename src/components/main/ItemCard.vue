@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { Item } from '@models';
 
+const props = defineProps<{
+    info: Item;
+}>();
 </script>
 <template>
     <div class="subcategory-card-container">
@@ -10,13 +14,13 @@
             <div class="info">
                 <div class="name">
                     <span class="text-large">
-                        some stuff
+                        {{ props.info.name }}
                     </span>
                 </div>
             </div>
             <div class="info">
                 <div class="cost">
-                    <span class="text-large-bold">69.69$</span>
+                    <span class="text-large-bold">{{ props.info.cost }}$</span>
                 </div>
                 <div class="buy-button">Buy</div>
             </div>

@@ -1,11 +1,13 @@
 <script setup lang="ts">
-defineEmits(['back-to-home']);
+import { useSessionStore } from '../../storage/SessionStore';
+const sessionStore = useSessionStore();
+
 </script>
 
 <template>
     <div class="top-container">
         <div class="section">
-            <div @click="$emit('back-to-home')" class="logo-container">
+            <div @click="sessionStore.clearAll" class="logo-container">
                 <img src="/logo.jpg" alt="logo" class="logo-img">
             </div>
         </div>
