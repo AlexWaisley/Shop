@@ -7,9 +7,11 @@ const sessionStore = useSessionStore();
 
 import { shallowRef, watch } from 'vue';
 import Bucket from './bucket/Bucket.vue';
+import Account from './Account.vue';
 
 const props = defineProps<{
     bucketStatus: boolean;
+    accountStatus: boolean;
 }>();
 const currPage = shallowRef(Home);
 
@@ -28,6 +30,15 @@ watch(() => sessionStore.pickedSubcategory, (newVal) => {
     currPage.value = Home;
 }, { immediate: true });
 
+watch(() => sessionStore.displayedProducts, (newVal) => {
+    if (newVal !== null) {
+        currPage.value = Products;
+        return;
+    }
+    currPage.value = Home;
+
+}, { immediate: true });
+
 watch(() => sessionStore.pickedCategory, () => {
     currPage.value = Home;
 }, { immediate: true });
@@ -36,6 +47,20 @@ watch(() => sessionStore.pickedCategory, () => {
 watch(() => props.bucketStatus, (newVal) => {
     if (newVal) {
         currPage.value = Bucket;
+        return;
+    }
+    if (props.accountStatus) {
+        return;
+    }
+    currPage.value = Home;
+})
+
+watch(() => props.accountStatus, (newVal) => {
+    if (newVal) {
+        currPage.value = Account;
+        return;
+    }
+    if (props.bucketStatus) {
         return;
     }
     currPage.value = Home;

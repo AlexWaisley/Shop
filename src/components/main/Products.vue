@@ -22,7 +22,8 @@ watch(() => sessionStore.displayedProducts, (newVal) => {
             <div class="filter-container"></div>
         </div>
         <div class="products">
-            <ItemCard v-for="value in items" :info="value"></ItemCard>
+            <ItemCard v-if="items !== null && items.length !== 0" v-for="value in items" :info="value"></ItemCard>
+            <span v-else class="text-large">Sorry, there doesn't seem to be anything like that</span>
         </div>
     </div>
 </template>

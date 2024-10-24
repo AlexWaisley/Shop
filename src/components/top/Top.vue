@@ -2,7 +2,8 @@
 import SearchBar from './SearchBar.vue';
 defineEmits<{
     (e: 'openBucket'): void,
-    (e: 'goHome'): void
+    (e: 'goHome'): void,
+    (e: 'openAccount'): void,
 }>();
 </script>
 
@@ -21,7 +22,7 @@ defineEmits<{
         <div class="section">
             <div class="additional-buttons">
                 <div class="button">
-                    <div class="icon-container">
+                    <div @click="$emit('openAccount')" class="icon-container">
                         <img src="/account.svg" alt="account" class="icon">
                     </div>
                 </div>

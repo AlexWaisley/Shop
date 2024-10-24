@@ -34,7 +34,7 @@ const isNeededToShow = computed<boolean>(() => {
 </template>
 <style scoped lang="scss">
 .history-container {
-    height: 350px;
+    height: 400px;
     padding: 20px;
     background-color: rgb(0, 225, 255);
     border-radius: 15px;

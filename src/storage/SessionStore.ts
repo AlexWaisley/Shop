@@ -1,4 +1,4 @@
-import { BucketInfo, BucketProduct, Category, Item, Subcategory } from "@models";
+import { BucketInfo, BucketProduct, Category, Item, OrderInfo, Subcategory, User } from "@models";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useHardStore } from "./HardStore";
@@ -12,6 +12,7 @@ export const useSessionStore = defineStore('sessionStore', () => {
     const pickedSubcategory = ref<Subcategory | null>(null);
     const pickedItem = ref<Item | null>(null);
     const displayedProducts = ref<Item[] | null>(null);
+    const currUser = ref<User | null>(null);
 
     const pickCategory = (category: Category) => {
         pickedCategory.value = category;
@@ -45,6 +46,7 @@ export const useSessionStore = defineStore('sessionStore', () => {
         pickedSubcategory.value = null;
         addToHistory();
         pickedItem.value = null;
+        displayedProducts.value = null
     }
     const addToHistory = (product = pickedItem.value) => {
         if (product === null && pickedItem.value !== null) {
@@ -110,7 +112,18 @@ export const useSessionStore = defineStore('sessionStore', () => {
         bucket.value.totalCost = bucket.value.products.reduce((acc, value) => acc + value.product.cost * value.quantity, 0);
     }
 
-    const orderConfirmed = () => {
+    const orderConfirmed = (order: OrderInfo) => {
+        if (currUser.value === null) {
+            return;
+        }
+        if (currUser.value.orderInfo === null) {
+            currUser.value.orderInfo = [];
+        }
+
+        currUser.value.orderInfo.push(order);
+
+        console.log(currUser.value);
+
         bucket.value = null;
     }
 
@@ -118,6 +131,23 @@ export const useSessionStore = defineStore('sessionStore', () => {
         displayedProducts.value = hardStore.itemList.filter(x => x.name.toLocaleLowerCase().includes(name.toLocaleLowerCase()))
     }
 
-    return { history, bucket, displayedProducts, startSearch, changeQuantityOfProductInBucket, orderConfirmed, pickCategory, pickItem, pickSubcategory, clearAll, addToBucket, removeFromBucket, pickedCategory, pickedItem, pickedSubcategory };
+    const logIn = (name: string, password: string) => {
+        currUser.value = { name, email: "example@gmail.com", password, orderInfo: null };
+    }
+    const register = (email: string, password: string) => {
+        currUser.value = { name: "", email, password, orderInfo: null };
+    }
+
+    const changeCurrUserEmail = (email: string) => {
+        if (currUser.value === null)
+            return;
+        currUser.value.email = email;
+    }
+    const changeCurrUserName = (name: string) => {
+        if (currUser.value === null)
+            return;
+        currUser.value.name = name;
+    }
+    return { history, currUser, bucket, displayedProducts, changeCurrUserEmail, changeCurrUserName, register, logIn, startSearch, changeQuantityOfProductInBucket, orderConfirmed, pickCategory, pickItem, pickSubcategory, clearAll, addToBucket, removeFromBucket, pickedCategory, pickedItem, pickedSubcategory };
 
 });

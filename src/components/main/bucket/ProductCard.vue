@@ -6,6 +6,7 @@ const sessionStorage = useSessionStore();
 
 const props = defineProps<{
     info: BucketProduct;
+    isQuantityFixed: boolean,
 }>();
 
 const quantity = ref<number>(props.info.quantity);
@@ -21,14 +22,15 @@ const quantity = ref<number>(props.info.quantity);
                 <span class="text-large">{{ props.info.product.name }}</span>
             </div>
             <div class="quantity-container">
-                <input type="number" class="quantity text-large" v-model="quantity"
+                <span v-if="props.isQuantityFixed" class="text-large"> {{ quantity }}</span>
+                <input v-else type="number" class="quantity text-large" v-model="quantity"
                     :oninput="sessionStorage.changeQuantityOfProductInBucket(props.info, quantity)" />
             </div>
             <div class="cost">
                 <span class="text-large">{{ props.info.totalCost }}$</span>
             </div>
         </div>
-        <div class="additional-buttons-container">
+        <div v-if="!props.isQuantityFixed" class="additional-buttons-container">
             <div @click="sessionStorage.removeFromBucket(props.info)" class="delete-button">
                 <img src="/cross.svg" alt="delete" class="icon">
             </div>

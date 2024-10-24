@@ -7,11 +7,18 @@ const sessionStore = useSessionStore();
 import { provide, ref } from 'vue';
 
 const bucketStatus = ref(false);
+const accountStatus = ref(false);
 const toggleBucketStatus = () => {
+    accountStatus.value = false;
     bucketStatus.value = true;
+}
+const toggleAccountStatus = () => {
+    bucketStatus.value = false;
+    accountStatus.value = true;
 }
 const openHome = () => {
     bucketStatus.value = false;
+    accountStatus.value = false;
     sessionStore.clearAll();
 }
 
@@ -21,8 +28,8 @@ provide('bucketStatus', { bucketStatus, toggleBucketStatus });
 
 <template>
     <div class="container">
-        <Top @go-home="openHome" @open-bucket="toggleBucketStatus"></Top>
-        <PageContainer :bucket-status="bucketStatus"></PageContainer>
+        <Top @go-home="openHome" @open-account="toggleAccountStatus" @open-bucket="toggleBucketStatus"></Top>
+        <PageContainer :account-status="accountStatus" :bucket-status="bucketStatus"></PageContainer>
         <Bottom></Bottom>
     </div>
 </template>

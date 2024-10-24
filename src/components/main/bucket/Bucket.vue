@@ -31,11 +31,13 @@ const orderSubmitted = ref<boolean>(false);
 
 const submitOrder = () => {
     const order = ref<OrderInfo>({
+        id: 1,
         bucket: sessionStore.bucket!,
-        addressInfo: selectedAddress.value
+        addressInfo: selectedAddress.value,
+        status: "Waiting for answer"
     });
     orderSubmitted.value = true;
-    sessionStore.orderConfirmed();
+    sessionStore.orderConfirmed(order.value);
 }
 
 
@@ -43,7 +45,8 @@ const submitOrder = () => {
 <template>
     <div v-if="isBucketContainsItems" class="bucket-container">
         <div class="products-list">
-            <ProductCard v-for="value in sessionStore.bucket!.products" :info="value"></ProductCard>
+            <ProductCard v-for="value in sessionStore.bucket!.products" :info="value" :is-quantity-fixed="false">
+            </ProductCard>
         </div>
         <div class="confirm-form">
             <div class="products-quantity">
