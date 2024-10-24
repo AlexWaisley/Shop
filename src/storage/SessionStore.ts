@@ -5,6 +5,7 @@ import { ref } from "vue";
 export const useSessionStore = defineStore('sessionStore', () => {
 
     const history = ref<Item[] | null>(null);
+    const bucket = ref<Item[] | null>(null);
     const pickedCategory = ref<Category | null>(null);
     const pickedSubcategory = ref<Subcategory | null>(null);
     const pickedItem = ref<Item | null>(null);

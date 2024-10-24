@@ -127,5 +127,7 @@ export const useHardStore = defineStore('hardStore', () => {
         { id: 61, images: [], name: "Saxophone", cost: 400, subCategoryId: 8 },
         { id: 62, images: [], name: "Trumpet", cost: 250, subCategoryId: 8 },
     ]);
+
+    //TODO:Shops addresses
     return { categoryList, subCategoryList, itemList };
 });

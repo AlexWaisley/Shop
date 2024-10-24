@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { useSessionStore } from '../../storage/SessionStore';
-const sessionStore = useSessionStore();
 
+const emits = defineEmits<{
+    (e: 'openBucket'): void,
+    (e: 'goHome'): void
+}>();
 </script>
 
 <template>
     <div class="top-container">
         <div class="section">
-            <div @click="sessionStore.clearAll" class="logo-container">
+            <div @click="$emit('goHome')" class="logo-container">
                 <img src="/logo.jpg" alt="logo" class="logo-img">
             </div>
         </div>
@@ -23,7 +25,7 @@ const sessionStore = useSessionStore();
                         <img src="/account.svg" alt="account" class="icon">
                     </div>
                 </div>
-                <div class="button">
+                <div @click="$emit('openBucket')" class="button">
                     <div class="icon-container">
                         <img src="/cart.svg" alt="cart" class="icon">
                     </div>
@@ -79,6 +81,7 @@ const sessionStore = useSessionStore();
                 border: 1px solid transparent;
                 align-items: center;
                 border-radius: 15px;
+                transition: all .5s ease;
 
                 & .icon-container {
                     max-width: 100%;

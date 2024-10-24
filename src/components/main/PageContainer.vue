@@ -6,7 +6,11 @@ import { useSessionStore } from '@storage';
 const sessionStore = useSessionStore();
 
 import { shallowRef, watch } from 'vue';
+import Bucket from './bucket/Bucket.vue';
 
+const props = defineProps<{
+    bucketStatus: boolean;
+}>();
 const currPage = shallowRef(Home);
 
 watch(() => sessionStore.pickedItem, (newVal) => {
@@ -29,6 +33,15 @@ watch(() => sessionStore.pickedCategory, (newVal) => {
         return;
     }
 }, { immediate: true });
+
+
+watch(() => props.bucketStatus, (newVal) => {
+    if (newVal) {
+        currPage.value = Bucket;
+        return;
+    }
+    currPage.value = Home;
+})
 
 </script>
 
