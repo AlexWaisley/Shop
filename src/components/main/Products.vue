@@ -30,7 +30,7 @@ watch(() => sessionStore.pickedSubcategory, () => {
             <div class="filter-container"></div>
         </div>
         <div class="products">
-            <ItemCard v-for="value in items" :info="value" @click="sessionStore.pickItem(value)"></ItemCard>
+            <ItemCard v-for="value in items" :info="value"></ItemCard>
         </div>
     </div>
 </template>
@@ -38,6 +38,7 @@ watch(() => sessionStore.pickedSubcategory, () => {
 .products-container {
     display: flex;
     width: 100%;
+    gap: 15px;
 
     & .side-panel {
         min-width: 200px;
@@ -48,6 +49,10 @@ watch(() => sessionStore.pickedSubcategory, () => {
 
     & .products {
         padding: 20px;
+        background-color: aliceblue;
+        box-shadow: 3px 3px 3px rgb(207, 228, 246);
+        border-radius: 15px;
+        height: 100%;
         display: flex;
         flex-wrap: wrap;
         gap: 15px;

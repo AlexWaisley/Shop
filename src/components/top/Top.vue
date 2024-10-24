@@ -54,6 +54,7 @@ const sessionStore = useSessionStore();
             max-height: 60px;
             max-width: 60px;
             overflow: hidden;
+            cursor: pointer;
 
             & .logo-img {
                 max-height: 100%;
