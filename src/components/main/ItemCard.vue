@@ -9,12 +9,12 @@ const props = defineProps<{
 }>();
 </script>
 <template>
-    <div @click="sessionStore.pickItem(props.info)" class="subcategory-card-container">
-        <div class="image-container">
-            <img src="/logo.jpg" alt="Item image" class="subcategory-image">
+    <div class="item-card-container">
+        <div @click="sessionStore.pickItem(props.info)" class="image-container">
+            <img src="/logo.jpg" alt="Item image" class="item-image">
         </div>
         <div class="info-container">
-            <div class="info">
+            <div @click="sessionStore.pickItem(props.info)" class="info">
                 <div class="name">
                     <span class="text-large">
                         {{ props.info.name }}
@@ -25,13 +25,15 @@ const props = defineProps<{
                 <div class="cost">
                     <span class="text-large-bold">{{ props.info.cost }}$</span>
                 </div>
-                <div class="buy-button">Buy</div>
+                <div @click="sessionStore.addToBucket(props.info)" class="buy-button">
+                    <span class="text-large">Buy</span>
+                </div>
             </div>
         </div>
     </div>
 </template>
 <style scoped lang="scss">
-.subcategory-card-container {
+.item-card-container {
     min-width: 250px;
     height: 250px;
     overflow: hidden;
@@ -50,7 +52,7 @@ const props = defineProps<{
         max-width: 200px;
         overflow: hidden;
 
-        & .subcategory-image {
+        & .item-image {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
@@ -67,6 +69,22 @@ const props = defineProps<{
             display: flex;
             width: 100%;
             justify-content: space-around;
+            align-items: center;
+
+            & .buy-button {
+                background-color: skyblue;
+                padding: 7px;
+                border-radius: 15px;
+                transition: all .5s ease;
+                z-index: 5;
+                user-select: none;
+
+                &:hover {
+                    cursor: pointer;
+                    background-color: rgb(94, 175, 208);
+                }
+            }
+
         }
     }
 

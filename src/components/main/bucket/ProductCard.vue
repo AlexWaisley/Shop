@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import { Item } from '@models';
+import { BucketProduct } from '@models';
 import { ref } from 'vue';
+import { useSessionStore } from '@storage';
+const sessionStorage = useSessionStore();
 
-/* 
 const props = defineProps<{
-    info: Item;
+    info: BucketProduct;
 }>();
-const totalCost = ref<number>(props.info.cost);
- */
-const quantity = ref<number>(1);
 
+const quantity = ref<number>(props.info.quantity);
 
 </script>
 <template>
-    <div @click="" class="product-container">
+    <div class="product-container">
         <div class="image-container">
             <img src="/2.jpg" alt="product preview" class="image-preview" />
         </div>
         <div class="info-container">
             <div class="name">
-                <span class="text-large">some name</span>
+                <span class="text-large">{{ props.info.product.name }}</span>
             </div>
             <div class="quantity-container">
-                <input type="number" class="quantity text-large" v-model="quantity" />
+                <input type="number" class="quantity text-large" v-model="quantity"
+                    :oninput="sessionStorage.changeQuantityOfProductInBucket(props.info, quantity)" />
             </div>
             <div class="cost">
-                <span class="text-large">999$</span>
+                <span class="text-large">{{ props.info.totalCost }}$</span>
             </div>
         </div>
         <div class="additional-buttons-container">
-            <div class="delete-button">
+            <div @click="sessionStorage.removeFromBucket(props.info)" class="delete-button">
                 <img src="/cross.svg" alt="delete" class="icon">
             </div>
         </div>
@@ -60,8 +60,8 @@ const quantity = ref<number>(1);
     }
 
     & .info-container {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
         gap: 15px;
         width: 100%;
         align-items: center;
@@ -73,11 +73,15 @@ const quantity = ref<number>(1);
         }
 
         & .quantity-container {
+            display: flex;
+            justify-content: center;
+
             & .quantity {
                 border-radius: 7px;
                 border: 1px solid black;
                 padding: 7px;
                 text-align: center;
+                width: 50%;
             }
         }
     }

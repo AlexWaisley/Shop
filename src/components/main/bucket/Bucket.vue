@@ -1,21 +1,56 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import ProductCard from './ProductCard.vue';
+import { useSessionStore } from '@storage';
+import { OrderInfo } from '@models';
+const sessionStore = useSessionStore();
 
-const selectedAddress = ref(null);
+const selectedAddress = ref<string>("");
+
+const price = ref<number>(0);
+const totalQuantity = computed<number>(() => {
+    if (sessionStore.bucket === null) {
+        return 0;
+    }
+    return sessionStore.bucket.products.reduce((acc, value) => acc + value.quantity, 0);
+});
+
+watch(() => sessionStore.bucket?.totalCost, (newVal) => {
+    if (newVal === undefined) {
+        return;
+    }
+    price.value = newVal;
+
+}, { immediate: true });
+
+const isBucketContainsItems = computed<boolean>(() => {
+    return sessionStore.bucket !== null && sessionStore.bucket.products.length !== 0;
+});
+
+const orderSubmitted = ref<boolean>(false);
+
+const submitOrder = () => {
+    const order = ref<OrderInfo>({
+        bucket: sessionStore.bucket!,
+        addressInfo: selectedAddress.value
+    });
+    orderSubmitted.value = true;
+    sessionStore.orderConfirmed();
+}
+
 
 </script>
 <template>
-    <div class="bucket-container">
+    <div v-if="isBucketContainsItems" class="bucket-container">
         <div class="products-list">
-            <ProductCard v-for="_ in 9"></ProductCard>
+            <ProductCard v-for="value in sessionStore.bucket!.products" :info="value"></ProductCard>
         </div>
         <div class="confirm-form">
             <div class="products-quantity">
-                <span class="text-large">U have 1 product in your bucket</span>
+                <span class="text-large">You have {{ totalQuantity }} product in your bucket</span>
             </div>
             <div class="total-cost">
-                <span class="text-large">999$</span>
+                <span class="text-large">{{ price }}$</span>
             </div>
             <div class="shop-address-picker-container">
                 <div class="shop-address-container">
@@ -38,12 +73,17 @@ const selectedAddress = ref(null);
                 </div>
             </div>
             <div class="submit">
-                <div class="buy-button">
+                <button @click="submitOrder" :disabled="selectedAddress === ''" class="buy-button">
                     <span class="text-large">I WILL HAVE ORDER</span>
-                </div>
+                </button>
             </div>
         </div>
     </div>
+    <div v-else class="clean-bucket-container">
+        <span v-if="!orderSubmitted" class="text-large">Why there is nothing? Are you poor or what?</span>
+        <span v-else class="text-large">Thank you for purchase ^_^</span>
+    </div>
+
 </template>
 <style scoped lang="scss">
 .bucket-container {
@@ -98,6 +138,8 @@ const selectedAddress = ref(null);
                 width: 100%;
                 height: 100%;
                 transition: all .5s ease;
+                border: none;
+                outline: none;
 
                 &:hover {
                     background-color: rgb(101, 186, 219);

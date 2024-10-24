@@ -11,7 +11,7 @@ const history = ref<Item[] | null>(null);
 watch(() => sessionStore.history, (newVal) => {
     if (newVal !== null) {
         history.value = newVal.reverse();
-        return
+        return;
     }
 }, { immediate: true });
 

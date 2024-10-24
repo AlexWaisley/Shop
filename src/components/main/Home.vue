@@ -7,6 +7,7 @@ import { shallowRef, watch } from 'vue';
 import { useSessionStore } from '@storage';
 
 const sessionStore = useSessionStore();
+const currMain = shallowRef(Main);
 
 watch(() => sessionStore.pickedCategory, (newVal) => {
     if (newVal !== null) {
@@ -14,9 +15,8 @@ watch(() => sessionStore.pickedCategory, (newVal) => {
         return;
     }
     currMain.value = Main;
-});
+}, { immediate: true });
 
-const currMain = shallowRef(Main);
 
 </script>
 <template>

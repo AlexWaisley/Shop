@@ -19,7 +19,7 @@ const sessionStore = useSessionStore();
                     <div class="price-container">
                         <span class="text-large">{{ sessionStore.pickedItem?.cost }}$</span>
                     </div>
-                    <div class="buy-button">
+                    <div @click="sessionStore.addToBucket(null)" class="buy-button">
                         <span class="text-large-bold">Buy</span>
                     </div>
                 </div>
@@ -74,10 +74,24 @@ const sessionStore = useSessionStore();
             & .bucket-container {
                 padding: 20px;
                 display: flex;
+                align-items: center;
                 justify-content: space-around;
                 background-color: aliceblue;
                 border-radius: 0 0 15px 15px;
                 box-shadow: 3px 3px 3px rgb(216, 237, 255);
+
+                & .buy-button {
+                    background-color: skyblue;
+                    user-select: none;
+                    padding: 10px;
+                    border-radius: 15px;
+                    transition: all .5s ease;
+
+                    &:hover {
+                        cursor: pointer;
+                        background-color: rgb(94, 175, 208);
+                    }
+                }
             }
         }
     }
