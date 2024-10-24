@@ -1,24 +1,16 @@
 <script setup lang="ts">
 import ItemCard from './ItemCard.vue';
 import Catalog from './Catalog.vue';
-import { useSessionStore, useHardStore } from '@storage';
+import { useSessionStore } from '@storage';
 import { Item } from '@models';
 import { ref, watch } from 'vue';
 
 const sessionStore = useSessionStore();
-const hardStore = useHardStore();
 
+const items = ref<Item[] | null>(sessionStore.displayedProducts);
 
-const items = ref<Item[] | null>(null);
-
-watch(() => sessionStore.pickedSubcategory, () => {
-    if (sessionStore.pickedSubcategory === null) {
-        return;
-    }
-    const id = sessionStore.pickedSubcategory.id;
-    console
-    const subcategoriesList = hardStore.itemList.filter(x => x.subCategoryId === id);
-    items.value = subcategoriesList;
+watch(() => sessionStore.displayedProducts, (newVal) => {
+    items.value = newVal;
 }, { immediate: true });
 
 
@@ -53,6 +45,7 @@ watch(() => sessionStore.pickedSubcategory, () => {
         box-shadow: 3px 3px 3px rgb(207, 228, 246);
         border-radius: 15px;
         height: 100%;
+        width: 100%;
         display: flex;
         flex-wrap: wrap;
         gap: 15px;

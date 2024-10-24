@@ -1,6 +1,6 @@
 <script setup lang="ts">
-
-const emits = defineEmits<{
+import SearchBar from './SearchBar.vue';
+defineEmits<{
     (e: 'openBucket'): void,
     (e: 'goHome'): void
 }>();
@@ -15,7 +15,7 @@ const emits = defineEmits<{
         </div>
         <div class="section">
             <div class="searchbar">
-                <span class="text-large-bold">searchbar</span>
+                <SearchBar></SearchBar>
             </div>
         </div>
         <div class="section">

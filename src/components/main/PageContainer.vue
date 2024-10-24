@@ -25,13 +25,11 @@ watch(() => sessionStore.pickedSubcategory, (newVal) => {
         currPage.value = Products;
         return;
     }
+    currPage.value = Home;
 }, { immediate: true });
 
-watch(() => sessionStore.pickedCategory, (newVal) => {
-    if (newVal === null) {
-        currPage.value = Home;
-        return;
-    }
+watch(() => sessionStore.pickedCategory, () => {
+    currPage.value = Home;
 }, { immediate: true });
 
 

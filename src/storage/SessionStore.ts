@@ -11,6 +11,7 @@ export const useSessionStore = defineStore('sessionStore', () => {
     const pickedCategory = ref<Category | null>(null);
     const pickedSubcategory = ref<Subcategory | null>(null);
     const pickedItem = ref<Item | null>(null);
+    const displayedProducts = ref<Item[] | null>(null);
 
     const pickCategory = (category: Category) => {
         pickedCategory.value = category;
@@ -20,6 +21,7 @@ export const useSessionStore = defineStore('sessionStore', () => {
     }
     const pickSubcategory = (subcategory: Subcategory) => {
         pickedSubcategory.value = subcategory;
+        displayedProducts.value = hardStore.itemList.filter(x => x.subCategoryId === subcategory.id);
     }
     const pickItem = (item: Item) => {
         if (pickedCategory.value === null || pickedSubcategory === null) {
@@ -112,6 +114,10 @@ export const useSessionStore = defineStore('sessionStore', () => {
         bucket.value = null;
     }
 
-    return { history, bucket, changeQuantityOfProductInBucket, orderConfirmed, pickCategory, pickItem, pickSubcategory, clearAll, addToBucket, removeFromBucket, pickedCategory, pickedItem, pickedSubcategory };
+    const startSearch = (name: string) => {
+        displayedProducts.value = hardStore.itemList.filter(x => x.name.toLocaleLowerCase().includes(name.toLocaleLowerCase()))
+    }
+
+    return { history, bucket, displayedProducts, startSearch, changeQuantityOfProductInBucket, orderConfirmed, pickCategory, pickItem, pickSubcategory, clearAll, addToBucket, removeFromBucket, pickedCategory, pickedItem, pickedSubcategory };
 
 });

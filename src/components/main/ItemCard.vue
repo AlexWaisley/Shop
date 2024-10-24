@@ -35,22 +35,26 @@ const props = defineProps<{
 <style scoped lang="scss">
 .item-card-container {
     min-width: 250px;
-    height: 250px;
+    max-width: 250px;
+    height: 320px;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 200px 1fr;
     gap: 7px;
     background-color: aqua;
-    justify-content: center;
-    align-items: center;
+
+
     border-radius: 15px;
     box-shadow: 3px 3px 3px rgb(55, 230, 230);
     transition: all .5s ease;
 
     & .image-container {
-        max-height: 150px;
-        max-width: 200px;
+        max-height: 200px;
+        max-width: 100%;
         overflow: hidden;
+        display: flex;
+        justify-content: center;
+        padding: 10px;
 
         & .item-image {
             max-width: 100%;
@@ -60,8 +64,8 @@ const props = defineProps<{
     }
 
     & .info-container {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-rows: 50px 1fr;
         gap: 5px;
         width: 100%;
 
@@ -70,6 +74,18 @@ const props = defineProps<{
             width: 100%;
             justify-content: space-around;
             align-items: center;
+
+            & .name {
+                display: flex;
+                text-align: center;
+                width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                line-height: 24px;
+                max-height: 54px;
+            }
 
             & .buy-button {
                 background-color: skyblue;
