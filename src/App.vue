@@ -8,6 +8,7 @@ import 'toastr/build/toastr.min.css';
 
 
 const sessionStore = useSessionStore();
+sessionStore.initSession();
 
 const bucketStatus = ref(false);
 const accountStatus = ref(false);

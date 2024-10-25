@@ -30,7 +30,6 @@ watch(() => sessionStore.pickedCategory, () => {
     display: flex;
     flex-wrap: wrap;
     max-width: 100%;
-    min-width: 1200px;
     gap: 15px;
     padding: 20px;
     justify-content: center;

@@ -1,19 +1,54 @@
 import { BucketInfo, BucketProduct, Category, Item, OrderInfo, Subcategory, User } from "@models";
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useHardStore } from "./HardStore";
+import { useCookies } from '@vueuse/integrations/useCookies';
 import toastr from 'toastr';
 
 export const useSessionStore = defineStore('sessionStore', () => {
     const hardStore = useHardStore();
+    const cookies = useCookies();
 
-    const history = ref<Item[] | null>(null);
-    const bucket = ref<BucketInfo | null>(null);
+    const history = ref<Item[] | null>(cookies.get('userHistory') || null);
+    const bucket = ref<BucketInfo | null>(cookies.get('userBucket') || null);
+    const currUser = ref<User | null>(cookies.get('userSession') || null);
     const pickedCategory = ref<Category | null>(null);
     const pickedSubcategory = ref<Subcategory | null>(null);
     const pickedItem = ref<Item | null>(null);
     const displayedProducts = ref<Item[] | null>(null);
-    const currUser = ref<User | null>(null);
+
+
+    const initSession = () => {
+        if (currUser.value) {
+            toastr.info(`Welcome back, ${currUser.value.name}`);
+        }
+    };
+
+    watch(currUser, (newUser) => {
+        if (newUser) {
+            cookies.set('userSession', newUser, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
+            toastr.success('User logged in successfully');
+        } else {
+            cookies.remove('userSession');
+            toastr.info('User logged out');
+        }
+    });
+
+    watch(bucket, (newBucket) => {
+        if (newBucket) {
+            cookies.set('userBucket', newBucket, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
+        } else {
+            cookies.remove('userBucket');
+        }
+    });
+
+    watch(history, (newHistory) => {
+        if (newHistory) {
+            cookies.set('userHistory', newHistory, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
+        } else {
+            cookies.remove('userHistory');
+        }
+    });
 
     const pickCategory = (category: Category) => {
         pickedCategory.value = category;
@@ -28,7 +63,8 @@ export const useSessionStore = defineStore('sessionStore', () => {
     }
     const pickItem = (item: Item) => {
         if (pickedCategory.value === null || pickedSubcategory === null) {
-            const subCategory = hardStore.subCategoryList.find(x => x.categoryId === item.subCategoryId);
+            const subCategory = hardStore.subCategoryList.find(x => x.id === item.subCategoryId);
+            console.log(subCategory);
             if (subCategory === undefined) {
                 console.log("Bruh");
                 return;
@@ -196,10 +232,12 @@ export const useSessionStore = defineStore('sessionStore', () => {
         if (currUser.value === null)
             return;
         currUser.value.isEmailActive = true;
+        cookies.set('userSession', currUser.value, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
+
         toastr.success("Your email is active now");
 
     }
 
-    return { history, currUser, bucket, displayedProducts, changeUserPassword, activateUserEmail, changeCurrUserEmail, changeCurrUserName, register, logIn, startSearch, changeQuantityOfProductInBucket, orderConfirmed, pickCategory, pickItem, pickSubcategory, clearAll, addToBucket, removeFromBucket, pickedCategory, pickedItem, pickedSubcategory };
+    return { history, currUser, bucket, displayedProducts, initSession, changeUserPassword, activateUserEmail, changeCurrUserEmail, changeCurrUserName, register, logIn, startSearch, changeQuantityOfProductInBucket, orderConfirmed, pickCategory, pickItem, pickSubcategory, clearAll, addToBucket, removeFromBucket, pickedCategory, pickedItem, pickedSubcategory };
 
 });

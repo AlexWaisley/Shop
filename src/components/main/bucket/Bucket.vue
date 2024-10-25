@@ -153,4 +153,9 @@ const submitOrder = () => {
 
     }
 }
+
+.clean-bucket-container {
+    display: flex;
+    justify-content: center;
+}
 </style>
