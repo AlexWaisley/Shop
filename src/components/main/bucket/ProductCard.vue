@@ -18,7 +18,7 @@ const quantity = ref<number>(props.info.quantity);
             <img src="/2.jpg" alt="product preview" class="image-preview" />
         </div>
         <div class="info-container">
-            <div class="name">
+            <div @click="sessionStorage.pickItem(props.info.product)" class="name">
                 <span class="text-large">{{ props.info.product.name }}</span>
             </div>
             <div class="quantity-container">
@@ -72,6 +72,11 @@ const quantity = ref<number>(props.info.quantity);
             display: flex;
             justify-content: center;
             align-items: center;
+            cursor: pointer;
+
+            &:hover {
+                text-decoration: underline;
+            }
         }
 
         & .quantity-container {

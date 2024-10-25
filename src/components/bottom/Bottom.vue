@@ -57,7 +57,7 @@
     display: flex;
     flex-direction: column;
     background-color: skyblue;
-    gap: 15px;
+    gap: 7px;
 
     & .bottom {
         display: flex;
@@ -71,27 +71,30 @@
             & .info {
                 display: flex;
                 flex-direction: column;
-                gap: 15px;
+                gap: 5px;
 
                 & .tag {
                     span {
                         display: block;
-                        height: 50px;
+                        height: 40px;
                     }
                 }
 
                 & .content {
                     display: flex;
                     flex-direction: column;
-                    gap: 15px;
+                    gap: 7px;
 
                     & .work-hours-table {
-                        border-spacing: 15px;
+
+                        & tbody>tr>td {
+                            padding: 7px;
+                        }
 
                         & tbody>tr>.day {
-                            padding: 7px;
                             border-right: 1px solid gray;
                         }
+
                     }
                 }
             }

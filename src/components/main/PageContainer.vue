@@ -49,7 +49,7 @@ watch(() => props.bucketStatus, (newVal) => {
         currPage.value = Bucket;
         return;
     }
-    if (props.accountStatus) {
+    if (props.accountStatus || sessionStore.pickedItem !== null) {
         return;
     }
     currPage.value = Home;
@@ -70,17 +70,58 @@ watch(() => props.accountStatus, (newVal) => {
 
 <template>
     <div class="page-container">
+        <nav class="query">
+            <div @click="sessionStore.clearAll" v-if="sessionStore.pickedCategory !== null" class="prop">
+                <span class="text-small">Home</span>
+            </div>
+            <div @click="sessionStore.pickCategory(sessionStore.pickedCategory!)"
+                v-if="sessionStore.pickedSubcategory !== null" class="prop">
+                <span class="text-small">{{ sessionStore.pickedCategory?.name }}</span>
+            </div>
+            <div @click="sessionStore.pickSubcategory(sessionStore.pickedSubcategory!)"
+                v-if="sessionStore.pickedItem !== null" class="prop">
+                <span class="text-small">{{ sessionStore.pickedSubcategory?.name }}</span>
+            </div>
+        </nav>
         <component :is="currPage" />
     </div>
 </template>
 
 <style scoped lang="scss">
 .page-container {
-    min-height: 500px;
+    min-height: 600px;
+    flex: 1;
     width: 100%;
     display: flex;
+    flex-direction: column;
+    gap: 7px;
     justify-content: center;
     margin-top: 80px;
     padding: 20px;
+
+    & .query {
+        display: flex;
+        margin-left: 250px;
+
+        & .prop {
+            cursor: pointer;
+
+            & span {
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+
+            &::before {
+                content: '-';
+            }
+
+            &:first-child {
+                &::before {
+                    content: '';
+                }
+            }
+        }
+    }
 }
 </style>

@@ -2,6 +2,7 @@ import { BucketInfo, BucketProduct, Category, Item, OrderInfo, Subcategory, User
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useHardStore } from "./HardStore";
+import toastr from 'toastr';
 
 export const useSessionStore = defineStore('sessionStore', () => {
     const hardStore = useHardStore();
@@ -23,6 +24,7 @@ export const useSessionStore = defineStore('sessionStore', () => {
     const pickSubcategory = (subcategory: Subcategory) => {
         pickedSubcategory.value = subcategory;
         displayedProducts.value = hardStore.itemList.filter(x => x.subCategoryId === subcategory.id);
+        pickedItem.value = null;
     }
     const pickItem = (item: Item) => {
         if (pickedCategory.value === null || pickedSubcategory === null) {
@@ -105,6 +107,11 @@ export const useSessionStore = defineStore('sessionStore', () => {
         calcTotal();
     }
 
+    const validateEmail = (email: string) => {
+        const re = /\S+@\S+\.\S+/;
+        return re.test(email);
+    }
+
     const calcTotal = () => {
         if (bucket.value === null) {
             bucket.value = { products: [], totalCost: 0 };
@@ -112,8 +119,30 @@ export const useSessionStore = defineStore('sessionStore', () => {
         bucket.value.totalCost = bucket.value.products.reduce((acc, value) => acc + value.product.cost * value.quantity, 0);
     }
 
+    const changeUserPassword = (oldPassword: string, newPassword: string) => {
+        if (currUser.value === null) {
+            toastr.error("Sign in account");
+            return;
+        }
+        if (currUser.value.password !== oldPassword) {
+            console.log(currUser.value.password);
+            console.log(oldPassword);
+            toastr.error("Old password is wrong");
+            return
+        }
+        currUser.value.password = newPassword;
+        toastr.success("Your password is successfully changed");
+
+
+    }
+
     const orderConfirmed = (order: OrderInfo) => {
         if (currUser.value === null) {
+            toastr.error("Sign in account");
+            return;
+        }
+        if (!currUser.value.isEmailActive) {
+            toastr.error("Activate your email, so we can contact with you");
             return;
         }
         if (currUser.value.orderInfo === null) {
@@ -131,16 +160,30 @@ export const useSessionStore = defineStore('sessionStore', () => {
         displayedProducts.value = hardStore.itemList.filter(x => x.name.toLocaleLowerCase().includes(name.toLocaleLowerCase()))
     }
 
-    const logIn = (name: string, password: string) => {
-        currUser.value = { name, email: "example@gmail.com", password, orderInfo: null };
+    const logIn = (email: string, password: string) => {
+        if (!validateEmail(email)) {
+            toastr.error("Enter valid email");
+            return;
+        }
+        currUser.value = { name: "", email, isEmailActive: false, password, orderInfo: null };
+        if (!currUser.value.isEmailActive) {
+            toastr.warning("Validate your email");
+        }
     }
     const register = (email: string, password: string) => {
-        currUser.value = { name: "", email, password, orderInfo: null };
+        if (!validateEmail(email)) {
+            toastr.error("Enter valid email");
+            return;
+        }
+
+        currUser.value = { name: "", email, isEmailActive: false, password, orderInfo: null };
     }
 
     const changeCurrUserEmail = (email: string) => {
-        if (currUser.value === null)
+        if (currUser.value === null || !validateEmail(currUser.value.email)) {
+            toastr.error("Enter valid email");
             return;
+        }
         currUser.value.email = email;
     }
     const changeCurrUserName = (name: string) => {
@@ -148,6 +191,15 @@ export const useSessionStore = defineStore('sessionStore', () => {
             return;
         currUser.value.name = name;
     }
-    return { history, currUser, bucket, displayedProducts, changeCurrUserEmail, changeCurrUserName, register, logIn, startSearch, changeQuantityOfProductInBucket, orderConfirmed, pickCategory, pickItem, pickSubcategory, clearAll, addToBucket, removeFromBucket, pickedCategory, pickedItem, pickedSubcategory };
+
+    const activateUserEmail = () => {
+        if (currUser.value === null)
+            return;
+        currUser.value.isEmailActive = true;
+        toastr.success("Your email is active now");
+
+    }
+
+    return { history, currUser, bucket, displayedProducts, changeUserPassword, activateUserEmail, changeCurrUserEmail, changeCurrUserName, register, logIn, startSearch, changeQuantityOfProductInBucket, orderConfirmed, pickCategory, pickItem, pickSubcategory, clearAll, addToBucket, removeFromBucket, pickedCategory, pickedItem, pickedSubcategory };
 
 });

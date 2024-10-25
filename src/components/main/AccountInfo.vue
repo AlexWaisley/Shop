@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useSessionStore } from '@storage';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import InputField from './InputField.vue';
 import Order from './Order.vue';
+import ChangePassword from './ChangePassword.vue';
 const sessionStore = useSessionStore();
 
 const userName = ref<string>("");
@@ -12,6 +13,7 @@ if (sessionStore.currUser !== null) {
 }
 
 const userEmail = ref<string>("");
+const changePassRequired = ref<boolean>(false);
 
 if (sessionStore.currUser !== null) {
     userEmail.value = sessionStore.currUser.email;
@@ -26,10 +28,22 @@ const submitName = () => {
         sessionStore.changeCurrUserName(userName.value);
     }
 }
+watch(() => sessionStore.currUser?.password, () => {
+    changePassRequired.value = false;
+})
+
 
 const submitChanges = () => {
     submitEmail();
     submitName();
+}
+
+const validateEmail = () => {
+    sessionStore.activateUserEmail();
+}
+
+const changePassword = () => {
+    changePassRequired.value = true;
 }
 
 </script>
@@ -47,8 +61,15 @@ const submitChanges = () => {
                     <span class="text-large">Submit changes</span>
                 </button>
 
+                <button @click="changePassword">
+                    <span class="text-large">Change password</span>
+                </button>
+                <button v-if="!sessionStore.currUser?.isEmailActive" @click="validateEmail">
+                    <span class="text-large">Validate email</span>
+                </button>
+
             </div>
-            <div class="section">
+            <div v-if="!changePassRequired" class="section">
                 <div v-if="sessionStore.currUser?.orderInfo !== null && sessionStore.currUser?.orderInfo?.length !== 0"
                     class="orders-list">
                     <Order v-for="value in sessionStore.currUser?.orderInfo" :info="value"></Order>
@@ -56,6 +77,9 @@ const submitChanges = () => {
                 <div v-else class="plain">
                     <span class="text-large">You have no orders.</span>
                 </div>
+            </div>
+            <div v-else class="change-pass-container">
+                <ChangePassword></ChangePassword>
             </div>
         </div>
     </div>

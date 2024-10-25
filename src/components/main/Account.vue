@@ -20,7 +20,7 @@ const register = () => {
         <div v-if="sessionStore.currUser === null" class="load-account">
             <form @submit.prevent="logIn" class="login-block">
                 <div class="input-fields">
-                    <InputField v-model="name" placeholder="Name" type="text"></InputField>
+                    <InputField v-model="name" placeholder="Email" type="text"></InputField>
                     <InputField v-model="password" placeholder="Password" type="password"></InputField>
                 </div>
                 <div class="submit-btns">

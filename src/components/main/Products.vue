@@ -34,7 +34,7 @@ watch(() => sessionStore.displayedProducts, (newVal) => {
     gap: 15px;
 
     & .side-panel {
-        min-width: 200px;
+        min-width: 250px;
         display: flex;
         flex-direction: column;
 
