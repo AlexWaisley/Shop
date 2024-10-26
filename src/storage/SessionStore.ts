@@ -3,14 +3,15 @@ import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import { useHardStore } from "./HardStore";
 import { useCookies } from '@vueuse/integrations/useCookies';
+import { useLocalStorage, StorageSerializers } from "@vueuse/core";
 import toastr from 'toastr';
 
 export const useSessionStore = defineStore('sessionStore', () => {
     const hardStore = useHardStore();
     const cookies = useCookies();
 
-    const history = ref<Item[] | null>(cookies.get('userHistory') || null);
-    const bucket = ref<BucketInfo | null>(cookies.get('userBucket') || null);
+    const history = useLocalStorage<Item[] | null>('userHistory', null, { serializer: StorageSerializers.object });
+    const bucket = useLocalStorage<BucketInfo | null>('User', null, { serializer: StorageSerializers.object });
     const currUser = ref<User | null>(cookies.get('userSession') || null);
     const pickedCategory = ref<Category | null>(null);
     const pickedSubcategory = ref<Subcategory | null>(null);
@@ -31,22 +32,6 @@ export const useSessionStore = defineStore('sessionStore', () => {
         } else {
             cookies.remove('userSession');
             toastr.info('User logged out');
-        }
-    });
-
-    watch(bucket, (newBucket) => {
-        if (newBucket) {
-            cookies.set('userBucket', newBucket, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
-        } else {
-            cookies.remove('userBucket');
-        }
-    });
-
-    watch(history, (newHistory) => {
-        if (newHistory) {
-            cookies.set('userHistory', newHistory, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
-        } else {
-            cookies.remove('userHistory');
         }
     });
 
@@ -87,15 +72,13 @@ export const useSessionStore = defineStore('sessionStore', () => {
         displayedProducts.value = null
     }
     const addToHistory = (product = pickedItem.value) => {
-        if (product === null && pickedItem.value !== null) {
-            product = pickedItem.value;
-        }
         if (product === null)
             return;
         if (history.value === null) {
             history.value = [];
         }
         const index = history.value.indexOf(product);
+        console.log(product);
         if (index !== -1) {
             history.value.splice(index, 1);
         }

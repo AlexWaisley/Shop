@@ -34,16 +34,19 @@ const isNeededToShow = computed<boolean>(() => {
 </template>
 <style scoped lang="scss">
 .history-container {
-    height: 400px;
+    height: 420px;
     padding: 20px;
     background-color: rgb(0, 225, 255);
     border-radius: 15px;
+    width: 100%;
+    overflow-x: auto;
 
     & .history {
         display: flex;
         max-width: 100%;
         flex-direction: column;
         gap: 15px;
+        overflow-x: auto;
 
         & .items-container {
             display: flex;

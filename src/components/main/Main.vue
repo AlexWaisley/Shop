@@ -10,7 +10,6 @@ import History from './History.vue';
 <style scoped lang="scss">
 .main {
     width: 100%;
-    min-width: 1200px;
     height: 100%;
     display: flex;
     flex-direction: column;

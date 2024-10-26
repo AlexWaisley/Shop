@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/core": "^11.1.0",
     "@vueuse/integrations": "^11.1.0",
     "pinia": "^2.2.4",
     "toastr": "^2.1.4",
