@@ -1,9 +1,8 @@
-import { OrderInfo } from "./OrderInfo"
+import { EmailInfo } from "./EmailInfo"
 
 export type User = {
+    id: string,
     name: string,
-    email: string,
-    isEmailActive: boolean,
-    password: string,
-    orderInfo: OrderInfo[] | null
+    isAdmin: boolean,
+    email: EmailInfo
 }

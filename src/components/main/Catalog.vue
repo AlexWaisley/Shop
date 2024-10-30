@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useHardStore, useSessionStore } from '@storage';
+import AddNewCategoryForm from './AddNewCategoryForm.vue';
 
 const hardStore = useHardStore();
 const sessionStore = useSessionStore();
 
 
 const showCategories = ref<boolean>(true);
+const addNewCategory = ref<boolean>(false);
 
+const changeAddNewCategoryShowStatus = () => {
+    addNewCategory.value = !addNewCategory.value;
+}
 const changeCategoriesShowStatus = () => {
     showCategories.value = !showCategories.value;
 }
@@ -19,6 +24,9 @@ const changeCategoriesShowStatus = () => {
             <span class="text-large-bold">Catalog</span>
         </div>
         <div v-if="showCategories" class="category-container">
+            <div v-if="sessionStore.currUser?.isAdmin" @click="changeAddNewCategoryShowStatus" class="add-button">
+                <img src="/cross.svg" alt="add new category">
+            </div>
             <div v-for="value in hardStore.categoryList" @click="sessionStore.pickCategory(value)" class="category">
                 <div class="catalog-over"></div>
                 <div class="over">
@@ -26,6 +34,9 @@ const changeCategoriesShowStatus = () => {
                 </div>
             </div>
         </div>
+        <Teleport v-if="addNewCategory" to="body">
+            <AddNewCategoryForm @close="changeAddNewCategoryShowStatus"></AddNewCategoryForm>
+        </Teleport>
     </div>
 </template>
 <style scoped lang="scss">
@@ -95,6 +106,24 @@ const changeCategoriesShowStatus = () => {
                 & .catalog-over {
                     transform: translateX(0);
                 }
+            }
+        }
+
+        & .add-button {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all .5s ease;
+            padding: 15px;
+
+            & img {
+                transform: rotateZ(45deg)
+            }
+
+            &:hover {
+                cursor: pointer;
+                background-color: aliceblue;
             }
         }
     }

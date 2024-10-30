@@ -1,29 +1,111 @@
-import { BucketInfo, BucketProduct, Category, Item, OrderInfo, Subcategory, User } from "@models";
+import { Category, Product, User } from "@models";
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
-import { useHardStore } from "./HardStore";
 import { useCookies } from '@vueuse/integrations/useCookies';
 import { useLocalStorage, StorageSerializers } from "@vueuse/core";
 import toastr from 'toastr';
+import { api } from "../api";
+import { useDataStore } from "./DataStorage";
 
 export const useSessionStore = defineStore('sessionStore', () => {
-    const hardStore = useHardStore();
     const cookies = useCookies();
+    const dataStore = useDataStore();
 
-    const history = useLocalStorage<Item[] | null>('userHistory', null, { serializer: StorageSerializers.object });
-    const bucket = useLocalStorage<BucketInfo | null>('User', null, { serializer: StorageSerializers.object });
+    const jwt = ref<string>(cookies.get('ultra-shop-token'));
+    const history = useLocalStorage<string[] | null>('userHistory', null, { serializer: StorageSerializers.object });
     const currUser = ref<User | null>(cookies.get('userSession') || null);
-    const pickedCategory = ref<Category | null>(null);
-    const pickedSubcategory = ref<Subcategory | null>(null);
-    const pickedItem = ref<Item | null>(null);
-    const displayedProducts = ref<Item[] | null>(null);
 
+    const pickedCategories = ref<Category[] | null>(null);
+    const pickedItem = ref<Product | null>(null);
 
     const initSession = () => {
         if (currUser.value) {
             toastr.info(`Welcome back, ${currUser.value.name}`);
         }
     };
+
+    const login = async (email: string, password: string) => {
+        if (!validateEmail(email)) {
+            toastr.error("Enter valid email");
+            return;
+        }
+
+        const user = await api.Login({ email, password });
+
+        if (user === null) {
+            toastr.error("Email or password is wrong");
+            return;
+        }
+
+        currUser.value = user;
+        if (!currUser.value!.email.isActive) {
+            toastr.warning("Validate your email");
+        }
+    }
+
+    const register = async (name: string, email: string, password: string) => {
+        if (!validateEmail(email)) {
+            toastr.error("Enter valid email");
+            return;
+        }
+        const user = await api.Register({
+            name, email, password
+        });
+
+        if (user === null) {
+            toastr.error("Email or password is wrong");
+            return;
+        }
+
+        currUser.value = user;
+        if (!currUser.value!.email.isActive) {
+            toastr.warning("Validate your email");
+        }
+    }
+
+    const changeUserPassword = async (oldPassword: string, newPassword: string) => {
+        if (currUser.value === null) {
+            toastr.error("Sign in account");
+            return;
+        }
+
+        const result = await api.UpdatePassword({
+            oldPassword,
+            newPassword
+        });
+
+        if (result) {
+            toastr.success("Your password is successfully changed");
+            return;
+        }
+
+        toastr.error("Old password is wrong");
+    }
+
+    const changeCurrUserInfo = async (name: string, email: string) => {
+        if (currUser.value === null || !validateEmail(email)) {
+            toastr.error("Enter valid email");
+            return;
+        }
+        const result = await api.UpdateInfo({
+            name,
+            email
+        });
+        if (result) {
+            toastr.success("Info about your account is successfully changed");
+            return;
+        }
+        toastr.error("Something went wrong and info not changes.");
+    }
+
+    const activateUserEmail = () => {
+        if (currUser.value === null)
+            return;
+        currUser.value.email.isActive = true;
+        cookies.set('userSession', currUser.value, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
+
+        toastr.success("Your email is active now");
+    }
 
     watch(currUser, (newUser) => {
         if (newUser) {
@@ -36,94 +118,49 @@ export const useSessionStore = defineStore('sessionStore', () => {
     });
 
     const pickCategory = (category: Category) => {
-        pickedCategory.value = category;
-        pickedSubcategory.value = null;
-        addToHistory();
-        pickedItem.value = null;
-    }
-    const pickSubcategory = (subcategory: Subcategory) => {
-        pickedSubcategory.value = subcategory;
-        displayedProducts.value = hardStore.itemList.filter(x => x.subCategoryId === subcategory.id);
-        pickedItem.value = null;
-    }
-    const pickItem = (item: Item) => {
-        if (pickedCategory.value === null || pickedSubcategory === null) {
-            const subCategory = hardStore.subCategoryList.find(x => x.id === item.subCategoryId);
-            console.log(subCategory);
-            if (subCategory === undefined) {
-                console.log("Bruh");
-                return;
-            }
-            pickedSubcategory.value = subCategory;
-            const category = hardStore.categoryList.find(x => x.id === subCategory.categoryId);
-            if (category === undefined) {
-                console.log("Bruh");
-                return;
-            }
-            pickedCategory.value = category;
+        if (pickedCategories.value === null) {
+            pickedCategories.value = [];
         }
-        pickedItem.value = item;
+        pickedCategories.value.push(category);
+        if (pickedItem.value !== null) {
+            addToHistory(pickedItem.value.id);
+            pickedItem.value = null;
+        }
     }
+
+    const pickItem = (productId: string) => {
+        const product = dataStore.getFullProductById(productId);
+        if (product === null) {
+            toastr.error("Something went wrong");
+            return;
+        }
+        pickedItem.value = product;
+    }
+
     const clearAll = () => {
-        pickedCategory.value = null;
-        pickedSubcategory.value = null;
-        addToHistory();
-        pickedItem.value = null;
-        displayedProducts.value = null
+        pickedCategories.value = [];
+
+        if (pickedItem.value !== null) {
+            addToHistory(pickedItem.value.id);
+            pickedItem.value = null;
+        }
     }
-    const addToHistory = (product = pickedItem.value) => {
-        if (product === null)
+
+    const addToHistory = (productId: string) => {
+        if (productId === null)
             return;
         if (history.value === null) {
             history.value = [];
         }
-        const index = history.value.indexOf(product);
-        console.log(product);
+        const index = history.value.indexOf(productId);
+        console.log(productId);
         if (index !== -1) {
             history.value.splice(index, 1);
         }
         if (history.value.length > 20) {
             history.value.pop();
         }
-        history.value.push(product);
-
-    }
-
-    const addToBucket = (product: Item | null) => {
-        if (product === null) {
-            if (pickedItem.value === null) {
-                console.log("Bruh");
-                return;
-            }
-            product = pickedItem.value;
-        }
-        if (bucket.value === null) {
-            bucket.value = { products: [], totalCost: 0 };
-        }
-        addToHistory(product);
-        if (bucket.value.products.find(x => x.product === product) === undefined)
-            bucket.value.products.push({ product, quantity: 1, totalCost: product.cost });
-    }
-    const removeFromBucket = (product: BucketProduct) => {
-        if (bucket.value === null) {
-            bucket.value = { products: [], totalCost: 0 };
-        }
-        const itemIndex = bucket.value.products.indexOf(product);
-        if (itemIndex === -1) {
-            console.log("Bruh");
-            return;
-        }
-        bucket.value.products.splice(itemIndex, 1);
-    }
-
-    const changeQuantityOfProductInBucket = (bucketProduct: BucketProduct, newQuantity: number) => {
-        if (bucket.value === null) {
-            bucket.value = { products: [], totalCost: 0 };
-        }
-        const index = bucket.value.products.indexOf(bucketProduct);
-        bucket.value.products[index].quantity = newQuantity;
-        bucket.value.products[index].totalCost = bucket.value.products[index].product.cost * bucket.value.products[index].quantity;
-        calcTotal();
+        history.value.push(productId);
     }
 
     const validateEmail = (email: string) => {
@@ -131,96 +168,21 @@ export const useSessionStore = defineStore('sessionStore', () => {
         return re.test(email);
     }
 
-    const calcTotal = () => {
-        if (bucket.value === null) {
-            bucket.value = { products: [], totalCost: 0 };
-        }
-        bucket.value.totalCost = bucket.value.products.reduce((acc, value) => acc + value.product.cost * value.quantity, 0);
-    }
-
-    const changeUserPassword = (oldPassword: string, newPassword: string) => {
-        if (currUser.value === null) {
-            toastr.error("Sign in account");
-            return;
-        }
-        if (currUser.value.password !== oldPassword) {
-            console.log(currUser.value.password);
-            console.log(oldPassword);
-            toastr.error("Old password is wrong");
-            return
-        }
-        currUser.value.password = newPassword;
-        toastr.success("Your password is successfully changed");
-
-
-    }
-
-    const orderConfirmed = (order: OrderInfo) => {
-        if (currUser.value === null) {
-            toastr.error("Sign in account");
-            return;
-        }
-        if (!currUser.value.isEmailActive) {
-            toastr.error("Activate your email, so we can contact with you");
-            return;
-        }
-        if (currUser.value.orderInfo === null) {
-            currUser.value.orderInfo = [];
-        }
-
-        currUser.value.orderInfo.push(order);
-
-        console.log(currUser.value);
-
-        bucket.value = null;
-    }
-
-    const startSearch = (name: string) => {
-        displayedProducts.value = hardStore.itemList.filter(x => x.name.toLocaleLowerCase().includes(name.toLocaleLowerCase()))
-    }
-
-    const logIn = (email: string, password: string) => {
-        if (!validateEmail(email)) {
-            toastr.error("Enter valid email");
-            return;
-        }
-        currUser.value = { name: "", email, isEmailActive: false, password, orderInfo: null };
-        if (!currUser.value.isEmailActive) {
-            toastr.warning("Validate your email");
-        }
-    }
-    const register = (email: string, password: string) => {
-        if (!validateEmail(email)) {
-            toastr.error("Enter valid email");
-            return;
-        }
-
-        currUser.value = { name: "", email, isEmailActive: false, password, orderInfo: null };
-    }
-
-    const changeCurrUserEmail = (email: string) => {
-        if (currUser.value === null || !validateEmail(currUser.value.email)) {
-            toastr.error("Enter valid email");
-            return;
-        }
-        currUser.value.email = email;
-    }
-    const changeCurrUserName = (name: string) => {
-        if (currUser.value === null)
-            return;
-        currUser.value.name = name;
-    }
-
-    const activateUserEmail = () => {
-        if (currUser.value === null)
-            return;
-        currUser.value.isEmailActive = true;
-        cookies.set('userSession', currUser.value, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
-
-        toastr.success("Your email is active now");
-
-    }
-
-    return { history, currUser, bucket, displayedProducts, initSession, changeUserPassword, activateUserEmail, changeCurrUserEmail, changeCurrUserName, register, logIn, startSearch, changeQuantityOfProductInBucket, orderConfirmed, pickCategory, pickItem, pickSubcategory, clearAll, addToBucket, removeFromBucket, pickedCategory, pickedItem, pickedSubcategory };
+    return {
+        history,
+        currUser,
+        jwt,
+        addToHistory,
+        initSession,
+        changeUserPassword,
+        activateUserEmail,
+        changeCurrUserInfo,
+        register,
+        logIn: login,
+        pickCategory,
+        pickItem,
+        clearAll,
+        pickedItem,
+    };
 
 });
