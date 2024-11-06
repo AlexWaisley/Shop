@@ -7,12 +7,18 @@ const sessionStore = useSessionStore();
 
 const name = ref<string>("");
 const password = ref<string>("");
+const email = ref<string>("");
+
+const isRegister = ref<boolean>(false);
+
 
 const logIn = () => {
-    sessionStore.logIn(name.value, password.value);
+    sessionStore.logIn(email.value, password.value);
 }
 const register = () => {
-    sessionStore.register(name.value, password.value);
+    if (isRegister.value)
+        sessionStore.register(name.value, email.value, password.value);
+    isRegister.value = true;
 }
 </script>
 <template>
@@ -20,7 +26,8 @@ const register = () => {
         <div v-if="sessionStore.currUser === null" class="load-account">
             <form @submit.prevent="logIn" class="login-block">
                 <div class="input-fields">
-                    <InputField v-model="name" placeholder="Email" type="text"></InputField>
+                    <InputField v-if="isRegister" v-model="name" placeholder="Name" type="text"></InputField>
+                    <InputField v-model="email" placeholder="Email" type="text"></InputField>
                     <InputField v-model="password" placeholder="Password" type="password"></InputField>
                 </div>
                 <div class="submit-btns">

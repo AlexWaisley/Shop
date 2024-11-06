@@ -1,51 +1,43 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import ProductCard from './ProductCard.vue';
-import { useSessionStore } from '@storage';
-import { OrderInfo } from '@models';
-const sessionStore = useSessionStore();
+import { useCartStore, useDataStore, useOrderRecordStore } from '@storage';
+import Decimal from 'decimal.js';
+const cartStore = useCartStore();
+const orderStore = useOrderRecordStore();
+const dataStore = useDataStore();
 
-const selectedAddress = ref<string>("");
-
-const price = ref<number>(0);
-const totalQuantity = computed<number>(() => {
-    if (sessionStore.bucket === null) {
-        return 0;
-    }
-    return sessionStore.bucket.products.reduce((acc, value) => acc + value.quantity, 0);
-});
-
-watch(() => sessionStore.bucket?.totalCost, (newVal) => {
-    if (newVal === undefined) {
-        return;
-    }
-    price.value = newVal;
-
-}, { immediate: true });
+const selectedAddress = ref<number>(0);
 
 const isBucketContainsItems = computed<boolean>(() => {
-    return sessionStore.bucket !== null && sessionStore.bucket.products.length !== 0;
+    return cartStore.cart !== null && cartStore.cart.items.length !== 0;
 });
 
 const orderSubmitted = ref<boolean>(false);
 
 const submitOrder = () => {
-    const order = ref<OrderInfo>({
-        id: 1,
-        bucket: sessionStore.bucket!,
-        addressInfo: selectedAddress.value,
-        status: "Waiting for answer"
-    });
+    orderStore.orderConfirmed(selectedAddress.value);
     orderSubmitted.value = true;
-    sessionStore.orderConfirmed(order.value);
 }
 
+const totalPrice = ref<Decimal>(cartStore.calcTotal());
+const totalQuantity = ref<number>(cartStore.calcTotalQuantity());
+
+watch(() => cartStore.cart, () => {
+    totalPrice.value = cartStore.calcTotal();
+    totalQuantity.value = cartStore.calcTotalQuantity();
+}, { deep: true });
+
+const changeQuantity = async (id: string, quantity: number, productId: string) => {
+    await cartStore.changeProductQuantity(id, quantity, productId);
+}
 
 </script>
 <template>
     <div v-if="isBucketContainsItems" class="bucket-container">
         <div class="products-list">
-            <ProductCard v-for="value in sessionStore.bucket!.products" :info="value" :is-quantity-fixed="false">
+            <ProductCard @change-quantity="changeQuantity" v-for="value in cartStore.cart!.items" :info="value"
+                :is-quantity-fixed="false">
             </ProductCard>
         </div>
         <div class="confirm-form">
@@ -53,30 +45,19 @@ const submitOrder = () => {
                 <span class="text-large">You have {{ totalQuantity }} product in your bucket</span>
             </div>
             <div class="total-cost">
-                <span class="text-large">{{ price }}$</span>
+                <span class="text-large">{{ totalPrice }}$</span>
             </div>
             <div class="shop-address-picker-container">
-                <div class="shop-address-container">
-                    <input type="radio" id="option1" name="option" value="1" v-model="selectedAddress">
+                <div v-for="(value) in dataStore.shippingAddresses" :key="value.id" class="shop-address-container">
+                    <input type="radio" :id="value.id.toString()" :name="'shippingAddress'" :value="value.id"
+                        v-model="selectedAddress">
                     <div class="label-container">
-                        <label for="option1">ул. Николаевская (Короленко), 6 </label>
-                    </div>
-                </div>
-                <div class="shop-address-container">
-                    <input type="radio" id="option2" name="option" value="2" v-model="selectedAddress">
-                    <div class="label-container">
-                        <label for="option2">просп. Независимости, 5</label>
-                    </div>
-                </div>
-                <div class="shop-address-container">
-                    <input type="radio" id="option3" name="option" value="3" v-model="selectedAddress">
-                    <div class="label-container">
-                        <label for="option3">ул. Алчевских, 36</label>
+                        <label :for="value.id.toString()">{{ value.street }}, {{ value.house }}</label>
                     </div>
                 </div>
             </div>
             <div class="submit">
-                <button @click="submitOrder" :disabled="selectedAddress === ''" class="buy-button">
+                <button @click="submitOrder" :disabled="selectedAddress === 0" class="buy-button">
                     <span class="text-large">I WILL HAVE ORDER</span>
                 </button>
             </div>

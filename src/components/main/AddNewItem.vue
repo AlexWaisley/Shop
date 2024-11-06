@@ -1,15 +1,35 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import InputField from './InputField.vue';
+import { useCreatingStore, useSessionStore } from '@storage';
+import Decimal from 'decimal.js';
+
+const creatingStore = useCreatingStore();
+const sessionStore = useSessionStore();
 const emits = defineEmits<{
     (e: 'close'): void
 }>();
-const itemName = ref<string>();
-const description = ref<string>();
-const price = ref<string>();
-const imageUrl = ref<string>();
+
+const itemName = ref<string>("");
+const description = ref<string>("");
+const price = ref<string>("");
+const imageUrl = ref<string>("");
+
+const parentCategoryId = computed<number>(() => {
+    if (sessionStore.pickedCategories === null || sessionStore.pickedCategories.length === 0) {
+        return 0;
+    }
+    return sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id;
+});
 
 const addNewCategory = () => {
+    creatingStore.AddNewProduct({
+        name: itemName.value,
+        description: description.value,
+        price: new Decimal(price.value),
+        categoryId: parentCategoryId.value,
+        previews: []
+    });
     emits('close');
 }
 </script>

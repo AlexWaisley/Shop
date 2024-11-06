@@ -1,25 +1,31 @@
 <script setup lang="ts">
 import ItemCard from './ItemCard.vue';
 import Catalog from './Catalog.vue';
-import { useSessionStore } from '@storage';
-import { Item } from '@models';
+import { useDataStore, useSessionStore } from '@storage';
+import { ProductDto } from '@models';
 import { ref, watch } from 'vue';
 import AddNewItem from './AddNewItem.vue';
 
 const sessionStore = useSessionStore();
+const dataStore = useDataStore();
 
-const items = ref<Item[] | null>(sessionStore.displayedProducts);
+const items = ref<ProductDto[] | null>(dataStore.displayedProducts);
 
-watch(() => sessionStore.displayedProducts, (newVal) => {
+watch(() => dataStore.displayedProducts, (newVal) => {
     items.value = newVal;
 }, { immediate: true });
-
 
 const addNewItem = ref<boolean>(false);
 
 const changeAddNewItemShowStatus = () => {
     addNewItem.value = !addNewItem.value;
 }
+
+const oneMore = async () => {
+    if (sessionStore.pickedCategories !== null)
+        await dataStore.loadCategories(sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id);
+}
+
 </script>
 <template>
     <div class="products-container">
@@ -28,11 +34,15 @@ const changeAddNewItemShowStatus = () => {
             <div class="filter-container"></div>
         </div>
         <div class="products">
-            <div v-if="sessionStore.currUser?.isAdmin" @click="changeAddNewItemShowStatus" class="add-button">
+            <div v-if="sessionStore.isCurrUserAdmin()" @click="changeAddNewItemShowStatus" class="add-button">
                 <img src="/cross.svg" alt="add new category">
             </div>
             <ItemCard v-if="items !== null && items.length !== 0" v-for="value in items" :info="value"></ItemCard>
-            <span v-else class="text-large">Sorry, there doesn't seem to be anything like that</span>
+            <span v-else-if="!sessionStore.isCurrUserAdmin()" class="text-large">Sorry, there doesn't seem to be
+                anything like that</span>
+            <div v-if="items && items.length % 20 === 0 && items.length !== 0" @click="oneMore" class="loader-button">
+                <span class="text-large">Load more</span>
+            </div>
         </div>
         <Teleport v-if="addNewItem" to="body">
             <AddNewItem @close="changeAddNewItemShowStatus">
@@ -88,6 +98,22 @@ const changeAddNewItemShowStatus = () => {
                 cursor: pointer;
                 box-shadow: 12px 12px 12px rgb(97, 185, 220);
 
+            }
+        }
+
+        & .loader-button {
+            width: 100%;
+            height: 80px;
+            background-color: skyblue;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px;
+            transition: all .5s ease;
+
+            &:hover {
+                background-color: rgb(95, 157, 181);
+                cursor: pointer;
             }
         }
     }

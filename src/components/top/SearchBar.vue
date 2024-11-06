@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useSessionStore } from '@storage';
+import { useDataStore } from '@storage';
 
-const sessionStore = useSessionStore();
+const dataStorage = useDataStore();
 
 const searchItem = ref<string>("");
 </script>
@@ -11,7 +11,7 @@ const searchItem = ref<string>("");
         <div class="searchbar">
             <input type="text" class="text-large bar" v-model="searchItem" placeholder="Write what you want here ...">
         </div>
-        <div @click="sessionStore.startSearch(searchItem)" class="search">
+        <div @click="dataStorage.startSearch(searchItem)" class="search">
             <img src="/search.svg" alt="search" class="icon">
         </div>
     </div>
@@ -39,7 +39,6 @@ const searchItem = ref<string>("");
                 outline: none;
             }
         }
-
     }
 
     & .search {

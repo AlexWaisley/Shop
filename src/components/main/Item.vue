@@ -1,37 +1,45 @@
 <script setup lang="ts">
+import { Product } from '@models';
 import ImageBlock from './Item/ImageBlock.vue';
 import SpecsBlock from './Item/SpecsBlock.vue';
-import { useSessionStore } from '@storage';
+import { useSessionStore, useDataStore, useCartStore } from '@storage';
+import { onMounted, ref } from 'vue';
 const sessionStore = useSessionStore();
+const dataStore = useDataStore();
+const cartStore = useCartStore();
+const fullProductInfo = ref<Product | null>(null);
+
+const id = sessionStore.pickedItem?.id;
+
+onMounted(async () => {
+    if (id !== undefined)
+        fullProductInfo.value = await dataStore.getFullProductById(id);
+})
 
 </script>
 <template>
-    <div class="item-container">
+    <div v-if="fullProductInfo !== null" class="item-container">
         <div class="item">
             <div class="image-container">
                 <ImageBlock></ImageBlock>
             </div>
             <div class="fast-info">
                 <div class="name-container">
-                    <span class="text-large">{{ sessionStore.pickedItem?.name }}</span>
+                    <span class="text-large">{{ fullProductInfo.name }}</span>
                 </div>
                 <div class="bucket-container">
                     <div class="price-container">
-                        <span class="text-large">{{ sessionStore.pickedItem?.cost }}$</span>
+                        <span class="text-large">{{ fullProductInfo.price.toFixed(2) }}$</span>
                     </div>
-                    <div @click="sessionStore.addToBucket(null)" class="buy-button">
+                    <button :disabled="cartStore.isItemInCart(fullProductInfo.id)"
+                        @click="cartStore.addToCart(fullProductInfo.id, 1)" class="buy-button">
                         <span class="text-large-bold">Buy</span>
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
         <div class="item-info">
-            <div class="description">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Minus doloremque, eius
-                voluptatem totam illum aperiam ab error veniam vitae labore, odio consequatur commodi eaque magni
-                voluptas unde autem. Tempora, a!
-                Sequi rerum aliquid tempora omnis a ipsum quidem! Exercitationem repellendus tenetur laboriosam error
-                distinctio corrupti, illum quibusdam amet ab aspernatur aperiam veritatis esse voluptates quasi, quidem
-                aliquid odit, maxime optio.</div>
+            <div class="description">{{ fullProductInfo.description }}</div>
             <div class="specs">
                 <SpecsBlock></SpecsBlock>
             </div>

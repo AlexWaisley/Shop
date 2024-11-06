@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed } from 'vue';
 import ItemCard from './ItemCard.vue';
-import { useSessionStore } from '@storage';
-import { Item } from '@models';
+import { useDataStore, useSessionStore } from '@storage';
+import { ProductDto } from '@models';
 
 const sessionStore = useSessionStore();
+const dataStore = useDataStore();
+const history = computed<ProductDto[]>(() => {
+    if (!sessionStore.history) return [];
+    if (dataStore.products === null || sessionStore.history === null) return [];
 
-const history = ref<Item[] | null>(null);
+    const productMap = new Map(dataStore.products.map(product => [product.id, product]));
 
-watch(() => sessionStore.history, (newVal) => {
-    if (newVal !== null) {
-        history.value = newVal.reverse();
-        return;
-    }
-}, { immediate: true });
+    const result = sessionStore.history.map(historyId => productMap.get(historyId)).filter(product => product !== undefined).reverse();
+
+    return result;
+});
 
 const isNeededToShow = computed<boolean>(() => {
     return sessionStore.history !== null;
@@ -34,7 +36,7 @@ const isNeededToShow = computed<boolean>(() => {
 </template>
 <style scoped lang="scss">
 .history-container {
-    height: 420px;
+    height: 430px;
     padding: 20px;
     background-color: rgb(0, 225, 255);
     border-radius: 15px;
@@ -54,7 +56,6 @@ const isNeededToShow = computed<boolean>(() => {
             gap: 15px;
             padding-bottom: 10px;
             overflow-x: auto;
-
         }
     }
 }

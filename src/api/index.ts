@@ -12,7 +12,9 @@ import {
     CategoryCreateRequest,
     ProductCreateRequest,
     OrderDto,
-    OrderFull
+    OrderFull,
+    ShippingAddress,
+    CartItemDto
 } from "@models";
 import axios from "axios"
 import { CartDto } from "../models/CartDto";
@@ -47,6 +49,18 @@ export const api = {
         catch (e) {
             console.log(e);
             return null;
+        }
+    },
+
+    async RefreshToken(): Promise<boolean> {
+        try {
+            const { status } = await apiInstance.post(`/refresh`);
+            console.log('[api]', 'User valid status:', status);
+            return status === 200;
+        }
+        catch (e) {
+            console.log(e);
+            return false;
         }
     },
 
@@ -104,7 +118,7 @@ export const api = {
     async AddToCart(cartItemDto: CartItemAddRequest): Promise<boolean | null> {
         const sessionStore = useSessionStore();
         try {
-            const { status } = await apiInstance.post(`/user/cart/info`, cartItemDto, {
+            const { status } = await apiInstance.post(`/user/cart/item`, cartItemDto, {
                 headers: {
                     "Authorization": "Bearer " + sessionStore.jwt
                 }
@@ -121,7 +135,7 @@ export const api = {
     async RemoveFromCart(cartItemId: string): Promise<boolean | null> {
         const sessionStore = useSessionStore();
         try {
-            const { status } = await apiInstance.post(`/user/cart/info`, cartItemId, {
+            const { status } = await apiInstance.delete(`/user/cart/item/${cartItemId}`, {
                 headers: {
                     "Authorization": "Bearer " + sessionStore.jwt
                 }
@@ -263,6 +277,40 @@ export const api = {
         }
     },
 
+    async GetAllOrders(): Promise<OrderDto[] | null> {
+        const sessionStore = useSessionStore();
+        try {
+            const { data, status } = await apiInstance.get(`/orders/all`, {
+                headers: {
+                    "Authorization": "Bearer " + sessionStore.jwt
+                }
+            });
+            console.log('[api]', 'User valid status:', status);
+            return data;
+        }
+        catch (e) {
+            console.log(e);
+            return null;
+        }
+    },
+
+    async UpdateOrderStatus(orderId: string, newStatus: string): Promise<OrderDto[] | null> {
+        const sessionStore = useSessionStore();
+        try {
+            const { data, status } = await apiInstance.post(`/orders/update/${orderId}`, newStatus, {
+                headers: {
+                    "Authorization": "Bearer " + sessionStore.jwt
+                }
+            });
+            console.log('[api]', 'User valid status:', status);
+            return data;
+        }
+        catch (e) {
+            console.log(e);
+            return null;
+        }
+    },
+
     async GetOrderItems(orderId: string): Promise<OrderItemDto[] | null> {
         const sessionStore = useSessionStore();
         try {
@@ -283,7 +331,7 @@ export const api = {
     async CreateOrderRecord(shippingAddressId: number): Promise<boolean | null> {
         const sessionStore = useSessionStore();
         try {
-            const { status } = await apiInstance.post(`/orders/create`, shippingAddressId, {
+            const { status } = await apiInstance.post(`/orders/create/${shippingAddressId}`, {}, {
                 headers: {
                     "Authorization": "Bearer " + sessionStore.jwt
                 }
@@ -297,6 +345,34 @@ export const api = {
         }
     },
 
+    async GetAddresses(): Promise<ShippingAddress[] | null> {
+        try {
+            const { data, status } = await apiInstance.get(`/addresses`);
+            console.log('[api]', 'User valid status:', status);
+            return data;
+        }
+        catch (e) {
+            console.log(e);
+            return null;
+        }
+    },
+
+    async UpdateCartItemQuantity(cartItemDto: CartItemDto): Promise<boolean> {
+        const sessionStore = useSessionStore();
+        try {
+            const { status } = await apiInstance.post(`/user/cart/update`, cartItemDto, {
+                headers: {
+                    "Authorization": "Bearer " + sessionStore.jwt
+                }
+            });
+            console.log('[api]', 'User valid status:', status);
+            return status === 200;
+        }
+        catch (e) {
+            console.log(e);
+            return false;
+        }
+    }
 
 
 };

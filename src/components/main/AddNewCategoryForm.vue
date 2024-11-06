@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import InputField from './InputField.vue';
+import { useCreatingStore } from '@storage';
+const props = defineProps<{
+    parentCategoryId: number
+}>();
 const emits = defineEmits<{
     (e: 'close'): void
 }>();
-const categoryName = ref<string>();
-const imageUrl = ref<string>();
+const creatingStore = useCreatingStore();
+const categoryName = ref<string>("");
+const imageUrl = ref<string>("");
 
 const addNewCategory = () => {
+    creatingStore.AddNewCategory({ name: categoryName.value, imageUrl: imageUrl.value, parentCategoryId: props.parentCategoryId });
     emits('close');
 }
 </script>
@@ -36,6 +42,7 @@ const addNewCategory = () => {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 7;
 
     & .form-container {
         width: 50%;

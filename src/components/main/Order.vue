@@ -1,17 +1,38 @@
 <script setup lang="ts">
-import { OrderInfo } from '@models';
-import { ref } from 'vue';
-import ProductCard from './bucket/ProductCard.vue';
+import { ref, watch } from 'vue';
+import { OrderDto, OrderItemDto } from '@models';
+import { useDataStore, useOrderRecordStore } from '@storage';
+import OrderProductCard from './OrderProductCard.vue';
+const orderStore = useOrderRecordStore();
+const dataStore = useDataStore();
+
 
 const props = defineProps<{
-    info: OrderInfo;
+    info: OrderDto;
 }>();
 
 const isExpandOrder = ref<boolean>(false);
+const ordersItemsList = ref<OrderItemDto[]>([]);
+
+watch(isExpandOrder, async () => {
+    await orderStore.loadOrderItems(props.info.id);
+    const itemList = orderStore.orderItemsList?.filter(x => x.orderId === props.info.id);
+    if (itemList === undefined) {
+        return;
+    }
+    ordersItemsList.value = itemList;
+})
 
 const toggleExpand = () => {
     isExpandOrder.value = !isExpandOrder.value;
 }
+
+const addressInfo = ref<string>("");
+
+const address = dataStore.shippingAddresses?.find(x => x.id === props.info.shippingAddress);
+
+if (address !== undefined)
+    addressInfo.value = address.street + ", " + address.house;
 
 </script>
 <template>
@@ -24,15 +45,15 @@ const toggleExpand = () => {
                 <span class="text-large">{{ props.info.status }}</span>
             </div>
             <div class="price-container">
-                <span class="text-large">{{ props.info.bucket.totalCost }}$</span>
+                <span class="text-large">{{ orderStore.calcTotal(props.info.id) }}$</span>
             </div>
             <div class="address-container">
-                <span class="text-large">Address info: {{ props.info.addressInfo }}</span>
+                <span class="text-large">Address info: {{ addressInfo }}</span>
             </div>
         </div>
         <div v-if="isExpandOrder" class="content">
-            <ProductCard v-for="value in props.info.bucket.products" :info="value" :is-quantity-fixed="true">
-            </ProductCard>
+            <OrderProductCard v-for="value in ordersItemsList" :info="value">
+            </OrderProductCard>
         </div>
     </div>
 </template>

@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { useSessionStore } from '@storage';
-import { ref, watch } from 'vue';
+import { useSessionStore, useOrderRecordStore, useDataStore } from '@storage';
+import { onMounted, ref } from 'vue';
 import InputField from './InputField.vue';
 import Order from './Order.vue';
 import ChangePassword from './ChangePassword.vue';
 const sessionStore = useSessionStore();
+const orderStore = useOrderRecordStore();
 
 const userName = ref<string>("");
+onMounted(async () => {
+    await orderStore.loadUserOrders();
+})
 
 if (sessionStore.currUser !== null) {
     userName.value = sessionStore.currUser.name;
@@ -16,26 +20,12 @@ const userEmail = ref<string>("");
 const changePassRequired = ref<boolean>(false);
 
 if (sessionStore.currUser !== null) {
-    userEmail.value = sessionStore.currUser.email;
+    userEmail.value = sessionStore.currUser.email.email;
 }
-
-const submitEmail = () => {
-    if (userEmail.value !== "")
-        sessionStore.changeCurrUserEmail(userEmail.value);
-}
-const submitName = () => {
-    if (userEmail.value !== "") {
-        sessionStore.changeCurrUserName(userName.value);
-    }
-}
-watch(() => sessionStore.currUser?.password, () => {
-    changePassRequired.value = false;
-})
-
 
 const submitChanges = () => {
-    submitEmail();
-    submitName();
+    if (userEmail.value !== "" && userName.value !== "")
+        sessionStore.changeCurrUserInfo(userName.value, userEmail.value);
 }
 
 const validateEmail = () => {
@@ -44,6 +34,15 @@ const validateEmail = () => {
 
 const changePassword = () => {
     changePassRequired.value = true;
+}
+
+const openOrders = () => {
+    changePassRequired.value = false;
+}
+
+const openAllOrders = () => {
+    changePassRequired.value = false;
+    orderStore.loadAllOrders();
 }
 
 </script>
@@ -64,22 +63,29 @@ const changePassword = () => {
                 <button @click="changePassword">
                     <span class="text-large">Change password</span>
                 </button>
-                <button v-if="!sessionStore.currUser?.isEmailActive" @click="validateEmail">
+
+                <button @click="openOrders">
+                    <span class="text-large">Open orders</span>
+                </button>
+
+                <button v-if="!sessionStore.currUser?.email.isActive" @click="validateEmail">
                     <span class="text-large">Validate email</span>
                 </button>
 
+                <button v-if="sessionStore.currUser?.isAdmin" @click="openAllOrders">
+                    <span class="text-large">Open All Orders</span>
+                </button>
             </div>
             <div v-if="!changePassRequired" class="section">
-                <div v-if="sessionStore.currUser?.orderInfo !== null && sessionStore.currUser?.orderInfo?.length !== 0"
-                    class="orders-list">
-                    <Order v-for="value in sessionStore.currUser?.orderInfo" :info="value"></Order>
+                <div v-if="orderStore.orderList !== null && orderStore.orderList.length !== 0" class="orders-list">
+                    <Order v-for="value in orderStore.orderList" :info="value"></Order>
                 </div>
                 <div v-else class="plain">
                     <span class="text-large">You have no orders.</span>
                 </div>
             </div>
             <div v-else class="change-pass-container">
-                <ChangePassword></ChangePassword>
+                <ChangePassword @changed="changePassword"></ChangePassword>
             </div>
         </div>
     </div>
@@ -118,6 +124,12 @@ const changePassword = () => {
             justify-content: center;
             flex-direction: column;
             overflow: auto;
+
+            & .orders-list {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
         }
     }
 }

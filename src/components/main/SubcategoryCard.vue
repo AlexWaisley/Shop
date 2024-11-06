@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { Subcategory } from '@models';
+import { Category } from '@models';
 import { useSessionStore } from '@storage';
 
 const sessionStore = useSessionStore();
 
 const props = defineProps<{
-    info: Subcategory;
+    info: Category;
 }>();
 
 </script>
 <template>
-    <div @click="sessionStore.pickSubcategory(props.info)" class="subcategory-card-container">
+    <div @click="sessionStore.pickCategory(props.info)" class="subcategory-card-container">
         <div class="image-container">
             <img src="/logo.jpg" alt="Subcategory image" class="subcategory-image">
         </div>

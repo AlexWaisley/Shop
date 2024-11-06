@@ -1,15 +1,32 @@
 <script setup lang="ts">
-import { BucketProduct } from '@models';
-import { ref } from 'vue';
-import { useSessionStore } from '@storage';
+import { computed, ref } from 'vue';
+import { useCartStore, useDataStore, useSessionStore } from '@storage';
+import { CartItemDto, ProductDto } from '@models';
+import Decimal from 'decimal.js';
 const sessionStorage = useSessionStore();
+const dataStore = useDataStore();
+const cartStore = useCartStore();
 
 const props = defineProps<{
-    info: BucketProduct;
+    info: CartItemDto;
     isQuantityFixed: boolean,
 }>();
 
 const quantity = ref<number>(props.info.quantity);
+
+const product = ref<ProductDto | null>(dataStore.getProductById(props.info.productId));
+const totalCost = computed<Decimal>(() => {
+    if (product.value === null) {
+        return new Decimal(1);
+    }
+
+    return new Decimal(product.value.price).times(new Decimal(quantity.value));
+});
+
+
+defineEmits<{
+    (e: 'changeQuantity', cartItemId: string, quantity: number, productId: string): void
+}>();
 
 </script>
 <template>
@@ -17,21 +34,20 @@ const quantity = ref<number>(props.info.quantity);
         <div class="image-container">
             <img src="/2.jpg" alt="product preview" class="image-preview" />
         </div>
-        <div class="info-container">
-            <div @click="sessionStorage.pickItem(props.info.product)" class="name">
-                <span class="text-large">{{ props.info.product.name }}</span>
+        <div v-if="product !== null" class="info-container">
+            <div @click="sessionStorage.pickItem(product.id)" class="name">
+                <span class="text-large">{{ product.name }}</span>
             </div>
             <div class="quantity-container">
-                <span v-if="props.isQuantityFixed" class="text-large"> {{ quantity }}</span>
-                <input v-else type="number" class="quantity text-large" v-model="quantity"
-                    :oninput="sessionStorage.changeQuantityOfProductInBucket(props.info, quantity)" />
+                <input type="number" :min="1" class="quantity text-large" v-model="quantity"
+                    v-on:input="$emit('changeQuantity', props.info.id, quantity, product.id)" />
             </div>
             <div class="cost">
-                <span class="text-large">{{ props.info.totalCost }}$</span>
+                <span class="text-large">{{ totalCost }}$</span>
             </div>
         </div>
         <div v-if="!props.isQuantityFixed" class="additional-buttons-container">
-            <div @click="sessionStorage.removeFromBucket(props.info)" class="delete-button">
+            <div @click="cartStore.removeFromCart(props.info.id)" class="delete-button">
                 <img src="/cross.svg" alt="delete" class="icon">
             </div>
         </div>

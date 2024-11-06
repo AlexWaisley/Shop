@@ -2,85 +2,61 @@
 import Home from './Home.vue';
 import Products from './Products.vue';
 import Item from './Item.vue';
-import { useSessionStore } from '@storage';
+import { useDataStore, useSessionStore, useDisplayInfoStore } from '@storage';
 const sessionStore = useSessionStore();
+const dataStore = useDataStore();
+const displayInfoStore = useDisplayInfoStore();
 
-import { shallowRef, watch } from 'vue';
-import Bucket from './bucket/Bucket.vue';
+import { computed, shallowRef, watch } from 'vue';
+import Cart from './Cart/Cart.vue';
 import Account from './Account.vue';
 
 const props = defineProps<{
-    bucketStatus: boolean;
+    cartStatus: boolean;
     accountStatus: boolean;
 }>();
+
 const currPage = shallowRef(Home);
 
-watch(() => sessionStore.pickedItem, (newVal) => {
-    if (newVal !== null) {
-        currPage.value = Item;
-        return;
+function updatePage() {
+    switch (true) {
+        case sessionStore.pickedItem !== null:
+            currPage.value = Item;
+            break;
+        case displayInfoStore.productPageOpen:
+            currPage.value = Products;
+            break;
+        case props.cartStatus:
+            currPage.value = Cart;
+            break;
+        case props.accountStatus:
+            currPage.value = Account;
+            break;
+        default:
+            currPage.value = Home;
+            break;
     }
-}, { immediate: true });
+}
 
-watch(() => sessionStore.pickedSubcategory, (newVal) => {
-    if (newVal !== null) {
-        currPage.value = Products;
-        return;
-    }
-    currPage.value = Home;
-}, { immediate: true });
+const hasPickedCategories = computed(() => (sessionStore.pickedCategories?.length || 0) > 0);
 
-watch(() => sessionStore.displayedProducts, (newVal) => {
-    if (newVal !== null) {
-        currPage.value = Products;
-        return;
-    }
-    currPage.value = Home;
-
-}, { immediate: true });
-
-watch(() => sessionStore.pickedCategory, () => {
-    currPage.value = Home;
-}, { immediate: true });
-
-
-watch(() => props.bucketStatus, (newVal) => {
-    if (newVal) {
-        currPage.value = Bucket;
-        return;
-    }
-    if (props.accountStatus || sessionStore.pickedItem !== null) {
-        return;
-    }
-    currPage.value = Home;
-})
-
-watch(() => props.accountStatus, (newVal) => {
-    if (newVal) {
-        currPage.value = Account;
-        return;
-    }
-    if (props.bucketStatus) {
-        return;
-    }
-    currPage.value = Home;
-})
+watch(hasPickedCategories, updatePage, { immediate: true });
+watch(() => sessionStore.pickedItem, updatePage, { immediate: true });
+watch(() => displayInfoStore.productPageOpen, updatePage, { immediate: true });
+watch(() => props.cartStatus, updatePage);
+watch(() => props.accountStatus, updatePage);
 
 </script>
 
 <template>
     <div class="page-container">
         <nav class="query">
-            <div @click="sessionStore.clearAll" v-if="sessionStore.pickedCategory !== null" class="prop">
+            <div @click="sessionStore.clearAll" v-if="hasPickedCategories" class="prop">
                 <span class="text-small">Home</span>
             </div>
-            <div @click="sessionStore.pickCategory(sessionStore.pickedCategory!)"
-                v-if="sessionStore.pickedSubcategory !== null" class="prop">
-                <span class="text-small">{{ sessionStore.pickedCategory?.name }}</span>
-            </div>
-            <div @click="sessionStore.pickSubcategory(sessionStore.pickedSubcategory!)"
-                v-if="sessionStore.pickedItem !== null" class="prop">
-                <span class="text-small">{{ sessionStore.pickedSubcategory?.name }}</span>
+            <div v-for="category in sessionStore.pickedCategories" @click="sessionStore.pickCategory(category)"
+                v-if="hasPickedCategories" class="prop">
+                <span class="text-small">{{ category.name }}</span>
             </div>
         </nav>
         <component :is="currPage" />
@@ -95,7 +71,6 @@ watch(() => props.accountStatus, (newVal) => {
     display: flex;
     flex-direction: column;
     gap: 7px;
-    justify-content: center;
     margin-top: 80px;
     padding: 20px;
 

@@ -14,6 +14,7 @@ import { CartItemDto } from "./CartItemDto";
 import { OrderDto } from "./OrderDto";
 import { OrderFull } from "./OrderFull";
 import { OrderItemDto } from "./OrderItemDto";
+import { ShippingAddress } from "./ShippingAddress";
 
 
 
@@ -33,6 +34,7 @@ export type {
     CartItemDto,
     OrderDto,
     OrderFull,
-    OrderItemDto
+    OrderItemDto,
+    ShippingAddress
 
 };

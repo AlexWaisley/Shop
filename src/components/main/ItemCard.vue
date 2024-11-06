@@ -1,20 +1,24 @@
 <script setup lang="ts">
-import { Item } from '@models';
-import { useSessionStore } from '@storage';
+import { ProductDto } from '@models';
+import { useSessionStore, useCartStore } from '@storage';
 
 const sessionStore = useSessionStore();
+const cartStore = useCartStore();
 
 const props = defineProps<{
-    info: Item;
+    info: ProductDto;
 }>();
+const pickItem = async () => {
+    await sessionStore.pickItem(props.info.id);
+}
 </script>
 <template>
     <div class="item-card-container">
-        <div @click="sessionStore.pickItem(props.info)" class="image-container">
+        <div @click="pickItem()" class="image-container">
             <img src="/logo.jpg" alt="Item image" class="item-image">
         </div>
         <div class="info-container">
-            <div @click="sessionStore.pickItem(props.info)" class="info">
+            <div @click="pickItem()" class="info">
                 <div class="name">
                     <span class="text-large">
                         {{ props.info.name }}
@@ -23,11 +27,12 @@ const props = defineProps<{
             </div>
             <div class="info">
                 <div class="cost">
-                    <span class="text-large-bold">{{ props.info.cost }}$</span>
+                    <span class="text-large-bold">{{ props.info.price.toFixed(2) }}$</span>
                 </div>
-                <div @click="sessionStore.addToBucket(props.info)" class="buy-button">
+                <button :disabled="cartStore.isItemInCart(props.info.id)" @click="cartStore.addToCart(props.info.id, 1)"
+                    class="buy-button">
                     <span class="text-large">Buy</span>
-                </div>
+                </button>
             </div>
         </div>
     </div>

@@ -3,20 +3,21 @@ import Catalog from './Catalog.vue';
 import Main from './Main.vue';
 import SubCategories from './Subcategories.vue';
 
-import { shallowRef, watch } from 'vue';
+import { computed, shallowRef, watch } from 'vue';
 import { useSessionStore } from '@storage';
 
 const sessionStore = useSessionStore();
 const currMain = shallowRef(Main);
 
-watch(() => sessionStore.pickedCategory, (newVal) => {
-    if (newVal !== null) {
-        currMain.value = SubCategories;
-        return;
-    }
-    currMain.value = Main;
-}, { immediate: true });
+const hasPickedCategories = computed(() => (sessionStore.pickedCategories?.length || 0) > 0);
 
+watch(hasPickedCategories, () => {
+    if (hasPickedCategories.value)
+        currMain.value = SubCategories;
+    else
+        currMain.value = Main;
+
+}, { immediate: true });
 
 </script>
 <template>

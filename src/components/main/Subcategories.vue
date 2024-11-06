@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { Subcategory } from '@models';
 import SubcategoryCard from './SubcategoryCard.vue';
-import { useSessionStore, useHardStore } from '@storage';
-import { ref, watch } from 'vue';
+import { useDataStore, useSessionStore, useDisplayInfoStore } from '@storage';
+import { computed, ref, watch } from 'vue';
 import AddNewCategoryForm from './AddNewCategoryForm.vue';
+import { Category } from '@models';
 
 const sessionStore = useSessionStore();
-const hardStore = useHardStore();
-
+const dataStore = useDataStore();
+const displayInfoStore = useDisplayInfoStore();
 
 const addNewCategory = ref<boolean>(false);
 
@@ -15,17 +15,41 @@ const changeAddNewCategoryShowStatus = () => {
     addNewCategory.value = !addNewCategory.value;
 }
 
-const subcategories = ref<Subcategory[] | null>(null);
+const parentCategoryId = computed<number>(() => {
+    if (sessionStore.pickedCategories === null || sessionStore.pickedCategories.length === 0) {
+        return 0;
+    }
+    return sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id;
+});
 
-watch(() => sessionStore.pickedCategory, () => {
-    if (sessionStore.pickedCategory === null) {
+const displayedCategories = ref<Category[]>([]);
+
+watch(() => parentCategoryId.value, async () => {
+    if (dataStore.categories === null) {
         return;
     }
-    const id = sessionStore.pickedCategory.id;
-    console
-    const subcategoriesList = hardStore.subCategoryList.filter(x => x.categoryId === id);
-    subcategories.value = subcategoriesList;
+    if (dataStore.categories.find(x => x.parentCategory === parentCategoryId.value) === undefined) {
+        displayedCategories.value = [];
+        await dataStore.displayProductsByCategoryId(parentCategoryId.value);
+        if (!sessionStore.isCurrUserAdmin()) {
+            openProductsPage();
+        }
+        return;
+    }
+    displayedCategories.value = dataStore.categories.filter(x => x.parentCategory === parentCategoryId.value);
 }, { immediate: true });
+
+watch(() => dataStore.categories, () => {
+    if (dataStore.categories === null) {
+        dataStore.displayProductsByCategoryId(parentCategoryId.value);
+        return;
+    }
+    displayedCategories.value = dataStore.categories.filter(x => x.parentCategory === parentCategoryId.value);
+}, { immediate: true });
+
+const openProductsPage = () => {
+    displayInfoStore.changeProductPageOpenStatus(true);
+}
 
 </script>
 <template>
@@ -33,12 +57,19 @@ watch(() => sessionStore.pickedCategory, () => {
         <div v-if="sessionStore.currUser?.isAdmin" @click="changeAddNewCategoryShowStatus" class="add-button">
             <img src="/cross.svg" alt="add new subcategory">
         </div>
-        <SubcategoryCard v-for="value in subcategories" :info="value" />
+        <SubcategoryCard v-if="displayedCategories !== null && displayedCategories.length !== 0"
+            v-for="value in displayedCategories" :info="value" />
+        <div v-if="sessionStore.currUser?.isAdmin && displayedCategories.length === 0" @click="openProductsPage"
+            class="add-button">
+            <img src="/switch.svg" alt="Go to products">
+        </div>
         <Teleport v-if="addNewCategory" to="body">
-            <AddNewCategoryForm @close="changeAddNewCategoryShowStatus"></AddNewCategoryForm>
+            <AddNewCategoryForm :parent-category-id="parentCategoryId" @close="changeAddNewCategoryShowStatus">
+            </AddNewCategoryForm>
         </Teleport>
     </div>
 </template>
+
 <style scoped lang="scss">
 .subcategories-container {
     display: flex;

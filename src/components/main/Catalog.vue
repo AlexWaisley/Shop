@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useHardStore, useSessionStore } from '@storage';
+import { useDataStore, useSessionStore } from '@storage';
 import AddNewCategoryForm from './AddNewCategoryForm.vue';
 
-const hardStore = useHardStore();
 const sessionStore = useSessionStore();
-
+const dataStore = useDataStore();
 
 const showCategories = ref<boolean>(true);
 const addNewCategory = ref<boolean>(false);
@@ -13,6 +12,7 @@ const addNewCategory = ref<boolean>(false);
 const changeAddNewCategoryShowStatus = () => {
     addNewCategory.value = !addNewCategory.value;
 }
+
 const changeCategoriesShowStatus = () => {
     showCategories.value = !showCategories.value;
 }
@@ -24,10 +24,10 @@ const changeCategoriesShowStatus = () => {
             <span class="text-large-bold">Catalog</span>
         </div>
         <div v-if="showCategories" class="category-container">
-            <div v-if="sessionStore.currUser?.isAdmin" @click="changeAddNewCategoryShowStatus" class="add-button">
+            <div v-if="sessionStore.isCurrUserAdmin()" @click="changeAddNewCategoryShowStatus" class="add-button">
                 <img src="/cross.svg" alt="add new category">
             </div>
-            <div v-for="value in hardStore.categoryList" @click="sessionStore.pickCategory(value)" class="category">
+            <div v-for="value in dataStore.rootCategories" @click="sessionStore.pickCategory(value)" class="category">
                 <div class="catalog-over"></div>
                 <div class="over">
                     <span class="text-default">{{ value.name }}</span>
@@ -35,7 +35,7 @@ const changeCategoriesShowStatus = () => {
             </div>
         </div>
         <Teleport v-if="addNewCategory" to="body">
-            <AddNewCategoryForm @close="changeAddNewCategoryShowStatus"></AddNewCategoryForm>
+            <AddNewCategoryForm :parent-category-id="0" @close="changeAddNewCategoryShowStatus"></AddNewCategoryForm>
         </Teleport>
     </div>
 </template>
