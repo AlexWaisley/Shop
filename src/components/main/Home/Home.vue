@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Catalog from './Catalog.vue';
+import Catalog from '../General/Catalog.vue';
 import Main from './Main.vue';
-import SubCategories from './Subcategories.vue';
+import SubCategories from '../Subcategories/Subcategories.vue';
 
 import { computed, shallowRef, watch } from 'vue';
 import { useSessionStore } from '@storage';
@@ -16,7 +16,6 @@ watch(hasPickedCategories, () => {
         currMain.value = SubCategories;
     else
         currMain.value = Main;
-
 }, { immediate: true });
 
 </script>

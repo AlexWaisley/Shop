@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import ItemCard from './ItemCard.vue';
-import { useDataStore, useSessionStore } from '@storage';
+import ItemCard from '../Products/ItemCard.vue';
+import { useProductStore, useSessionStore } from '@storage';
 import { ProductDto } from '@models';
 
 const sessionStore = useSessionStore();
-const dataStore = useDataStore();
+const productStore = useProductStore();
 const history = computed<ProductDto[]>(() => {
     if (!sessionStore.history) return [];
-    if (dataStore.products === null || sessionStore.history === null) return [];
+    if (productStore.products === null || sessionStore.history === null) return [];
 
-    const productMap = new Map(dataStore.products.map(product => [product.id, product]));
+    const productMap = new Map(productStore.products.map(product => [product.id, product]));
 
     const result = sessionStore.history.map(historyId => productMap.get(historyId)).filter(product => product !== undefined).reverse();
 

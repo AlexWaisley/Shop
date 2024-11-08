@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import InputField from './InputField.vue';
+import InputField from '@main/General/InputField.vue';
 import { useCreatingStore } from '@storage';
 const props = defineProps<{
     parentCategoryId: number

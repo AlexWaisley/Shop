@@ -175,7 +175,8 @@ export const useSessionStore = defineStore('sessionStore', () => {
             return;
         }
         pickedItem.value = product;
-        displayInfoStore.changeProductPageOpenStatus(false);
+        displayInfoStore.resetAll()
+        displayInfoStore.changeProductFullInfoStatus(true);
     }
 
     const clearAll = () => {
@@ -185,7 +186,8 @@ export const useSessionStore = defineStore('sessionStore', () => {
             addToHistory(pickedItem.value.id);
             pickedItem.value = null;
         }
-        displayInfoStore.changeProductPageOpenStatus(false);
+        displayInfoStore.resetAll();
+        displayInfoStore.changeHomeStatus(true);
     }
 
     const addToHistory = (productId: string) => {

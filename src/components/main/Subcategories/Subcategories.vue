@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import SubcategoryCard from './SubcategoryCard.vue';
-import { useDataStore, useSessionStore, useDisplayInfoStore } from '@storage';
+import { useDataStore, useSessionStore, useDisplayInfoStore, useProductStore } from '@storage';
 import { computed, ref, watch } from 'vue';
-import AddNewCategoryForm from './AddNewCategoryForm.vue';
+import AddNewCategoryForm from '../Admin/AddForms/NewCategory.vue';
 import { Category } from '@models';
 
 const sessionStore = useSessionStore();
 const dataStore = useDataStore();
+const productStore = useProductStore();
 const displayInfoStore = useDisplayInfoStore();
 
 const addNewCategory = ref<boolean>(false);
@@ -26,11 +27,13 @@ const displayedCategories = ref<Category[]>([]);
 
 watch(() => parentCategoryId.value, async () => {
     if (dataStore.categories === null) {
+        await productStore.displayProductsByCategoryId(parentCategoryId.value);
         return;
     }
-    if (dataStore.categories.find(x => x.parentCategory === parentCategoryId.value) === undefined) {
+    const subCategories = dataStore.categories.find(x => x.parentCategory === parentCategoryId.value);
+    if (subCategories === undefined) {
         displayedCategories.value = [];
-        await dataStore.displayProductsByCategoryId(parentCategoryId.value);
+        await productStore.displayProductsByCategoryId(parentCategoryId.value);
         if (!sessionStore.isCurrUserAdmin()) {
             openProductsPage();
         }
@@ -41,13 +44,13 @@ watch(() => parentCategoryId.value, async () => {
 
 watch(() => dataStore.categories, () => {
     if (dataStore.categories === null) {
-        dataStore.displayProductsByCategoryId(parentCategoryId.value);
         return;
     }
     displayedCategories.value = dataStore.categories.filter(x => x.parentCategory === parentCategoryId.value);
 }, { immediate: true });
 
 const openProductsPage = () => {
+    displayInfoStore.resetAll();
     displayInfoStore.changeProductPageOpenStatus(true);
 }
 

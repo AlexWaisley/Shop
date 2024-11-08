@@ -1,24 +1,30 @@
 <script setup lang="ts">
-import { useCartStore, useSessionStore } from '@storage';
+import { useCartStore, useDisplayInfoStore, useSessionStore } from '@storage';
 import SearchBar from './SearchBar.vue';
 const sessionStore = useSessionStore();
 const cartStore = useCartStore();
-const eventE = defineEmits<{
-    (e: 'openBucket'): void,
-    (e: 'goHome'): void,
-    (e: 'openAccount'): void,
-}>();
+const displayInfoStore = useDisplayInfoStore();
 
 const openCart = async () => {
-    eventE('openBucket');
+    sessionStore.clearAll();
+    displayInfoStore.changeCartStatus(true);
     await cartStore.loadCart();
+}
+
+const openAccount = () => {
+    sessionStore.clearAll();
+    displayInfoStore.changeAccountInfoStatus(true);
+}
+const openHome = () => {
+    sessionStore.clearAll();
+    displayInfoStore.changeHomeStatus(true);
 }
 </script>
 
 <template>
     <div class="top-container">
         <div class="section">
-            <div @click="$emit('goHome')" class="logo-container">
+            <div @click="openHome" class="logo-container">
                 <img src="/logo.jpg" alt="logo" class="logo-img">
             </div>
         </div>
@@ -35,7 +41,7 @@ const openCart = async () => {
                     </div>
                 </div>
                 <div class="button">
-                    <div @click="$emit('openAccount')" class="icon-container">
+                    <div @click="openAccount" class="icon-container">
                         <img src="/account.svg" alt="account" class="icon">
                     </div>
                 </div>

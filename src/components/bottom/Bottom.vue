@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useDataStore } from '@storage';
 
+const dataStore = useDataStore();
 </script>
 
 <template>
@@ -19,9 +21,9 @@
                 <div class="info">
                     <div class="tag"><span class="text-large-bold">Address</span></div>
                     <div class="content">
-                        <span class="text-standart-bold">ул. Николаевская (Короленко), 6</span>
-                        <span class="text-standart-bold">просп. Независимости, 5</span>
-                        <span class="text-standart-bold">ул. Алчевских, 36</span>
+                        <span v-for=" value in dataStore.shippingAddresses" class="text-default-bold">
+                            {{ value.street }},
+                            {{ value.house }}</span>
                     </div>
                 </div>
             </div>

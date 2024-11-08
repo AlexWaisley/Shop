@@ -1,10 +1,9 @@
-import { CategoryCreateRequest, ProductCreateRequest } from "@models";
+import { CategoryCreateRequest, ProductCreateRequest, ProductUpdateRequest } from "@models";
 import { defineStore } from "pinia";
 import { categoriesApi, imagesApi, productsApi } from "@api/index";
 import { useDataStore } from "./DataStorage";
-import toastr from 'toastr';
-import { ProductUpdateRequest } from "../models/requests/ProductUpdateRequest";
 import { useProductStore } from "./ProductStore";
+import toastr from 'toastr';
 
 export const useCreatingStore = defineStore('creatingStore', () => {
     const dataStorage = useDataStore();

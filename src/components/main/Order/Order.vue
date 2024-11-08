@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { OrderDto, OrderItemDto } from '@models';
 import { useDataStore, useOrderRecordStore, useSessionStore } from '@storage';
 import OrderProductCard from './OrderProductCard.vue';
-import ChangeStatusWindow from './ChangeStatusWindow.vue';
+import ChangeStatusWindow from '../Admin/ChangeStatusWindow.vue';
 const orderStore = useOrderRecordStore();
 const dataStore = useDataStore();
 const sessionStore = useSessionStore();

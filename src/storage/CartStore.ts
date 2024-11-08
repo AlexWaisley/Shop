@@ -1,12 +1,12 @@
 import { defineStore } from "pinia"
 import { useSessionStore } from "./SessionStore";
 import { useDataStore } from "./DataStorage";
+import { useProductStore } from "./ProductStore";
 import { CartDto } from "@models";
 import { cartApi } from "@api/index";
 import Decimal from "decimal.js";
 import toastr from "toastr";
 import { StorageSerializers, useLocalStorage } from "@vueuse/core";
-import { useProductStore } from "./ProductStore";
 
 export const useCartStore = defineStore('cartStore', () => {
 
@@ -42,7 +42,6 @@ export const useCartStore = defineStore('cartStore', () => {
             await dataStorage.loadShippingAddresses();
         }
         if (result === null || cart.value === null) {
-            cart.value = { id: "0", items: [] };
             return;
         }
         cart.value = result;
@@ -67,7 +66,7 @@ export const useCartStore = defineStore('cartStore', () => {
         sessionStore.addToHistory(productId);
         const cartItem = cart.value.items.find(x => x.productId === productId);
         if (cartItem === undefined || cartItem.id === "0") {
-            if (sessionStore.currUser === null) {
+            if (sessionStore.currUser === null && cartItem === undefined) {
                 cart.value.items.push({ id: "0", cartId: "0", productId, quantity });
                 toastr.warning('You must register or login to commit order.');
                 return;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useDataStore, usePreviewImagesStore, useProductStore, useSessionStore } from '@storage';
+import { usePreviewImagesStore, useProductStore, useSessionStore } from '@storage';
 import { OrderItemDto, ProductDto } from '@models';
 import Decimal from 'decimal.js';
 const sessionStorage = useSessionStore();
@@ -37,7 +37,6 @@ onMounted(async () => {
         const previewUrl = await previewStore.loadPreview(preview.imageId);
         if (previewUrl !== null)
             file.value = previewUrl;
-
     }
 })
 

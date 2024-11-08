@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import ItemCard from './ItemCard.vue';
-import Catalog from './Catalog.vue';
-import { useDataStore, useSessionStore } from '@storage';
+import Catalog from '../General/Catalog.vue';
+import { useDataStore, useProductStore, useSessionStore } from '@storage';
 import { ProductDto } from '@models';
 import { ref, watch } from 'vue';
-import AddNewItem from './AddNewItem.vue';
+import AddNewItem from '../Admin/AddForms/NewItem.vue';
 
 const sessionStore = useSessionStore();
 const dataStore = useDataStore();
+const productStore = useProductStore();
 
-const items = ref<ProductDto[] | null>(dataStore.displayedProducts);
+const items = ref<ProductDto[] | null>(productStore.displayedProducts);
 
-watch(() => dataStore.displayedProducts, (newVal) => {
+watch(() => productStore.displayedProducts, (newVal) => {
     items.value = newVal;
 }, { immediate: true });
 

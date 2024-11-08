@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useDataStore } from '@storage';
+import { useProductStore } from '@storage';
 
-const dataStorage = useDataStore();
+const productStore = useProductStore();
 
-const searchItem = ref<string>("");
+const productName = ref<string>("");
+
+const searchProduct = () => {
+    if (productName.value !== "")
+        productStore.startSearch(productName.value);
+}
 </script>
 <template>
     <div class="searchbar-container">
         <div class="searchbar">
-            <input type="text" class="text-large bar" v-model="searchItem" placeholder="Write what you want here ...">
+            <input type="text" class="text-large bar" v-model="productName" placeholder="Write product name">
         </div>
-        <div @click="dataStorage.startSearch(searchItem)" class="search">
+        <div @click="searchProduct" class="search">
             <img src="/search.svg" alt="search" class="icon">
         </div>
     </div>

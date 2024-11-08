@@ -5,8 +5,8 @@ import toastr from 'toastr';
 import { ref } from "vue";
 import { ordersApi } from "@api/index";
 import { useCartStore } from "./CartStore";
-import Decimal from "decimal.js";
 import { useProductStore } from "./ProductStore";
+import Decimal from "decimal.js";
 
 
 export const useOrderRecordStore = defineStore('orderRecordStore', () => {
@@ -91,7 +91,11 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
     }
 
     const loadOrderItems = async (orderId: string) => {
-        if (orderItemsList.value?.filter(item => item.orderId === orderId) !== undefined)
+        if (orderItemsList.value === null) {
+            orderItemsList.value = [];
+        }
+        const orderItems = orderItemsList.value.filter(item => item.orderId === orderId);
+        if (orderItems !== undefined && orderItems.length > 0)
             return;
         const result = await ordersApi.GetOrderItems(orderId);
         if (orderItemsList.value === null) {

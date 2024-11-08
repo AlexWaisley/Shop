@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useDataStore, useSessionStore } from '@storage';
+import { usePreviewImagesStore } from '@storage';
 import { onMounted, ref, watch } from 'vue';
-import AddNewPhoto from '@main/AddNewPhoto.vue';
+import AddNewPhoto from '@main/Admin/AddForms/NewPhoto.vue';
 import { Product, ProductImage } from '@models';
 
 
@@ -9,37 +9,20 @@ const props = defineProps<{
     fullInfo: Product
 }>();
 
-const sessionStore = useSessionStore();
-const dataStore = useDataStore();
+const imageStore = usePreviewImagesStore();
 
 onMounted(async () => {
-    if (dataStore.productsPreviews !== null && dataStore.productsPreviews.length > 0)
+    if (imageStore.productsPreviews !== null && imageStore.productsPreviews.length > 0)
         return;
-    await dataStore.LoadProductsPreviews(props.fullInfo.id);
+    await imageStore.LoadProductsPreviews(props.fullInfo.id);
 });
 
 const img = ref<ProductImage[] | null>(null);
 const files = ref<string[] | null>(null);
 
-watch(() => dataStore.productsPreviews, async () => {
-    if (dataStore.productsPreviews === null || dataStore.productsPreviews.length === 0) {
-        return;
-    }
-    const temp = dataStore.productsPreviews.filter(x => x.productId === props.fullInfo.id);
-    img.value = temp;
-
-    if (img.value === null)
-        return;
-
-    for (const x of img.value) {
-        const res = await dataStore.loadPreview(x.imageId)
-        console.log(x.imageId);
-        if (res === null)
-            return;
-        if (files.value === null)
-            files.value = [];
-        files.value.push(res);
-    }
+watch(() => imageStore.productsPreviews, async () => {
+    img.value = await imageStore.getProductImages(props.fullInfo.id);
+    files.value = await imageStore.getImageUrl(img.value);
 
 }, { immediate: true, deep: true });
 

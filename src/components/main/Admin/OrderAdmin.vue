@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { OrderDto, OrderItemDto } from '@models';
 import { useDataStore, useOrderRecordStore } from '@storage';
-import OrderProductCard from './OrderProductCard.vue';
+import OrderProductCard from '../Order/OrderProductCard.vue';
 import ChangeStatusWindow from './ChangeStatusWindow.vue';
 const orderStore = useOrderRecordStore();
 const dataStore = useDataStore();
@@ -42,6 +42,10 @@ const openStatusChangeWindow = () => {
 const closeStatusChangeWindow = () => {
     statusChangeWindow.value = false;
 }
+
+onMounted(async () => {
+    await orderStore.loadOrderItems(props.info.id);
+})
 
 </script>
 <template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useDataStore, useSessionStore } from '@storage';
-import AddNewCategoryForm from './AddNewCategoryForm.vue';
+import AddNewCategoryForm from '../Admin/AddForms/NewCategory.vue';
 
 const sessionStore = useSessionStore();
 const dataStore = useDataStore();

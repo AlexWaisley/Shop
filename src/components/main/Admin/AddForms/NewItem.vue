@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import InputField from './InputField.vue';
+import InputField from '@main/General/InputField.vue';
 import { useCreatingStore, useSessionStore } from '@storage';
 import Decimal from 'decimal.js';
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useSessionStore } from '@storage';
 import { ref } from 'vue';
-import InputField from './InputField.vue';
+import InputField from '../General/InputField.vue';
 import AccountInfo from './AccountInfo.vue';
 const sessionStore = useSessionStore();
 
@@ -13,7 +13,7 @@ const isRegister = ref<boolean>(false);
 
 
 const logIn = () => {
-    sessionStore.logIn(email.value, password.value);
+    sessionStore.login(email.value, password.value);
 }
 const register = () => {
     if (isRegister.value)

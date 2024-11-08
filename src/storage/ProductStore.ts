@@ -40,7 +40,6 @@ export const useProductStore = defineStore('productStore', () => {
         }
     }
 
-
     const displayProductsByCategoryId = async (categoryId: number) => {
         let counter = 10;
         if (products.value === null || products.value.length === 0) {
@@ -55,6 +54,8 @@ export const useProductStore = defineStore('productStore', () => {
         }
 
         displayedProducts.value = product;
+        displayStore.resetAll();
+        displayStore.changeProductPageOpenStatus(true);
 
         return product;
     }
@@ -120,7 +121,12 @@ export const useProductStore = defineStore('productStore', () => {
             products.value = [];
         }
 
-        products.value.push(...result);
+        const map = new Map<string, ProductDto>();
+
+        [...products.value, ...result].forEach(item => {
+            map.set(item.id, item);
+        });
+        products.value = Array.from(map.values());
     }
 
     watch(() => products.value?.length, () => {

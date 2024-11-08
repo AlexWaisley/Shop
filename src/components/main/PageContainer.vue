@@ -1,20 +1,15 @@
 <script setup lang="ts">
-import Home from './Home.vue';
-import Products from './Products.vue';
-import Item from './Item.vue';
-import { useDataStore, useSessionStore, useDisplayInfoStore } from '@storage';
+import Home from './Home/Home.vue';
+import Products from './Products/Products.vue';
+import Item from './Item/Item.vue';
+import { useSessionStore, useDisplayInfoStore } from '@storage';
 const sessionStore = useSessionStore();
 const displayInfoStore = useDisplayInfoStore();
 
 import { computed, shallowRef, watch } from 'vue';
 import Cart from './Cart/Cart.vue';
-import Account from './Account.vue';
-import ItemAdmin from './ItemAdmin.vue';
-
-const props = defineProps<{
-    cartStatus: boolean;
-    accountStatus: boolean;
-}>();
+import Account from './Account/Account.vue';
+import ItemAdmin from './Admin/ItemAdmin.vue';
 
 const currPage = shallowRef(Home);
 
@@ -23,16 +18,16 @@ function updatePage() {
         case displayInfoStore.isEditItemPage:
             currPage.value = ItemAdmin;
             break;
-        case sessionStore.pickedItem !== null:
+        case displayInfoStore.productFullInfoPageStatus:
             currPage.value = Item;
             break;
         case displayInfoStore.productPageOpen:
             currPage.value = Products;
             break;
-        case props.cartStatus:
+        case displayInfoStore.cartStatus:
             currPage.value = Cart;
             break;
-        case props.accountStatus:
+        case displayInfoStore.accountInfoStatus:
             currPage.value = Account;
             break;
         default:
@@ -41,14 +36,15 @@ function updatePage() {
     }
 }
 
+
 const hasPickedCategories = computed(() => (sessionStore.pickedCategories?.length || 0) > 0);
 
-watch(hasPickedCategories, updatePage, { immediate: true });
-watch(() => sessionStore.pickedItem, updatePage, { immediate: true });
+watch(() => displayInfoStore.accountInfoStatus, updatePage, { immediate: true });
 watch(() => displayInfoStore.productPageOpen, updatePage, { immediate: true });
-watch(() => props.cartStatus, updatePage);
-watch(() => props.accountStatus, updatePage);
+watch(() => displayInfoStore.cartStatus, updatePage);
+watch(() => displayInfoStore.productFullInfoPageStatus, updatePage);
 watch(() => displayInfoStore.isEditItemPage, updatePage, { immediate: true });
+watch(() => displayInfoStore.homeStatus, updatePage, { immediate: true });
 
 </script>
 
