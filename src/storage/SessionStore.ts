@@ -6,7 +6,7 @@ import { useLocalStorage, StorageSerializers } from "@vueuse/core";
 import toastr from 'toastr';
 import { api } from "../api";
 import { useDataStore } from "./DataStorage";
-import { useDisplayInfoStore } from "./displayInfoStore";
+import { useDisplayInfoStore } from "./DisplayInfoStore";
 import { useCartStore } from "./CartStore";
 
 export const useSessionStore = defineStore('sessionStore', () => {

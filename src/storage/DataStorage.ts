@@ -1,11 +1,11 @@
-import { Category, Product, ProductDto, ShippingAddress } from "@models";
+import { Category, Product, ProductDto, ProductImage, ShippingAddress } from "@models";
 import { StorageSerializers, useLocalStorage } from "@vueuse/core";
 import Decimal from "decimal.js";
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import { api } from "../api";
 import { useSessionStore } from "./SessionStore";
-import { useDisplayInfoStore } from "./displayInfoStore";
+import { useDisplayInfoStore } from "./DisplayInfoStore";
 
 export const useDataStore = defineStore('dataStore', () => {
     const displayedProducts = ref<ProductDto[] | null>(null);
@@ -16,6 +16,7 @@ export const useDataStore = defineStore('dataStore', () => {
     const shippingAddresses = useLocalStorage<ShippingAddress[] | null>('shippingAddresses', null, { serializer: StorageSerializers.object });
     const sessionStore = useSessionStore();
     const displayStore = useDisplayInfoStore();
+    const productsPreviews = ref<ProductImage[] | null>(null);
 
     const startSearch = async (name: string) => {
         if (products.value === null || products.value.length === 0) {
@@ -160,6 +161,23 @@ export const useDataStore = defineStore('dataStore', () => {
 
         return product;
     }
+    const LoadProductsPreviews = async (id: string) => {
+        if (productsPreviews.value === null) {
+            productsPreviews.value = [];
+        }
+        const result = await api.GetProductPreviewsById(id, 20, productsPreviews.value.filter(x => x.productId === id).length);
+
+        if (result !== null) {
+            result.sort((a, b) => a.imageId - b.imageId);
+            productsPreviews.value.push(...result);
+        }
+    }
+
+
+    const loadPreview = async (id: number): Promise<string | null> => {
+        const result = await api.GetPreviewById(id);
+        return result;
+    }
 
 
     return {
@@ -176,6 +194,9 @@ export const useDataStore = defineStore('dataStore', () => {
         categories,
         displayProductsByCategoryId,
         shippingAddresses,
-        loadShippingAddresses
+        loadShippingAddresses,
+        LoadProductsPreviews,
+        productsPreviews,
+        loadPreview
     };
 })

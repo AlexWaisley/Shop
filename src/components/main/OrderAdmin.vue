@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { OrderDto, OrderItemDto } from '@models';
-import { useDataStore, useOrderRecordStore, useSessionStore } from '@storage';
+import { useDataStore, useOrderRecordStore } from '@storage';
 import OrderProductCard from './OrderProductCard.vue';
 import ChangeStatusWindow from './ChangeStatusWindow.vue';
 const orderStore = useOrderRecordStore();
 const dataStore = useDataStore();
-const sessionStore = useSessionStore();
 
 const props = defineProps<{
     info: OrderDto;
@@ -65,7 +64,7 @@ const closeStatusChangeWindow = () => {
             <OrderProductCard v-for="value in ordersItemsList" :info="value">
             </OrderProductCard>
         </div>
-        <div v-if="sessionStore.isCurrUserAdmin()" @click="openStatusChangeWindow" class="change-status-button">
+        <div @click="openStatusChangeWindow" class="change-status-button">
             <span class="text-large">Change status</span>
         </div>
         <Teleport v-if="statusChangeWindow" to="body">

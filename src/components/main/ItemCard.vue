@@ -1,21 +1,44 @@
 <script setup lang="ts">
 import { ProductDto } from '@models';
-import { useSessionStore, useCartStore } from '@storage';
+import { useSessionStore, useCartStore, useDataStore } from '@storage';
+import { onMounted, ref } from 'vue';
 
 const sessionStore = useSessionStore();
 const cartStore = useCartStore();
+const dataStore = useDataStore();
+const file = ref<string | null>(null);
 
 const props = defineProps<{
     info: ProductDto;
 }>();
+
 const pickItem = async () => {
     await sessionStore.pickItem(props.info.id);
 }
+
+onMounted(async () => {
+    if (dataStore.productsPreviews === null) {
+        await dataStore.LoadProductsPreviews(props.info.id);
+    }
+    if (dataStore.productsPreviews !== null && dataStore.productsPreviews.length < 1) {
+        await dataStore.LoadProductsPreviews(props.info.id);
+    }
+    if (dataStore.productsPreviews !== null) {
+        const preview = dataStore.productsPreviews.filter(x => x.productId === props.info.id)[0];
+        if (preview === undefined)
+            return;
+        const previewUrl = await dataStore.loadPreview(preview.imageId);
+        if (previewUrl !== null)
+            file.value = previewUrl;
+
+    }
+})
 </script>
 <template>
     <div class="item-card-container">
         <div @click="pickItem()" class="image-container">
-            <img src="/logo.jpg" alt="Item image" class="item-image">
+            <img v-if="file !== null" :src="file" alt="Item image" class="item-image">
+            <img v-else src="/logo.jpg" alt="not loaded">
         </div>
         <div class="info-container">
             <div @click="pickItem()" class="info">

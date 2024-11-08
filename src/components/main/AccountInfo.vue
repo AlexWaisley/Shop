@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSessionStore, useOrderRecordStore, useDataStore } from '@storage';
+import { useSessionStore, useOrderRecordStore } from '@storage';
 import { onMounted, ref } from 'vue';
 import InputField from './InputField.vue';
 import Order from './Order.vue';
@@ -42,7 +42,12 @@ const openOrders = () => {
 
 const openAllOrders = () => {
     changePassRequired.value = false;
-    orderStore.loadAllOrders();
+
+    orderStore.loadOrdersPart();
+}
+
+const oneMore = async () => {
+    await orderStore.loadOrdersPart();
 }
 
 </script>
@@ -80,8 +85,15 @@ const openAllOrders = () => {
                 <div v-if="orderStore.orderList !== null && orderStore.orderList.length !== 0" class="orders-list">
                     <Order v-for="value in orderStore.orderList" :info="value"></Order>
                 </div>
+                <div v-if="orderStore.allOrders !== null && orderStore.allOrders.length !== 0" class="orders-list">
+                    <Order v-for="value in orderStore.allOrders" :info="value"></Order>
+                </div>
                 <div v-else class="plain">
                     <span class="text-large">You have no orders.</span>
+                </div>
+                <div v-if="sessionStore.isCurrUserAdmin() && orderStore.allOrders !== null && orderStore.allOrders.length % 20 === 0 && orderStore.allOrders.length !== 0"
+                    @click="oneMore" class="loader-button">
+                    <span class="text-large">Load more</span>
                 </div>
             </div>
             <div v-else class="change-pass-container">

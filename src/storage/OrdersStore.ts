@@ -18,6 +18,7 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
     const orderList = ref<OrderDto[] | null>(null);
     const orderFullList = ref<OrderFull[] | null>(null);
     const orderItemsList = ref<OrderItemDto[] | null>(null);
+    const allOrders = ref<OrderDto[] | null>(null);
 
     const loadUserOrders = async () => {
         const result = await api.GetUserOrders();
@@ -32,13 +33,32 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
     }
 
     const loadAllOrders = async () => {
+        if (allOrders.value === null) {
+            allOrders.value = [];
+        }
         const result = await api.GetAllOrders();
         if (result === null) {
             orderList.value = []
             return;
         }
-        orderList.value = result;
-        orderList.value.forEach(async (x) => {
+        allOrders.value = result;
+        allOrders.value.forEach(async (x) => {
+            await loadOrderItems(x.id);
+        })
+
+    }
+
+    const loadOrdersPart = async () => {
+        if (allOrders.value === null) {
+            allOrders.value = [];
+        }
+        const result = await api.GetOrdersPart(allOrders.value.length, 20);
+
+        if (result === null) {
+            return;
+        }
+        allOrders.value = result;
+        allOrders.value.forEach(async (x) => {
             await loadOrderItems(x.id);
         })
     }
@@ -84,6 +104,16 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
         orderItemsList.value.push(...result);
     };
 
+    const UpdateOrderStatus = async (orderId: string, status: string): Promise<boolean> => {
+        const result = await api.UpdateOrderStatus(orderId, status);
+        if (result) {
+            toastr.success('Status successfully changed');
+            return true;
+        }
+        toastr.error('Something went wrong');
+        return false;
+    }
+
     const orderConfirmed = async (shippingAddressId: number) => {
         if (sessionStore.currUser === null) {
             toastr.error("Sign in account");
@@ -116,7 +146,10 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
         orderFullList,
         orderItemsList,
         calcTotal,
-        loadAllOrders
+        loadAllOrders,
+        UpdateOrderStatus,
+        loadOrdersPart,
+        allOrders
 
     };
 });

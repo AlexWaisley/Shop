@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useCartStore, useDataStore, useSessionStore } from '@storage';
 import { CartItemDto, ProductDto } from '@models';
 import Decimal from 'decimal.js';
@@ -28,11 +28,33 @@ defineEmits<{
     (e: 'changeQuantity', cartItemId: string, quantity: number, productId: string): void
 }>();
 
+
+const file = ref<string | null>(null);
+
+onMounted(async () => {
+    if (dataStore.productsPreviews === null) {
+        await dataStore.LoadProductsPreviews(props.info.productId);
+    }
+    if (dataStore.productsPreviews !== null && dataStore.productsPreviews.length < 1) {
+        await dataStore.LoadProductsPreviews(props.info.productId);
+    }
+    if (dataStore.productsPreviews !== null) {
+        const preview = dataStore.productsPreviews.filter(x => x.productId === props.info.productId)[0];
+        if (preview === undefined)
+            return;
+        const previewUrl = await dataStore.loadPreview(preview.imageId);
+        if (previewUrl !== null)
+            file.value = previewUrl;
+
+    }
+})
+
+
 </script>
 <template>
     <div class="product-container">
         <div class="image-container">
-            <img src="/2.jpg" alt="product preview" class="image-preview" />
+            <img v-if="file !== null" :src="file" alt="product preview" class="image-preview" />
         </div>
         <div v-if="product !== null" class="info-container">
             <div @click="sessionStorage.pickItem(product.id)" class="name">

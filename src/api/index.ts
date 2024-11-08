@@ -14,7 +14,8 @@ import {
     OrderDto,
     OrderFull,
     ShippingAddress,
-    CartItemDto
+    CartItemDto,
+    PreviewCreateRequest
 } from "@models";
 import axios from "axios"
 import { CartDto } from "../models/CartDto";
@@ -25,6 +26,7 @@ const apiInstance = axios.create({
 });
 import { useSessionStore } from "@storage";
 import { CartItemAddRequest } from "../models/requests/CartItemAddRequest";
+import { ProductUpdateRequest } from "../models/requests/ProductUpdateRequest";
 
 
 export const api = {
@@ -214,11 +216,40 @@ export const api = {
         }
     },
 
-    async GetProductPreviewsById(id: string, count: number, offset: number): Promise<ProductImage | null> {
+    async GetProductPreviewsById(id: string, count: number, offset: number): Promise<ProductImage[] | null> {
         try {
             const { data, status } = await apiInstance.get(`/products/id=${id}/previews/count=${count}&offset=${offset}`);
             console.log('[api]', 'User valid status:', status);
             return data;
+        }
+        catch (e) {
+            console.log(e);
+            return null;
+        }
+    },
+
+    async GetPreviewById(id: number): Promise<string | null> {
+        try {
+            const { data, status } = await apiInstance.get(`/files/${id}`, { responseType: 'arraybuffer' });
+            console.log('[api]', 'User valid status:', status);
+            return URL.createObjectURL(new Blob([data]));
+        }
+        catch (e) {
+            console.log(e);
+            return null;
+        }
+    },
+
+    async UpdateProductInfo(productUpdateRequest: ProductUpdateRequest): Promise<boolean | null> {
+        const sessionStore = useSessionStore();
+        try {
+            const { status } = await apiInstance.post(`/products/update`, productUpdateRequest, {
+                headers: {
+                    "Authorization": "Bearer " + sessionStore.jwt
+                }
+            });
+            console.log('[api]', 'User valid status:', status);
+            return status === 200;
         }
         catch (e) {
             console.log(e);
@@ -294,16 +325,68 @@ export const api = {
         }
     },
 
-    async UpdateOrderStatus(orderId: string, newStatus: string): Promise<OrderDto[] | null> {
+    async GetOrdersPart(offset: number, count: number): Promise<OrderDto[] | null> {
         const sessionStore = useSessionStore();
         try {
-            const { data, status } = await apiInstance.post(`/orders/update/${orderId}`, newStatus, {
+            const { data, status } = await apiInstance.get(`/orders/all/offset=${offset}&limit=${count}`, {
                 headers: {
                     "Authorization": "Bearer " + sessionStore.jwt
                 }
             });
             console.log('[api]', 'User valid status:', status);
             return data;
+        }
+        catch (e) {
+            console.log(e);
+            return null;
+        }
+    },
+
+    async AddNewPhoto(formFile: FormData): Promise<number | null> {
+        const sessionStore = useSessionStore();
+        try {
+            const { data, status } = await apiInstance.post(`/files`, formFile, {
+                headers: {
+                    "Authorization": "Bearer " + sessionStore.jwt,
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+            console.log('[api]', 'User valid status:', status);
+            return data;
+        }
+        catch (e) {
+            console.log(e);
+            return null;
+        }
+    },
+
+    async AddNewProductPhoto(previewCreateRequest: PreviewCreateRequest): Promise<boolean | null> {
+        const sessionStore = useSessionStore();
+        try {
+            const { status } = await apiInstance.post(`/products/add/preview`, previewCreateRequest, {
+                headers: {
+                    "Authorization": "Bearer " + sessionStore.jwt
+                }
+            });
+            console.log('[api]', 'User valid status:', status);
+            return status === 200;
+        }
+        catch (e) {
+            console.log(e);
+            return null;
+        }
+    },
+
+    async UpdateOrderStatus(orderId: string, newStatus: string): Promise<boolean | null> {
+        const sessionStore = useSessionStore();
+        try {
+            const { status } = await apiInstance.post(`/orders/update`, { orderId, status: newStatus }, {
+                headers: {
+                    "Authorization": "Bearer " + sessionStore.jwt
+                }
+            });
+            console.log('[api]', 'User valid status:', status);
+            return status === 200;
         }
         catch (e) {
             console.log(e);

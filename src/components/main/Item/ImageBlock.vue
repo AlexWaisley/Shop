@@ -1,34 +1,79 @@
 <script setup lang="ts">
-import { useSessionStore } from '@storage';
-import { ref } from 'vue';
+import { useDataStore, useSessionStore } from '@storage';
+import { onMounted, ref, watch } from 'vue';
+import AddNewPhoto from '@main/AddNewPhoto.vue';
+import { Product, ProductImage } from '@models';
+
+
+const props = defineProps<{
+    fullInfo: Product
+}>();
 
 const sessionStore = useSessionStore();
+const dataStore = useDataStore();
 
-const images = ["/1.jpg", "/2.jpg", "/3.jpg", "/4.jpg"];
+onMounted(async () => {
+    if (dataStore.productsPreviews !== null && dataStore.productsPreviews.length > 0)
+        return;
+    await dataStore.LoadProductsPreviews(props.fullInfo.id);
+});
 
-const mainPhotoIndex = ref<number>(1);
+const img = ref<ProductImage[] | null>(null);
+const files = ref<string[] | null>(null);
+
+watch(() => dataStore.productsPreviews, async () => {
+    if (dataStore.productsPreviews === null || dataStore.productsPreviews.length === 0) {
+        return;
+    }
+    const temp = dataStore.productsPreviews.filter(x => x.productId === props.fullInfo.id);
+    img.value = temp;
+
+    if (img.value === null)
+        return;
+
+    for (const x of img.value) {
+        const res = await dataStore.loadPreview(x.imageId)
+        console.log(x.imageId);
+        if (res === null)
+            return;
+        if (files.value === null)
+            files.value = [];
+        files.value.push(res);
+    }
+
+}, { immediate: true, deep: true });
+
+
+const mainPhotoIndex = ref<number>(0);
+
+const isAddNewPhoto = ref<boolean>(false);
 
 const nextPicture = () => {
-    if (mainPhotoIndex.value >= images.length - 1) {
+    if (files.value === null)
+        return;
+    if (mainPhotoIndex.value >= files.value.length - 1) {
         mainPhotoIndex.value = 0;
         return;
     }
     mainPhotoIndex.value++;
 }
 const previousPicture = () => {
+    if (files.value === null)
+        return;
     if (mainPhotoIndex.value <= 0) {
-        mainPhotoIndex.value = images.length - 1;
+        mainPhotoIndex.value = files.value.length - 1;
         return;
     }
     mainPhotoIndex.value--;
 }
 
-
 const pickMainPhoto = (index: number) => {
     mainPhotoIndex.value = index;
 }
 
-
+const changeAddNewPhotoStatus = () => {
+    isAddNewPhoto.value = !isAddNewPhoto.value;
+}
 </script>
 <template>
     <div class="image-block-container">
@@ -42,14 +87,20 @@ const pickMainPhoto = (index: number) => {
                 </div>
             </div>
             <div class="image-container">
-                <img :src="images[mainPhotoIndex]" alt="Stuff image" class="preview">
+                <img v-if="files !== null" :src="files[mainPhotoIndex]" type="file" alt="Stuff image" class="preview">
             </div>
         </div>
         <div class="all-pictures">
-            <div v-for="(imageSrc, index) in images" @click="pickMainPhoto(index)" class="image-container-small">
+            <div @click="changeAddNewPhotoStatus" class="add-container">
+                <img src="/cross.svg" alt="Stuff image" class="add_preview">
+            </div>
+            <div v-for="(imageSrc, index) in files" @click="pickMainPhoto(index)" class="image-container-small">
                 <img :src="imageSrc" alt="preview" class="preview">
             </div>
         </div>
+        <Teleport v-if="isAddNewPhoto" to="body">
+            <AddNewPhoto :id="fullInfo.id" @close="changeAddNewPhotoStatus"></AddNewPhoto>
+        </Teleport>
     </div>
 </template>
 <style scoped lang="scss">
@@ -89,7 +140,6 @@ const pickMainPhoto = (index: number) => {
                 opacity: .2;
                 transition: all .5s ease;
 
-
                 &:last-child {
                     transform: rotate(180deg);
                 }
@@ -122,6 +172,23 @@ const pickMainPhoto = (index: number) => {
         max-width: 100%;
         padding: 10px;
         overflow-x: auto;
+
+        & .add-container {
+            & .add_preview {
+                width: 80px;
+                max-height: 80px;
+                border-radius: 7px;
+                overflow: hidden;
+                border: 1px solid transparent;
+                transition: all .5s ease;
+                display: flex;
+                justify-content: center;
+
+                &:hover {
+                    border: 1px solid blue;
+                }
+            }
+        }
 
         & .image-container-small {
             width: 80px;

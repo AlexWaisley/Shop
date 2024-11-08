@@ -15,6 +15,8 @@ import { OrderDto } from "./OrderDto";
 import { OrderFull } from "./OrderFull";
 import { OrderItemDto } from "./OrderItemDto";
 import { ShippingAddress } from "./ShippingAddress";
+import { PreviewCreateRequest } from "./requests/PreviewCreateRequest";
+import { ProductUpdateRequest } from "./requests/ProductUpdateRequest";
 
 
 
@@ -35,6 +37,8 @@ export type {
     OrderDto,
     OrderFull,
     OrderItemDto,
-    ShippingAddress
+    ShippingAddress,
+    PreviewCreateRequest,
+    ProductUpdateRequest
 
 };

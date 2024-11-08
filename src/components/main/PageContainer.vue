@@ -4,12 +4,12 @@ import Products from './Products.vue';
 import Item from './Item.vue';
 import { useDataStore, useSessionStore, useDisplayInfoStore } from '@storage';
 const sessionStore = useSessionStore();
-const dataStore = useDataStore();
 const displayInfoStore = useDisplayInfoStore();
 
 import { computed, shallowRef, watch } from 'vue';
 import Cart from './Cart/Cart.vue';
 import Account from './Account.vue';
+import ItemAdmin from './ItemAdmin.vue';
 
 const props = defineProps<{
     cartStatus: boolean;
@@ -20,6 +20,9 @@ const currPage = shallowRef(Home);
 
 function updatePage() {
     switch (true) {
+        case displayInfoStore.isEditItemPage:
+            currPage.value = ItemAdmin;
+            break;
         case sessionStore.pickedItem !== null:
             currPage.value = Item;
             break;
@@ -45,6 +48,7 @@ watch(() => sessionStore.pickedItem, updatePage, { immediate: true });
 watch(() => displayInfoStore.productPageOpen, updatePage, { immediate: true });
 watch(() => props.cartStatus, updatePage);
 watch(() => props.accountStatus, updatePage);
+watch(() => displayInfoStore.isEditItemPage, updatePage, { immediate: true });
 
 </script>
 

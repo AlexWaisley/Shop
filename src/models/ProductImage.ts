@@ -1,4 +1,4 @@
 export type ProductImage = {
-    url: string,
+    imageId: number,
     productId: string
 }

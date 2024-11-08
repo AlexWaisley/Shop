@@ -2,12 +2,12 @@
 import { Product } from '@models';
 import ImageBlock from './Item/ImageBlock.vue';
 import SpecsBlock from './Item/SpecsBlock.vue';
-import { useSessionStore, useDataStore, useCartStore, useDisplayInfoStore } from '@storage';
+import { useSessionStore, useDataStore, useCartStore, useCreatingStore } from '@storage';
 import { onMounted, ref } from 'vue';
 const sessionStore = useSessionStore();
+const createStore = useCreatingStore();
 const dataStore = useDataStore();
 const cartStore = useCartStore();
-const displayInfo = useDisplayInfoStore();
 const fullProductInfo = ref<Product | null>(null);
 
 const id = sessionStore.pickedItem?.id;
@@ -17,8 +17,15 @@ onMounted(async () => {
         fullProductInfo.value = await dataStore.getFullProductById(id);
 })
 
-const editItem = () => {
-    displayInfo.changeIsEditItem(true);
+const submitProductChanges = () => {
+    if (fullProductInfo.value !== null)
+        createStore.UpdateProduct({
+            id: fullProductInfo.value.id,
+            name: fullProductInfo.value.name,
+            description: fullProductInfo.value.description,
+            isAvailable: fullProductInfo.value.isAvailable,
+            price: fullProductInfo.value.price,
+        });
 }
 
 </script>
@@ -30,11 +37,11 @@ const editItem = () => {
             </div>
             <div class="fast-info">
                 <div class="name-container">
-                    <span class="text-large">{{ fullProductInfo.name }}</span>
+                    <input type="text" v-model="fullProductInfo.name" />
                 </div>
                 <div class="bucket-container">
                     <div class="price-container">
-                        <span class="text-large">{{ fullProductInfo.price }}$</span>
+                        <input type="text" v-model="fullProductInfo.price" />
                     </div>
                     <button :disabled="cartStore.isItemInCart(fullProductInfo.id)"
                         @click="cartStore.addToCart(fullProductInfo.id, 1)" class="buy-button">
@@ -44,13 +51,15 @@ const editItem = () => {
             </div>
         </div>
         <div class="item-info">
-            <div class="description">{{ fullProductInfo.description }}</div>
+            <div class="description">
+                <input type="text" v-model="fullProductInfo.description">
+            </div>
             <div class="specs">
                 <SpecsBlock></SpecsBlock>
             </div>
         </div>
-        <div @click="editItem" v-if="sessionStore.isCurrUserAdmin()" class="edit-item-button">
-            <span class="text-large">edit</span>
+        <div @click="submitProductChanges" class="submit-btn">
+            <span class="text-large">Submit changes</span>
         </div>
     </div>
 </template>
@@ -135,19 +144,20 @@ const editItem = () => {
 
     }
 
-    & .edit-item-button {
+    & .submit-btn {
         width: 100%;
         height: 80px;
-        background-color: skyblue;
-        border-radius: 15px;
         display: flex;
         justify-content: center;
         align-items: center;
+        background-color: skyblue;
         transition: all .5s ease;
+        border-radius: 15px;
+        box-shadow: 3px 3px 3px rgb(98, 169, 198);
 
         &:hover {
             cursor: pointer;
-            background-color: rgb(104, 187, 219);
+            background-color: rgb(116, 194, 225);
         }
     }
 }
