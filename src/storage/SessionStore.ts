@@ -4,29 +4,29 @@ import { ref, watch } from "vue";
 import { useCookies } from '@vueuse/integrations/useCookies';
 import { useLocalStorage, StorageSerializers } from "@vueuse/core";
 import toastr from 'toastr';
-import { api } from "../api";
+import { userApi } from "@api/index";
 import { useDataStore } from "./DataStorage";
 import { useDisplayInfoStore } from "./DisplayInfoStore";
 import { useCartStore } from "./CartStore";
+import { useTokenStore } from "./TokenStorage";
+import { useProductStore } from "./ProductStore";
 
 export const useSessionStore = defineStore('sessionStore', () => {
     const cookies = useCookies();
     const dataStore = useDataStore();
     const displayInfoStore = useDisplayInfoStore();
     const cartStore = useCartStore();
+    const tokenStore = useTokenStore();
+    const productStore = useProductStore();
 
-    const jwt = ref<string>(cookies.get('ultra-shop-token'));
-    const jwtRefresh = ref<string>(cookies.get('ultra-shop-token-refresh'));
     const history = useLocalStorage<string[] | null>('userHistory', null, { serializer: StorageSerializers.object });
-    const currUser = ref<User | null>(cookies.get('userSession') || null);
+    const currUser = useLocalStorage<User | null>('currUser', null, { serializer: StorageSerializers.object });
 
     const pickedCategories = ref<Category[] | null>(null);
     const pickedItem = ref<Product | null>(null);
 
     const initSession = async () => {
-        if (jwt.value === undefined && jwtRefresh.value !== undefined) {
-            await refresh();
-        }
+        tokenStore.initSession();
         if (currUser.value) {
             toastr.info(`Welcome back, ${currUser.value.name}`);
         }
@@ -34,6 +34,7 @@ export const useSessionStore = defineStore('sessionStore', () => {
     };
 
     const logOut = () => {
+        tokenStore.logOut();
         currUser.value = null;
         cookies.remove('ultra-shop-token-refresh');
         cookies.remove('ultra-shop-token');
@@ -51,8 +52,8 @@ export const useSessionStore = defineStore('sessionStore', () => {
             return;
         }
 
-        const user = await api.Login({ email, password });
-        jwt.value = cookies.get('ultra-shop-token');
+        const user = await userApi.login({ email, password });
+        tokenStore.jwt = cookies.get('ultra-shop-token');
 
         if (user === null) {
             toastr.error("Email or password is wrong");
@@ -65,22 +66,13 @@ export const useSessionStore = defineStore('sessionStore', () => {
         }
     }
 
-    watch(() => cookies.get('ultra-shop-token'), async (newVal) => {
-        if (newVal === undefined) {
-            const res = await api.RefreshToken();
-            if (!res) {
-                logOut();
-            }
-        }
-    })
-
     const register = async (name: string, email: string, password: string) => {
         if (!validateEmail(email)) {
             toastr.error("Enter valid email");
             return;
         }
-        jwt.value = cookies.get('ultra-shop-token');
-        const user = await api.Register({
+        tokenStore.jwt = cookies.get('ultra-shop-token');
+        const user = await userApi.register({
             name, email, password
         });
 
@@ -95,9 +87,6 @@ export const useSessionStore = defineStore('sessionStore', () => {
         }
     }
 
-    const refresh = async () => {
-        await api.RefreshToken();
-    }
 
     const changeUserPassword = async (oldPassword: string, newPassword: string) => {
         if (currUser.value === null) {
@@ -105,7 +94,7 @@ export const useSessionStore = defineStore('sessionStore', () => {
             return;
         }
 
-        const result = await api.UpdatePassword({
+        const result = await userApi.updatePassword({
             oldPassword,
             newPassword
         });
@@ -123,7 +112,7 @@ export const useSessionStore = defineStore('sessionStore', () => {
             toastr.error("Enter valid email");
             return;
         }
-        const result = await api.UpdateInfo({
+        const result = await userApi.updateInfo({
             name,
             email
         });
@@ -180,7 +169,7 @@ export const useSessionStore = defineStore('sessionStore', () => {
     }
 
     const pickItem = async (productId: string) => {
-        const product = await dataStore.getFullProductById(productId);
+        const product = await productStore.getFullProductById(productId);
         if (product === null) {
             toastr.error("Something went wrong");
             return;
@@ -223,22 +212,19 @@ export const useSessionStore = defineStore('sessionStore', () => {
     return {
         history,
         currUser,
-        jwt,
         addToHistory,
         initSession,
         changeUserPassword,
         activateUserEmail,
         changeCurrUserInfo,
         register,
-        logIn: login,
+        login,
         pickCategory,
         pickItem,
         clearAll,
         pickedItem,
         pickedCategories,
         isCurrUserAdmin,
-        jwtRefresh,
-        refresh,
         logOut
     };
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ProductDto } from '@models';
 import { useSessionStore, useCartStore, useDataStore } from '@storage';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const sessionStore = useSessionStore();
 const cartStore = useCartStore();
@@ -30,7 +30,23 @@ onMounted(async () => {
         const previewUrl = await dataStore.loadPreview(preview.imageId);
         if (previewUrl !== null)
             file.value = previewUrl;
+    }
+})
 
+watch(props.info, async () => {
+    if (dataStore.productsPreviews === null) {
+        await dataStore.LoadProductsPreviews(props.info.id);
+    }
+    if (dataStore.productsPreviews !== null && dataStore.productsPreviews.length < 1) {
+        await dataStore.LoadProductsPreviews(props.info.id);
+    }
+    if (dataStore.productsPreviews !== null) {
+        const preview = dataStore.productsPreviews.filter(x => x.productId === props.info.id)[0];
+        if (preview === undefined)
+            return;
+        const previewUrl = await dataStore.loadPreview(preview.imageId);
+        if (previewUrl !== null)
+            file.value = previewUrl;
     }
 })
 </script>

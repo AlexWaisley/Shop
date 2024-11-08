@@ -2,15 +2,17 @@ import { defineStore } from "pinia"
 import { useSessionStore } from "./SessionStore";
 import { useDataStore } from "./DataStorage";
 import { CartDto } from "@models";
-import { api } from "../api";
+import { cartApi } from "@api/index";
 import Decimal from "decimal.js";
 import toastr from "toastr";
 import { StorageSerializers, useLocalStorage } from "@vueuse/core";
+import { useProductStore } from "./ProductStore";
 
 export const useCartStore = defineStore('cartStore', () => {
 
     const sessionStore = useSessionStore();
     const dataStorage = useDataStore();
+    const productStore = useProductStore();
 
     const cart = useLocalStorage<CartDto | null>('cart', null, { serializer: StorageSerializers.object });
 
@@ -20,7 +22,7 @@ export const useCartStore = defineStore('cartStore', () => {
         }
 
         return cart.value.items.reduce((acc, item) => {
-            const productPrice = new Decimal(dataStorage.getProductPriceById(item.productId));
+            const productPrice = new Decimal(productStore.getProductPriceById(item.productId));
             return acc.plus(productPrice.times(new Decimal(item.quantity)));
         }, new Decimal(0));
     }
@@ -35,7 +37,7 @@ export const useCartStore = defineStore('cartStore', () => {
     }
 
     const loadCart = async () => {
-        const result = await api.GetCart();
+        const result = await cartApi.GetCart();
         if (dataStorage.shippingAddresses === null) {
             await dataStorage.loadShippingAddresses();
         }
@@ -70,7 +72,7 @@ export const useCartStore = defineStore('cartStore', () => {
                 toastr.warning('You must register or login to commit order.');
                 return;
             }
-            const result = await api.AddToCart({
+            const result = await cartApi.AddToCart({
                 productId, quantity
             });
             if (result)
@@ -83,7 +85,7 @@ export const useCartStore = defineStore('cartStore', () => {
             cart.value = { id: "0", items: [] };
         }
 
-        const result = await api.RemoveFromCart(cartItemId);
+        const result = await cartApi.RemoveFromCart(cartItemId);
         if (result)
             await loadCart();
     }
@@ -96,7 +98,7 @@ export const useCartStore = defineStore('cartStore', () => {
         const index = cart.value.items.find(x => x.id === itemId);
         if (index === undefined)
             return;
-        const result = await api.UpdateCartItemQuantity({ id: itemId, quantity, productId, cartId: "0" })
+        const result = await cartApi.UpdateCartItemQuantity({ id: itemId, quantity, productId, cartId: "0" })
         if (!result)
             return;
         loadCart();

@@ -3,17 +3,17 @@ import { useSessionStore } from "./SessionStore";
 import { OrderDto, OrderFull, OrderItemDto } from "@models";
 import toastr from 'toastr';
 import { ref } from "vue";
-import { api } from "../api";
+import { ordersApi } from "@api/index";
 import { useCartStore } from "./CartStore";
 import Decimal from "decimal.js";
-import { useDataStore } from "./DataStorage";
+import { useProductStore } from "./ProductStore";
 
 
 export const useOrderRecordStore = defineStore('orderRecordStore', () => {
 
     const cartStore = useCartStore();
     const sessionStore = useSessionStore();
-    const dataStorage = useDataStore();
+    const productStore = useProductStore();
 
     const orderList = ref<OrderDto[] | null>(null);
     const orderFullList = ref<OrderFull[] | null>(null);
@@ -21,7 +21,7 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
     const allOrders = ref<OrderDto[] | null>(null);
 
     const loadUserOrders = async () => {
-        const result = await api.GetUserOrders();
+        const result = await ordersApi.GetUserOrders();
         if (result === null) {
             orderList.value = []
             return;
@@ -36,7 +36,7 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
         if (allOrders.value === null) {
             allOrders.value = [];
         }
-        const result = await api.GetAllOrders();
+        const result = await ordersApi.GetAllOrders();
         if (result === null) {
             orderList.value = []
             return;
@@ -52,7 +52,7 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
         if (allOrders.value === null) {
             allOrders.value = [];
         }
-        const result = await api.GetOrdersPart(allOrders.value.length, 20);
+        const result = await ordersApi.GetOrdersPart(allOrders.value.length, 20);
 
         if (result === null) {
             return;
@@ -74,13 +74,13 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
 
 
         return orderItems.reduce((acc, item) => {
-            const productPrice = new Decimal(dataStorage.getProductPriceById(item.productId));
+            const productPrice = new Decimal(productStore.getProductPriceById(item.productId));
             return acc.plus(productPrice.mul(item.quantity));
         }, new Decimal(0));
     }
 
     const loadFullOrderInfo = async (orderId: string) => {
-        const result = await api.GetOrder(orderId);
+        const result = await ordersApi.GetOrder(orderId);
         if (orderFullList.value === null) {
             orderFullList.value = [];
         }
@@ -93,7 +93,7 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
     const loadOrderItems = async (orderId: string) => {
         if (orderItemsList.value?.filter(item => item.orderId === orderId) !== undefined)
             return;
-        const result = await api.GetOrderItems(orderId);
+        const result = await ordersApi.GetOrderItems(orderId);
         if (orderItemsList.value === null) {
             orderItemsList.value = [];
         }
@@ -105,7 +105,7 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
     };
 
     const UpdateOrderStatus = async (orderId: string, status: string): Promise<boolean> => {
-        const result = await api.UpdateOrderStatus(orderId, status);
+        const result = await ordersApi.UpdateOrderStatus(orderId, status);
         if (result) {
             toastr.success('Status successfully changed');
             return true;
@@ -124,7 +124,7 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
             return;
         }
 
-        const result = await api.CreateOrderRecord(shippingAddressId);
+        const result = await ordersApi.CreateOrderRecord(shippingAddressId);
 
         if (!result) {
             toastr.error("Something went wrong");

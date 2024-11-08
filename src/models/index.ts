@@ -17,7 +17,8 @@ import { OrderItemDto } from "./OrderItemDto";
 import { ShippingAddress } from "./ShippingAddress";
 import { PreviewCreateRequest } from "./requests/PreviewCreateRequest";
 import { ProductUpdateRequest } from "./requests/ProductUpdateRequest";
-
+import { PreviewImage } from "./PreviewImage";
+import { CartItemAddRequest } from "./requests/CartItemAddRequest";
 
 
 export type {
@@ -39,6 +40,9 @@ export type {
     OrderItemDto,
     ShippingAddress,
     PreviewCreateRequest,
-    ProductUpdateRequest
+    ProductUpdateRequest,
+    PreviewImage,
+    CartItemAddRequest,
+
 
 };

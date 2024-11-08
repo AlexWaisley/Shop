@@ -13,6 +13,7 @@ export default defineConfig({
       '@main': path.resolve(__dirname, './src/components/main'),
       '@top': path.resolve(__dirname, './src/components/top'),
       '@bottom': path.resolve(__dirname, './src/components/bottom'),
+      '@api': path.resolve(__dirname, './src/api'),
     }
   }
 })

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useDataStore, useSessionStore } from '@storage';
+import { useDataStore, usePreviewImagesStore, useProductStore, useSessionStore } from '@storage';
 import { OrderItemDto, ProductDto } from '@models';
 import Decimal from 'decimal.js';
 const sessionStorage = useSessionStore();
-const dataStore = useDataStore();
+const previewStore = usePreviewImagesStore();
+const productStore = useProductStore();
 
 const props = defineProps<{
     info: OrderItemDto;
@@ -12,7 +13,7 @@ const props = defineProps<{
 
 const quantity = ref<number>(props.info.quantity);
 
-const product = ref<ProductDto | null>(dataStore.getProductById(props.info.productId));
+const product = ref<ProductDto | null>(productStore.getProductById(props.info.productId));
 const totalCost = computed<Decimal>(() => {
     if (product.value === null) {
         return new Decimal(1);
@@ -23,17 +24,17 @@ const totalCost = computed<Decimal>(() => {
 const file = ref<string | null>(null);
 
 onMounted(async () => {
-    if (dataStore.productsPreviews === null) {
-        await dataStore.LoadProductsPreviews(props.info.productId);
+    if (previewStore.productsPreviews === null) {
+        await previewStore.LoadProductsPreviews(props.info.productId);
     }
-    if (dataStore.productsPreviews !== null && dataStore.productsPreviews.length < 1) {
-        await dataStore.LoadProductsPreviews(props.info.productId);
+    if (previewStore.productsPreviews !== null && previewStore.productsPreviews.length < 1) {
+        await previewStore.LoadProductsPreviews(props.info.productId);
     }
-    if (dataStore.productsPreviews !== null) {
-        const preview = dataStore.productsPreviews.filter(x => x.productId === props.info.productId)[0];
+    if (previewStore.productsPreviews !== null) {
+        const preview = previewStore.productsPreviews.filter(x => x.productId === props.info.productId)[0];
         if (preview === undefined)
             return;
-        const previewUrl = await dataStore.loadPreview(preview.imageId);
+        const previewUrl = await previewStore.loadPreview(preview.imageId);
         if (previewUrl !== null)
             file.value = previewUrl;
 
