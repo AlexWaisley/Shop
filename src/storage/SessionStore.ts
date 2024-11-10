@@ -22,6 +22,13 @@ export const useSessionStore = defineStore('sessionStore', () => {
     const history = useLocalStorage<string[] | null>('userHistory', null, { serializer: StorageSerializers.object });
     const currUser = useLocalStorage<User | null>('currUser', null, { serializer: StorageSerializers.object });
 
+
+    watch(() => cookies.get('ultra-shop-token-refresh'), async (newVal) => {
+        if (newVal === undefined) {
+            logOut();
+        }
+    }, { immediate: true })
+
     const pickedCategories = ref<Category[] | null>(null);
     const pickedItem = ref<Product | null>(null);
 
@@ -152,20 +159,40 @@ export const useSessionStore = defineStore('sessionStore', () => {
     });
 
 
-    const pickCategory = (category: Category) => {
+    const pickCategory = async (category: Category) => {
+        displayInfoStore.resetAll();
         if (pickedCategories.value === null) {
             pickedCategories.value = [];
         }
         if (category.parentCategory === 0) {
             pickedCategories.value = [];
         }
-        dataStore.loadCategories(category.id);
+        await dataStore.loadCategories(category.id);
         pickedCategories.value.push(category);
         if (pickedItem.value !== null) {
             addToHistory(pickedItem.value.id);
             pickedItem.value = null;
         }
-        displayInfoStore.changeProductPageOpenStatus(false);
+
+        const parentCategoryId = pickedCategories.value[pickedCategories.value.length - 1].id
+        if (dataStore.categories === null) {
+            if (!displayInfoStore.adminPanelsOn) {
+                await productStore.displayProductsByCategoryId(parentCategoryId);
+                displayInfoStore.changeProductPageOpenStatus(true);
+            }
+            return;
+        }
+        const subCategories = dataStore.categories.find(x => x.parentCategory === parentCategoryId);
+        if (subCategories === undefined) {
+            dataStore.displayedCategories = [];
+            console.log(displayInfoStore.adminPanelsOn);
+            if (!displayInfoStore.adminPanelsOn) {
+                await productStore.displayProductsByCategoryId(parentCategoryId);
+                displayInfoStore.changeProductPageOpenStatus(true);
+            }
+            return;
+        }
+        dataStore.displayedCategories = dataStore.categories.filter(x => x.parentCategory === parentCategoryId);
     }
 
     const pickItem = async (productId: string) => {
@@ -175,6 +202,7 @@ export const useSessionStore = defineStore('sessionStore', () => {
             return;
         }
         pickedItem.value = product;
+        addToHistory(pickedItem.value.id);
         displayInfoStore.resetAll()
         displayInfoStore.changeProductFullInfoStatus(true);
     }

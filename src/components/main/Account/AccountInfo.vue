@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { useSessionStore, useOrderRecordStore } from '@storage';
+import { useSessionStore, useOrderRecordStore, useDisplayInfoStore } from '@storage';
 import { onMounted, ref } from 'vue';
 import InputField from '../General/InputField.vue';
 import Order from '../Order/Order.vue';
 import ChangePassword from './ChangePassword.vue';
 const sessionStore = useSessionStore();
 const orderStore = useOrderRecordStore();
+const displayInfoStore = useDisplayInfoStore();
 
 const userName = ref<string>("");
 onMounted(async () => {
@@ -42,12 +43,15 @@ const openOrders = () => {
 
 const openAllOrders = () => {
     changePassRequired.value = false;
-
     orderStore.loadOrdersPart();
 }
 
 const oneMore = async () => {
     await orderStore.loadOrdersPart();
+}
+
+const switchAdminPanelsStatus = () => {
+    displayInfoStore.changeAdminPanelStatus();
 }
 
 </script>
@@ -79,6 +83,10 @@ const oneMore = async () => {
 
                 <button v-if="sessionStore.currUser?.isAdmin" @click="openAllOrders">
                     <span class="text-large">Open All Orders</span>
+                </button>
+
+                <button v-if="sessionStore.currUser?.isAdmin" @click="switchAdminPanelsStatus">
+                    <span class="text-large">Switch admin panels status</span>
                 </button>
             </div>
             <div v-if="!changePassRequired" class="section">

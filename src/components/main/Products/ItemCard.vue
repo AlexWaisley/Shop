@@ -22,7 +22,7 @@ onMounted(async () => {
     file.value = url[0];
 })
 
-watch(props.info, async () => {
+watch(() => props.info, async () => {
     const temp = await imageStore.getProductImages(props.info.id);
     const url = await imageStore.getImageUrl(temp);
     file.value = url[0];
@@ -44,7 +44,7 @@ watch(props.info, async () => {
             </div>
             <div class="info">
                 <div class="cost">
-                    <span class="text-large-bold">{{ props.info.price.toFixed(2) }}$</span>
+                    <span class="text-large-bold">{{ props.info.price }}$</span>
                 </div>
                 <button :disabled="cartStore.isItemInCart(props.info.id)" @click="cartStore.addToCart(props.info.id, 1)"
                     class="buy-button">

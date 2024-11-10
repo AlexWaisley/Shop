@@ -1,20 +1,27 @@
 <script setup lang="ts">
 import { Product } from '@models';
-import ImageBlock from '../Item/ImageBlock.vue';
+import ImageBlockAdmin from './ImageBlockAdmin.vue';
 import SpecsBlock from '../Item/SpecsBlock.vue';
-import { useSessionStore, useCartStore, useCreatingStore, useProductStore } from '@storage';
-import { onMounted, ref } from 'vue';
+import { useSessionStore, useCartStore, useCreatingStore, useProductStore, useDataStore, useDisplayInfoStore } from '@storage';
+import { onMounted, ref, watch } from 'vue';
+import AvailabilityStatusWindow from './AvailabilityStatusWindow.vue';
 const sessionStore = useSessionStore();
 const createStore = useCreatingStore();
 const productStore = useProductStore();
 const cartStore = useCartStore();
+const dataStore = useDataStore();
 const fullProductInfo = ref<Product | null>(null);
 
 const id = sessionStore.pickedItem?.id;
+const availabilityStatus = ref<boolean>(false);
+const temp = ref<Product | null>(null);
+const displayInfo = useDisplayInfoStore()
 
 onMounted(async () => {
-    if (id !== undefined)
-        fullProductInfo.value = await productStore.getFullProductById(id);
+    if (id !== undefined) {
+        temp.value = await productStore.getFullProductById(id);
+        fullProductInfo.value = JSON.parse(JSON.stringify(temp.value));
+    }
 })
 
 const submitProductChanges = () => {
@@ -25,15 +32,41 @@ const submitProductChanges = () => {
             description: fullProductInfo.value.description,
             isAvailable: fullProductInfo.value.isAvailable,
             price: fullProductInfo.value.price,
+            categoryId: fullProductInfo.value.categoryId
         });
+
+    displayInfo.changeIsEditItem(false);
 }
 
+const switchAvailabilityStatus = () => {
+    availabilityStatus.value = !availabilityStatus.value;
+}
+
+const changeStatus = (status: string) => {
+    if (fullProductInfo.value === null) {
+        return;
+    }
+    if (status === "Available") {
+        fullProductInfo.value.isAvailable = true;
+    }
+    if (status === "Not available") {
+        fullProductInfo.value.isAvailable = false;
+    }
+    switchAvailabilityStatus();
+}
+
+watch(() => productStore.productsFullInfo, async () => {
+    if (id !== undefined) {
+        temp.value = await productStore.getFullProductById(id);
+        fullProductInfo.value = JSON.parse(JSON.stringify(temp.value));
+    }
+}, { immediate: true, deep: true })
 </script>
 <template>
     <div v-if="fullProductInfo !== null" class="item-container">
         <div class="item">
             <div class="image-container">
-                <ImageBlock :full-info="fullProductInfo"></ImageBlock>
+                <ImageBlockAdmin :full-info="fullProductInfo"></ImageBlockAdmin>
             </div>
             <div class="fast-info">
                 <div class="name-container">
@@ -43,10 +76,16 @@ const submitProductChanges = () => {
                     <div class="price-container">
                         <input type="text" v-model="fullProductInfo.price" />
                     </div>
-                    <button :disabled="cartStore.isItemInCart(fullProductInfo.id)"
-                        @click="cartStore.addToCart(fullProductInfo.id, 1)" class="buy-button">
-                        <span class="text-large-bold">Buy</span>
+                    <button :disabled="cartStore.isItemInCart(fullProductInfo.id)" @click="switchAvailabilityStatus"
+                        class="buy-button">
+                        <span class="text-large-bold">Change availability</span>
                     </button>
+
+                    <select v-model="fullProductInfo.categoryId">
+                        <option v-for="value in dataStore.categories" :key="value.id" :value="value.id">
+                            {{ value.name }}
+                        </option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -61,6 +100,9 @@ const submitProductChanges = () => {
         <div @click="submitProductChanges" class="submit-btn">
             <span class="text-large">Submit changes</span>
         </div>
+        <Teleport v-if="availabilityStatus" to="body">
+            <AvailabilityStatusWindow @status-changed="changeStatus"></AvailabilityStatusWindow>
+        </Teleport>
     </div>
 </template>
 <style scoped lang="scss">

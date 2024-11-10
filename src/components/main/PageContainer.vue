@@ -10,6 +10,7 @@ import { computed, shallowRef, watch } from 'vue';
 import Cart from './Cart/Cart.vue';
 import Account from './Account/Account.vue';
 import ItemAdmin from './Admin/ItemAdmin.vue';
+import ProductsAdmin from './Admin/ProductsAdmin.vue';
 
 const currPage = shallowRef(Home);
 
@@ -20,6 +21,9 @@ function updatePage() {
             break;
         case displayInfoStore.productFullInfoPageStatus:
             currPage.value = Item;
+            break;
+        case displayInfoStore.productPageOpen && displayInfoStore.adminPanelsOn:
+            currPage.value = ProductsAdmin;
             break;
         case displayInfoStore.productPageOpen:
             currPage.value = Products;

@@ -1,24 +1,28 @@
-import { Category } from "./Category";
-import { User } from "./User";
-import { UserLoginRequest } from "./requests/UserLoginRequest";
-import { UserRegisterRequest } from "./requests/UserRegisterRequest";
-import { CategoryCreateRequest } from "./requests/CategoryCreateRequest";
-import { ProductCreateRequest } from "./requests/ProductCreateRequest";
-import { UserUpdateInfoRequest } from "./requests/UserUpdateInfoRequest";
-import { UserPasswordUpdateRequest } from "./requests/UserPasswordUpdateRequest";
-import { ProductDto } from "./ProductDto";
-import { Product } from "./Product";
-import { ProductImage } from "./ProductImage";
-import { CartDto } from "./CartDto";
-import { CartItemDto } from "./CartItemDto";
-import { OrderDto } from "./OrderDto";
-import { OrderFull } from "./OrderFull";
-import { OrderItemDto } from "./OrderItemDto";
+import { Category } from "./Category/Category";
+import { User } from "./User/User";
+import { UserLoginRequest } from "./User/UserLoginRequest";
+import { UserRegisterRequest } from "./User/UserRegisterRequest";
+import { CategoryCreateRequest } from "./Category/CategoryCreateRequest";
+import { ProductCreateRequest } from "./Product/ProductCreateRequest";
+import { UserUpdateInfoRequest } from "./User/UserUpdateInfoRequest";
+import { UserPasswordUpdateRequest } from "./User/UserPasswordUpdateRequest";
+import { ProductDto } from "./Product/ProductDto";
+import { Product } from "./Product/Product";
+import { ProductImage } from "./Product/ProductImage";
+import { CartDto } from "./Cart/CartDto";
+import { CartItemDto } from "./Cart/CartItemDto";
+import { OrderDto } from "./Order/OrderDto";
+import { OrderFull } from "./Order/OrderFull";
+import { OrderItemDto } from "./Order/OrderItemDto";
 import { ShippingAddress } from "./ShippingAddress";
-import { PreviewCreateRequest } from "./requests/PreviewCreateRequest";
-import { ProductUpdateRequest } from "./requests/ProductUpdateRequest";
+import { ProductPreviewCreateRequest } from "./Product/ProductPreviewCreateRequest";
+import { ProductUpdateRequest } from "./Product/ProductUpdateRequest";
 import { PreviewImage } from "./PreviewImage";
-import { CartItemAddRequest } from "./requests/CartItemAddRequest";
+import { CartItemAddRequest } from "./Cart/CartItemAddRequest";
+import { CategoryPreviewCreateRequest } from "./Category/CategoryPreviewCreateRequest ";
+import { CategoryImage } from "./Category/CategoryImage";
+import { CategoryUpdateRequest } from "./Category/CategoryUpdateRequest";
+import { CategoryPreviewUpdateRequest } from "./Category/CategoryPreviewUpdateRequest";
 
 
 export type {
@@ -39,10 +43,14 @@ export type {
     OrderFull,
     OrderItemDto,
     ShippingAddress,
-    PreviewCreateRequest,
     ProductUpdateRequest,
     PreviewImage,
     CartItemAddRequest,
+    ProductPreviewCreateRequest,
+    CategoryPreviewCreateRequest,
+    CategoryImage,
+    CategoryUpdateRequest,
+    CategoryPreviewUpdateRequest
 
 
 };

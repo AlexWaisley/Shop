@@ -5,5 +5,6 @@ export type ProductUpdateRequest = {
     name: string,
     description: string,
     price: Decimal,
-    isAvailable: boolean
+    isAvailable: boolean,
+    categoryId: number,
 }

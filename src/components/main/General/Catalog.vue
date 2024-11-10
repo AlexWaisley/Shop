@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useDataStore, useSessionStore } from '@storage';
+import { useDataStore, useDisplayInfoStore, useSessionStore } from '@storage';
 import AddNewCategoryForm from '../Admin/AddForms/NewCategory.vue';
 
 const sessionStore = useSessionStore();
+const displayInfoStore = useDisplayInfoStore();
 const dataStore = useDataStore();
 
 const showCategories = ref<boolean>(true);
@@ -18,13 +19,14 @@ const changeCategoriesShowStatus = () => {
 }
 
 </script>
+
 <template>
     <div class="catalog">
         <div @click="changeCategoriesShowStatus" class="head">
             <span class="text-large-bold">Catalog</span>
         </div>
         <div v-if="showCategories" class="category-container">
-            <div v-if="sessionStore.isCurrUserAdmin()" @click="changeAddNewCategoryShowStatus" class="add-button">
+            <div v-if="displayInfoStore.adminPanelsOn" @click="changeAddNewCategoryShowStatus" class="add-button">
                 <img src="/cross.svg" alt="add new category">
             </div>
             <div v-for="value in dataStore.rootCategories" @click="sessionStore.pickCategory(value)" class="category">
@@ -39,6 +41,7 @@ const changeCategoriesShowStatus = () => {
         </Teleport>
     </div>
 </template>
+
 <style scoped lang="scss">
 .catalog {
     max-width: 250px;

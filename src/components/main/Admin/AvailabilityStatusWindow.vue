@@ -1,45 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useCreatingStore, usePreviewImagesStore } from '@storage';
-import { useFileDialog } from '@vueuse/core';
-
-const props = defineProps<{
-    id: string,
-}>();
 
 const emits = defineEmits<{
-    (e: 'close'): void,
-    (e: 'added'): void
+    (e: 'statusChanged', status: string): void
 }>();
 
-const creatingStore = useCreatingStore();
-
-const { files, open, reset, onCancel, onChange } = useFileDialog()
-
-const addNewPhoto = async () => {
-    const file = ref<File | null>(null);
-
-    files.value && files.value[0] && (file.value = files.value[0]);
-    if (!file.value) {
-        alert('Please select a file first.');
-        return;
-    }
-    const formData = new FormData();
-    formData.append('formFile', file.value);
-
-    await creatingStore.AddNewProductPhoto(props.id, formData);
-
-    emits('added');
+const setStatus = async (status: string) => {
+    emits('statusChanged', status);
 }
-
 </script>
 <template>
     <div class="container">
         <div class="form-container">
-            <form @submit.prevent="addNewPhoto" class="form">
-                <button type="button" @click="open()">Choose file</button>
-                <button type="submit">Add</button>
-            </form>
+            <div class="form">
+                <button @click="setStatus('Available')">Available</button>
+                <button @click="setStatus('Not available')">Not available</button>
+            </div>
         </div>
     </div>
 </template>

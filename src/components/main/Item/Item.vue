@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Product } from '@models';
-import ImageBlock from '../Item/ImageBlock.vue';
-import SpecsBlock from '../Item/SpecsBlock.vue';
+import ImageBlock from './ImageBlock.vue';
+import SpecsBlock from './SpecsBlock.vue';
 import { useSessionStore, useCartStore, useDisplayInfoStore, useProductStore } from '@storage';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 const sessionStore = useSessionStore();
 const productStore = useProductStore();
 const cartStore = useCartStore();
@@ -21,6 +21,11 @@ const editItem = () => {
     displayInfo.changeIsEditItem(true);
 }
 
+watch(() => productStore.productsFullInfo, async () => {
+    if (id !== undefined) {
+        fullProductInfo.value = await productStore.getFullProductById(id);
+    }
+}, { immediate: true, deep: true })
 </script>
 <template>
     <div v-if="fullProductInfo !== null" class="item-container">
@@ -36,7 +41,7 @@ const editItem = () => {
                     <div class="price-container">
                         <span class="text-large">{{ fullProductInfo.price }}$</span>
                     </div>
-                    <button :disabled="cartStore.isItemInCart(fullProductInfo.id)"
+                    <button :disabled="cartStore.isItemInCart(fullProductInfo.id) || !fullProductInfo.isAvailable"
                         @click="cartStore.addToCart(fullProductInfo.id, 1)" class="buy-button">
                         <span class="text-large-bold">Buy</span>
                     </button>
@@ -49,7 +54,7 @@ const editItem = () => {
                 <SpecsBlock></SpecsBlock>
             </div>
         </div>
-        <div @click="editItem" v-if="sessionStore.isCurrUserAdmin()" class="edit-item-button">
+        <div @click="editItem" v-if="displayInfo.adminPanelsOn" class="edit-item-button">
             <span class="text-large">edit</span>
         </div>
     </div>

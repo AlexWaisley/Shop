@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { useDataStore } from '@storage';
+import { onMounted } from 'vue';
 
 const dataStore = useDataStore();
+onMounted(async () => {
+    await dataStore.loadShippingAddresses();
+})
 </script>
 
 <template>
@@ -21,7 +25,7 @@ const dataStore = useDataStore();
                 <div class="info">
                     <div class="tag"><span class="text-large-bold">Address</span></div>
                     <div class="content">
-                        <span v-for=" value in dataStore.shippingAddresses" class="text-default-bold">
+                        <span v-for="value in dataStore.shippingAddresses" class="text-default-bold">
                             {{ value.street }},
                             {{ value.house }}</span>
                     </div>

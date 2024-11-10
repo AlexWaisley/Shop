@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useCartStore, usePreviewImagesStore, useProductStore, useSessionStore } from '@storage';
 import { CartItemDto, ProductDto } from '@models';
 import Decimal from 'decimal.js';
@@ -20,7 +20,6 @@ const totalCost = computed<Decimal>(() => {
     if (product.value === null) {
         return new Decimal(1);
     }
-
     return new Decimal(product.value.price).times(new Decimal(quantity.value));
 });
 
@@ -46,8 +45,25 @@ onMounted(async () => {
         const previewUrl = await imageStore.loadPreview(preview.imageId);
         if (previewUrl !== null)
             file.value = previewUrl;
-
     }
+})
+
+watch(() => props.info, async () => {
+    if (imageStore.productsPreviews === null) {
+        await imageStore.LoadProductsPreviews(props.info.productId);
+    }
+    if (imageStore.productsPreviews !== null && imageStore.productsPreviews.length < 1) {
+        await imageStore.LoadProductsPreviews(props.info.productId);
+    }
+    if (imageStore.productsPreviews !== null) {
+        const preview = imageStore.productsPreviews.filter(x => x.productId === props.info.productId)[0];
+        if (preview === undefined)
+            return;
+        const previewUrl = await imageStore.loadPreview(preview.imageId);
+        if (previewUrl !== null)
+            file.value = previewUrl;
+    }
+    product.value = productStore.getProductById(props.info.productId);
 })
 
 

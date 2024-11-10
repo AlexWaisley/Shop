@@ -13,7 +13,6 @@ const emits = defineEmits<{
 const itemName = ref<string>("");
 const description = ref<string>("");
 const price = ref<string>("");
-const imageUrl = ref<string>("");
 
 const parentCategoryId = computed<number>(() => {
     if (sessionStore.pickedCategories === null || sessionStore.pickedCategories.length === 0) {
@@ -27,8 +26,7 @@ const addNewCategory = () => {
         name: itemName.value,
         description: description.value,
         price: new Decimal(price.value),
-        categoryId: parentCategoryId.value,
-        previews: []
+        categoryId: parentCategoryId.value
     });
     emits('close');
 }
@@ -40,7 +38,6 @@ const addNewCategory = () => {
                 <InputField v-model="itemName" type="text" placeholder="Product name"></InputField>
                 <InputField v-model="description" type="text" placeholder="Description"></InputField>
                 <InputField v-model="price" type="text" placeholder="Price"></InputField>
-                <InputField v-model="imageUrl" type="text" placeholder="Product image url"></InputField>
                 <div class="buttons-container">
                     <button type="reset" @click="$emit('close')">Cancel</button>
                     <button type="submit">Submit</button>

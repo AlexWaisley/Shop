@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { usePreviewImagesStore } from '@storage';
 import { onMounted, ref } from 'vue';
+import AddNewPhoto from '@main/Admin/AddForms/NewPhoto.vue';
 import { Product, ProductImage } from '@models';
+
 
 const props = defineProps<{
     fullInfo: Product
@@ -9,9 +11,9 @@ const props = defineProps<{
 
 const imageStore = usePreviewImagesStore();
 
+
 const img = ref<ProductImage[] | null>(null);
 const files = ref<string[] | null>(null);
-
 
 const mainPhotoIndex = ref<number>(0);
 
@@ -46,10 +48,33 @@ const pickMainPhoto = (index: number) => {
     mainPhotoIndex.value = index;
 }
 
+const changeAddNewPhotoStatus = () => {
+    isAddNewPhoto.value = !isAddNewPhoto.value;
+}
+
 onMounted(async () => {
     await imageStore.LoadProductsPreviews(props.fullInfo.id);
     await updatePreviews();
 });
+
+const previewAdded = async () => {
+    await updatePreviews();
+    if (files.value === null)
+        return;
+    mainPhotoIndex.value = files.value.length - 1;
+}
+
+const deleteCurrImage = async () => {
+    if (files.value === null || imageStore.previews === null)
+        return;
+    const image = files.value[mainPhotoIndex.value];
+    const imageId = imageStore.previews.find(x => x.url === image);
+    if (imageId === undefined)
+        return
+    await imageStore.deleteProductImage(imageId.id);
+    previousPicture();
+    await updatePreviews();
+}
 
 </script>
 <template>
@@ -66,12 +91,21 @@ onMounted(async () => {
             <div class="image-container">
                 <img v-if="files !== null" :src="files[mainPhotoIndex]" type="file" alt="Stuff image" class="preview">
             </div>
+            <div @click="deleteCurrImage" class="delete-button">
+                <img src="/cross.svg" alt="Delete image" class="add_preview">
+            </div>
         </div>
         <div class="all-pictures">
+            <div @click="changeAddNewPhotoStatus" class="add-container">
+                <img src="/cross.svg" alt="Add image" class="add_preview">
+            </div>
             <div v-for="(imageSrc, index) in files" @click="pickMainPhoto(index)" class="image-container-small">
                 <img :src="imageSrc" alt="preview" class="preview">
             </div>
         </div>
+        <Teleport v-if="isAddNewPhoto" to="body">
+            <AddNewPhoto @added="previewAdded" :id="fullInfo.id" @close="changeAddNewPhotoStatus"></AddNewPhoto>
+        </Teleport>
     </div>
 </template>
 <style scoped lang="scss">
@@ -92,6 +126,11 @@ onMounted(async () => {
         position: relative;
         align-items: center;
         justify-content: center;
+
+        & .delete-button {
+            position: absolute;
+            z-index: 20;
+        }
 
         & .switches {
             position: absolute;

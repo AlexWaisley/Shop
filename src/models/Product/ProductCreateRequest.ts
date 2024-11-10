@@ -4,6 +4,5 @@ export type ProductCreateRequest = {
     name: string,
     categoryId: number,
     price: Decimal,
-    description: string,
-    previews: string[]
+    description: string
 }

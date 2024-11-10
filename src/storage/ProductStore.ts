@@ -1,6 +1,7 @@
 import {
     Product,
-    ProductDto
+    ProductDto,
+    ProductUpdateRequest
 } from "@models";
 import { StorageSerializers, useLocalStorage } from "@vueuse/core";
 import Decimal from "decimal.js";
@@ -41,24 +42,45 @@ export const useProductStore = defineStore('productStore', () => {
     }
 
     const displayProductsByCategoryId = async (categoryId: number) => {
-        let counter = 10;
+        let counter = 0;
         if (products.value === null || products.value.length === 0) {
             products.value = [];
             await loadProducts(categoryId);
         }
 
-        const product = products.value.filter((p) => p.categoryId === categoryId);
+        let product = products.value.filter((p) => p.categoryId === categoryId);
         while (product.length < 20 && counter < 10) {
             await loadProducts(categoryId);
             counter++;
         }
-
+        product = products.value.filter((p) => p.categoryId === categoryId);
         displayedProducts.value = product;
         displayStore.resetAll();
         displayStore.changeProductPageOpenStatus(true);
 
         return product;
     }
+
+    const updateProduct = async (productInfo: ProductUpdateRequest) => {
+        if (products.value === null || productsFullInfo.value === null) return;
+
+        const index = products.value.findIndex(x => x.id === productInfo.id);
+        if (index >= 0) {
+            products.value.splice(index, 1);
+        }
+
+        const fullInfoIndex = productsFullInfo.value.findIndex(x => x.id === productInfo.id);
+        if (fullInfoIndex >= 0) {
+            productsFullInfo.value.splice(fullInfoIndex, 1);
+            if (fullInfoIndex === 0 && productsFullInfo.value.length === 1) {
+                productsFullInfo.value = [];
+            }
+        }
+
+        await loadProducts(productInfo.categoryId);
+        await getFullProductById(productInfo.id);
+    };
+
 
     const getProductPriceById = (id: string): Decimal => {
         if (products.value === null || products.value.length === 0) {
@@ -93,6 +115,7 @@ export const useProductStore = defineStore('productStore', () => {
         }
 
         const product = productsFullInfo.value.find((p) => p.id === id);
+
         if (product === undefined) {
             const result = await productsApi.GetProductInfoById(id);
             if (result === null) {
@@ -113,7 +136,7 @@ export const useProductStore = defineStore('productStore', () => {
             offset.value = products.value.filter(x => x.categoryId === categoryId).length;
         }
 
-        const result = await productsApi.GetProductsByCategoryId(categoryId, 20, offset.value);
+        const result = await productsApi.GetProductsByCategoryId(categoryId, 20, 0);
         if (result === null) {
             return;
         }
@@ -147,6 +170,7 @@ export const useProductStore = defineStore('productStore', () => {
         getFullProductById,
         getProductById,
         displayedProducts,
-        displayProductsByCategoryId
+        displayProductsByCategoryId,
+        updateProduct
     };
 })

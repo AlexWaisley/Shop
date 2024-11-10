@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import InputField from '@main/General/InputField.vue';
-import { useCreatingStore } from '@storage';
+import { useCreatingStore, useDataStore } from '@storage';
+import AddPhoto from './AddPhoto.vue';
 const props = defineProps<{
     parentCategoryId: number
 }>();
@@ -9,20 +10,30 @@ const emits = defineEmits<{
     (e: 'close'): void
 }>();
 const creatingStore = useCreatingStore();
+const dataStore = useDataStore();
 const categoryName = ref<string>("");
-const imageUrl = ref<string>("");
+const file = ref<FormData | null>(null);
 
-const addNewCategory = () => {
-    creatingStore.AddNewCategory({ name: categoryName.value, imageUrl: imageUrl.value, parentCategoryId: props.parentCategoryId });
+const addNewCategory = async () => {
+    await creatingStore.AddNewCategory({ name: categoryName.value, parentCategoryId: props.parentCategoryId });
+    const category = dataStore.findCategoryByName(categoryName.value);
+    if (category !== null && file.value !== null) {
+        creatingStore.AddNewCategoryPhoto(category.id, file.value);
+    }
     emits('close');
 }
+
+const updateFile = (fileForm: FormData) => {
+    file.value = fileForm;
+}
 </script>
+
 <template>
     <div class="container">
         <div class="form-container">
             <form @submit.prevent="addNewCategory" class="form">
                 <InputField v-model="categoryName" type="text" placeholder="Category name"></InputField>
-                <InputField v-model="imageUrl" type="text" placeholder="Category image url"></InputField>
+                <AddPhoto @file-changed="updateFile"></AddPhoto>
                 <div class="buttons-container">
                     <button type="reset" @click="$emit('close')">Cancel</button>
                     <button type="submit">Submit</button>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import ItemCard from './ItemCard.vue';
+import ItemCard from '@main/Products/ItemCard.vue';
 import Catalog from '../General/Catalog.vue';
 import { useDataStore, useProductStore, useSessionStore } from '@storage';
 import { ProductDto } from '@models';
 import { ref, watch } from 'vue';
+import AddNewItem from './AddForms/NewItem.vue';
 
 const sessionStore = useSessionStore();
 const dataStore = useDataStore();
@@ -15,10 +16,17 @@ watch(() => productStore.displayedProducts, (newVal) => {
     items.value = newVal;
 }, { immediate: true });
 
+const addNewItem = ref<boolean>(false);
+
+const changeAddNewItemShowStatus = () => {
+    addNewItem.value = !addNewItem.value;
+}
+
 const oneMore = async () => {
     if (sessionStore.pickedCategories !== null)
         await dataStore.loadCategories(sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id);
 }
+
 </script>
 <template>
     <div class="products-container">
@@ -27,13 +35,19 @@ const oneMore = async () => {
             <div class="filter-container"></div>
         </div>
         <div class="products">
+            <div @click="changeAddNewItemShowStatus" class="add-button">
+                <img src="/cross.svg" alt="add new category">
+            </div>
             <ItemCard v-if="items !== null && items.length !== 0" v-for="value in items" :info="value"></ItemCard>
-            <span v-else class="text-large">Sorry, there doesn't seem to be
-                anything like that</span>
-            <div v-if="items && items.length % 20 === 0 && items.length !== 0" @click="oneMore" class="loader-button">
+            <div v-if="items !== null && items.length % 20 === 0 && items.length !== 0" @click="oneMore"
+                class="loader-button">
                 <span class="text-large">Load more</span>
             </div>
         </div>
+        <Teleport v-if="addNewItem" to="body">
+            <AddNewItem @close="changeAddNewItemShowStatus">
+            </AddNewItem>
+        </Teleport>
     </div>
 </template>
 <style scoped lang="scss">

@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import Catalog from '../General/Catalog.vue';
 import Main from './Main.vue';
-import SubCategories from '../Subcategories/Subcategories.vue';
+import Subcategories from '../Subcategories/Subcategories.vue';
+import SubcategoriesAdmin from '@main/Admin/SubcategoriesAdmin.vue';
 
 import { computed, shallowRef, watch } from 'vue';
-import { useSessionStore } from '@storage';
+import { useDisplayInfoStore, useSessionStore } from '@storage';
 
 const sessionStore = useSessionStore();
 const currMain = shallowRef(Main);
+const displayInfoStore = useDisplayInfoStore();
 
 const hasPickedCategories = computed(() => (sessionStore.pickedCategories?.length || 0) > 0);
 
 watch(hasPickedCategories, () => {
-    if (hasPickedCategories.value)
-        currMain.value = SubCategories;
+    if (hasPickedCategories.value && !displayInfoStore.adminPanelsOn)
+        currMain.value = Subcategories;
+    else if (hasPickedCategories.value && displayInfoStore.adminPanelsOn)
+        currMain.value = SubcategoriesAdmin;
     else
         currMain.value = Main;
 }, { immediate: true });

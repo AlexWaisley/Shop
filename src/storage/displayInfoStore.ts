@@ -1,5 +1,8 @@
+import { StorageSerializers, useLocalStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import toastr from "toastr";
+
 
 export const useDisplayInfoStore = defineStore('displayInfo', () => {
     const productPageOpen = ref<boolean>(false);
@@ -8,6 +11,7 @@ export const useDisplayInfoStore = defineStore('displayInfo', () => {
     const accountInfoStatus = ref<boolean>(false);
     const homeStatus = ref<boolean>(false);
     const productFullInfoPageStatus = ref<boolean>(false);
+    const adminPanelsOn = useLocalStorage<boolean>("adminPanelsOn", false, { serializer: StorageSerializers.object });
 
     const changeProductPageOpenStatus = (newStatus: boolean) => {
         productPageOpen.value = newStatus;
@@ -33,6 +37,13 @@ export const useDisplayInfoStore = defineStore('displayInfo', () => {
         productFullInfoPageStatus.value = newStatus;
     }
 
+    const changeAdminPanelStatus = () => {
+        adminPanelsOn.value = !adminPanelsOn.value;
+        const mode = adminPanelsOn.value ? "on" : "off";
+        const info = "Edit mode " + mode;
+        toastr.info(info);
+    }
+
     const resetAll = () => {
         productPageOpen.value = false;
         isEditItemPage.value = false;
@@ -50,12 +61,14 @@ export const useDisplayInfoStore = defineStore('displayInfo', () => {
         homeStatus,
         productFullInfoPageStatus,
         isEditItemPage,
+        adminPanelsOn,
         changeProductPageOpenStatus,
         changeIsEditItem,
         changeAccountInfoStatus,
         changeCartStatus,
         changeHomeStatus,
         changeProductFullInfoStatus,
-        resetAll
+        resetAll,
+        changeAdminPanelStatus
     }
 })

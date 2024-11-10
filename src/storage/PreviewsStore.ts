@@ -1,11 +1,12 @@
-import { PreviewImage, ProductImage } from "@models";
-import { StorageSerializers, useLocalStorage } from "@vueuse/core";
+import { CategoryImage, PreviewImage, ProductImage } from "@models";
+/* import { StorageSerializers, useLocalStorage } from "@vueuse/core"; */
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { imagesApi } from "@api/index";
 
 export const usePreviewImagesStore = defineStore('previewStore', () => {
     const productsPreviews = ref<ProductImage[] | null>(null);
+    const categoriesPreviews = ref<CategoryImage[] | null>(null);
     /* const previews = useLocalStorage<PreviewImage[] | null>('previews', null, { serializer: StorageSerializers.object }); */
     const previews = ref<PreviewImage[] | null>(null);
 
@@ -13,16 +14,57 @@ export const usePreviewImagesStore = defineStore('previewStore', () => {
         if (productsPreviews.value === null) {
             productsPreviews.value = [];
         }
-        const previews = await imagesApi.GetProductPreviewsById(id, 20, productsPreviews.value.filter(x => x.productId === id).length);
+        const loadedPreviews = await imagesApi.GetProductPreviewsById(id, 20, 0/* productsPreviews.value.filter(x => x.productId === id).length - 1 */);
 
-        if (previews !== null) {
-            previews.sort((a, b) => a.imageId - b.imageId);
+        if (loadedPreviews !== null) {
+            loadedPreviews.sort((a, b) => a.imageId - b.imageId);
             const map = new Map<number, ProductImage>();
 
-            [...productsPreviews.value, ...previews].forEach(item => {
+            [...productsPreviews.value, ...loadedPreviews].forEach(item => {
                 map.set(item.imageId, item);
             });
             productsPreviews.value = Array.from(map.values());
+        }
+    }
+
+    const LoadCategoriesPreviews = async (id: number) => {
+        if (categoriesPreviews.value === null) {
+            categoriesPreviews.value = [];
+        }
+
+        const loadedPreview = categoriesPreviews.value.find(x => x.categoryId === id);
+
+        if (loadedPreview !== undefined)
+            return loadedPreview;
+
+        const previews = await imagesApi.GetCategoryPreviewsById(id);
+
+        if (previews !== null) {
+            previews.sort((a, b) => a.imageId - b.imageId);
+            const map = new Map<number, CategoryImage>();
+
+            [...categoriesPreviews.value, ...previews].forEach(item => {
+                map.set(item.imageId, item);
+            });
+            categoriesPreviews.value = Array.from(map.values());
+        }
+    }
+
+    const loadCategoryPreviewByCategoryId = async (id: number) => {
+        if (categoriesPreviews.value === null) {
+            categoriesPreviews.value = [];
+        }
+
+        const previews = await imagesApi.GetCategoryPreviewsById(id);
+
+        if (previews !== null) {
+            previews.sort((a, b) => a.imageId - b.imageId);
+            const map = new Map<number, CategoryImage>();
+
+            [...categoriesPreviews.value, ...previews].forEach(item => {
+                map.set(item.imageId, item);
+            });
+            categoriesPreviews.value = Array.from(map.values());
         }
     }
 
@@ -42,7 +84,7 @@ export const usePreviewImagesStore = defineStore('previewStore', () => {
         return result;
     }
 
-    const getImageUrl = async (temp: ProductImage[]): Promise<string[]> => {
+    const getImageUrl = async (temp: (ProductImage | CategoryImage)[]): Promise<string[]> => {
         const files = ref<string[]>([]);
 
         for (const x of temp) {
@@ -67,7 +109,37 @@ export const usePreviewImagesStore = defineStore('previewStore', () => {
         if (productsPreviews.value === null || productsPreviews.value.length === 0) {
             return [];
         }
+
+        await LoadProductsPreviews(id);
+
         return productsPreviews.value.filter(x => x.productId === id);
+    }
+
+    const deleteProductImage = async (id: number) => {
+        if (productsPreviews.value === null)
+            return
+
+        await imagesApi.DeleteProductPhoto(id);
+
+        const index = productsPreviews.value.findIndex(x => x.imageId === id);
+        if (index !== undefined) {
+            productsPreviews.value.splice(index, 1);
+            if (index === 0 && productsPreviews.value.length === 1)
+                productsPreviews.value = [];
+        }
+    }
+
+    const getCategoryImages = async (id: number): Promise<CategoryImage[]> => {
+        if (categoriesPreviews.value === null) {
+            await LoadCategoriesPreviews(id);
+        }
+        if (categoriesPreviews.value !== null && categoriesPreviews.value.length < 1) {
+            await LoadCategoriesPreviews(id);
+        }
+        if (categoriesPreviews.value === null || categoriesPreviews.value.length === 0) {
+            return [];
+        }
+        return categoriesPreviews.value.filter(x => x.categoryId === id);
     }
 
 
@@ -76,7 +148,12 @@ export const usePreviewImagesStore = defineStore('previewStore', () => {
         productsPreviews,
         loadPreview,
         previews,
+        categoriesPreviews,
         getImageUrl,
-        getProductImages
+        getProductImages,
+        LoadCategoriesPreviews,
+        getCategoryImages,
+        loadCategoryPreviewByCategoryId,
+        deleteProductImage
     };
 })
