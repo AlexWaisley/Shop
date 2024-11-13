@@ -38,7 +38,7 @@ const switchMenuStatusChange = () => {
 
 <template>
     <div class="subcategory-card-container">
-        <div @click="switchMenuStatusChange" class="edit-btn">
+        <div @click="switchMenuStatusChange" class="edit-button">
             <img src="/dots.svg" alt="Edit">
         </div>
         <div @click="sessionStore.pickCategory(props.info)" class="image-container">
@@ -74,6 +74,7 @@ const switchMenuStatusChange = () => {
     border-radius: 15px;
     box-shadow: 3px 3px 3px rgb(55, 230, 230);
     transition: all .5s ease;
+    position: relative;
 
     & .image-container {
         max-height: 200px;
@@ -97,6 +98,23 @@ const switchMenuStatusChange = () => {
             display: flex;
             width: 100%;
             justify-content: space-around;
+        }
+    }
+
+    & .edit-button {
+        position: absolute;
+        top: 10px;
+        right: 5px;
+        z-index: 5;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 3px;
+        transition: background-color .3s ease;
+
+        &:hover {
+            background-color: rgb(100, 171, 199);
         }
     }
 

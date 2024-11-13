@@ -34,7 +34,7 @@ const changeQuantity = async (id: string, quantity: number, productId: string) =
 
 </script>
 <template>
-    <div v-if="isBucketContainsItems" class="bucket-container">
+    <div v-if="isBucketContainsItems" class="cart-container">
         <div class="products-list">
             <ProductCard @change-quantity="changeQuantity" v-for="value in cartStore.cart!.items" :info="value"
                 :is-quantity-fixed="false">
@@ -70,7 +70,7 @@ const changeQuantity = async (id: string, quantity: number, productId: string) =
 
 </template>
 <style scoped lang="scss">
-.bucket-container {
+.cart-container {
     display: grid;
     grid-template-columns: 1fr 400px;
 

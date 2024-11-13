@@ -130,6 +130,19 @@ const deleteCurrImage = async () => {
         & .delete-button {
             position: absolute;
             z-index: 20;
+            top: 10px;
+            right: 20px;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            border-radius: 50%;
+            align-items: center;
+            transition: background-color .3s ease;
+
+            &:hover {
+                background-color: rgb(162, 210, 252);
+                cursor: pointer;
+            }
         }
 
         & .switches {
@@ -201,8 +214,8 @@ const deleteCurrImage = async () => {
         }
 
         & .image-container-small {
-            width: 80px;
-            max-height: 80px;
+            min-width: 80px;
+            min-height: 80px;
             border-radius: 7px;
             overflow: hidden;
             border: 1px solid transparent;
@@ -222,7 +235,5 @@ const deleteCurrImage = async () => {
         }
 
     }
-
-
 }
 </style>

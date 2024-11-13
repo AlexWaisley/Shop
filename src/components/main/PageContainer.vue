@@ -34,8 +34,10 @@ function updatePage() {
         case displayInfoStore.accountInfoStatus:
             currPage.value = Account;
             break;
-        default:
+        case displayInfoStore.homeStatus:
             currPage.value = Home;
+            break;
+        default:
             break;
     }
 }

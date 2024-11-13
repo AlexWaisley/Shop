@@ -19,6 +19,8 @@ if (sessionStore.currUser !== null) {
 
 const userEmail = ref<string>("");
 const changePassRequired = ref<boolean>(false);
+const orderListStatus = ref<boolean>(false);
+const allOrderListStatus = ref<boolean>(false);
 
 if (sessionStore.currUser !== null) {
     userEmail.value = sessionStore.currUser.email.email;
@@ -39,10 +41,14 @@ const changePassword = () => {
 
 const openOrders = () => {
     changePassRequired.value = false;
+    allOrderListStatus.value = false;
+    orderListStatus.value = true;
 }
 
 const openAllOrders = () => {
     changePassRequired.value = false;
+    allOrderListStatus.value = true;
+    orderListStatus.value = false;
     orderStore.loadOrdersPart();
 }
 
@@ -96,10 +102,11 @@ const switchAdminPanelsStatus = () => {
                 <div v-else class="plain">
                     <span class="text-large">You have no orders.</span>
                 </div>
-                <div v-if="orderStore.allOrders !== null && orderStore.allOrders.length !== 0" class="orders-list">
+                <div v-if="orderStore.allOrders !== null && orderStore.allOrders.length !== 0 && allOrderListStatus"
+                    class="orders-list">
                     <Order v-for="value in orderStore.allOrders" :info="value"></Order>
                 </div>
-                <div v-if="sessionStore.isCurrUserAdmin() && orderStore.allOrders !== null && orderStore.allOrders.length % 20 === 0 && orderStore.allOrders.length !== 0"
+                <div v-if="sessionStore.isCurrUserAdmin() && orderListStatus && orderStore.allOrders !== null && orderStore.allOrders.length % 20 === 0 && orderStore.allOrders.length !== 0"
                     @click="oneMore" class="loader-button">
                     <span class="text-large">Load more</span>
                 </div>
@@ -141,7 +148,6 @@ const switchAdminPanelsStatus = () => {
             text-align: center;
             display: flex;
             gap: 15px;
-            justify-content: center;
             flex-direction: column;
             overflow: auto;
 

@@ -12,7 +12,6 @@ const imageStore = usePreviewImagesStore();
 const img = ref<ProductImage[] | null>(null);
 const files = ref<string[] | null>(null);
 
-
 const mainPhotoIndex = ref<number>(0);
 
 const isAddNewPhoto = ref<boolean>(false);
@@ -74,6 +73,7 @@ onMounted(async () => {
         </div>
     </div>
 </template>
+
 <style scoped lang="scss">
 .image-block-container {
     display: flex;
@@ -163,7 +163,8 @@ onMounted(async () => {
 
         & .image-container-small {
             width: 80px;
-            max-height: 80px;
+            min-width: 80px;
+            min-height: 80px;
             border-radius: 7px;
             overflow: hidden;
             border: 1px solid transparent;
@@ -172,8 +173,8 @@ onMounted(async () => {
             justify-content: center;
 
             & .preview {
-                max-width: 80px;
-                max-height: 80px;
+                width: 100%;
+                height: 100%;
                 object-fit: contain;
             }
 
@@ -181,9 +182,6 @@ onMounted(async () => {
                 border: 1px solid blue;
             }
         }
-
     }
-
-
 }
 </style>

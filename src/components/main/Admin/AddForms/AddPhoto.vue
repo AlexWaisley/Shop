@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useFileDialog } from '@vueuse/core';
 
 const emits = defineEmits<{
@@ -19,19 +19,56 @@ onChange((files) => {
         const formData = new FormData();
         formData.append('formFile', file.value);
         emits('fileChanged', formData);
+        imageUrl.value = URL.createObjectURL(file.value);
     }
 });
+
+
+const imageUrl = ref<string | null>(null);
+
+
+watch(() => files.value, (newFiles) => {
+    if (!newFiles) {
+        imageUrl.value = null; // Reset image when no file is selected
+    }
+}, { immediate: true });
 </script>
 <template>
     <div class="photo-container">
-        <button type="button" @click="open()">Choose image</button>
-        <span v-if="files !== null">{{ files[0].name }}</span>
-        <button type="button" @click="reset()">Reset</button>
+        <div class="buttons-container">
+            <button type="button" @click="open()">Choose image</button>
+            <button type="button" @click="reset()">Reset</button>
+        </div>
+        <div v-if="imageUrl !== null && files !== null" class="preview-info">
+            <img v-if="imageUrl !== null" :src="imageUrl" alt="pic" class="preview">
+            <span v-if="files !== null">{{ files[0].name }}</span>
+        </div>
     </div>
 </template>
 <style lang="scss" scoped>
-.container {
+.photo-container {
     display: flex;
-    flex-direction: column;
+    gap: 15px;
+
+
+    & .buttons-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    & .preview-info {
+        display: flex;
+        flex-direction: column;
+
+        & .preview {
+            max-height: 200px;
+            max-width: 200px;
+            object-fit: contain;
+        }
+    }
+
 }
 </style>

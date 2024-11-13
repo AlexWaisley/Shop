@@ -21,5 +21,6 @@ sessionStore.initSession();
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    min-width: 530px;
 }
 </style>

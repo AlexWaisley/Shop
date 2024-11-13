@@ -11,7 +11,6 @@ const email = ref<string>("");
 
 const isRegister = ref<boolean>(false);
 
-
 const logIn = () => {
     sessionStore.login(email.value, password.value);
 }

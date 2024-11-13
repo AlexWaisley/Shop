@@ -3,26 +3,24 @@ import Catalog from '../General/Catalog.vue';
 import Main from './Main.vue';
 import Subcategories from '../Subcategories/Subcategories.vue';
 import SubcategoriesAdmin from '@main/Admin/SubcategoriesAdmin.vue';
-
-import { computed, shallowRef, watch } from 'vue';
+import { shallowRef, watch } from 'vue';
 import { useDisplayInfoStore, useSessionStore } from '@storage';
 
 const sessionStore = useSessionStore();
 const currMain = shallowRef(Main);
 const displayInfoStore = useDisplayInfoStore();
 
-const hasPickedCategories = computed(() => (sessionStore.pickedCategories?.length || 0) > 0);
-
-watch(hasPickedCategories, () => {
-    if (hasPickedCategories.value && !displayInfoStore.adminPanelsOn)
+watch(() => displayInfoStore.categoryPageStatus, () => {
+    if (displayInfoStore.categoryPageStatus && !displayInfoStore.adminPanelsOn)
         currMain.value = Subcategories;
-    else if (hasPickedCategories.value && displayInfoStore.adminPanelsOn)
+    else if (displayInfoStore.categoryPageStatus && displayInfoStore.adminPanelsOn)
         currMain.value = SubcategoriesAdmin;
-    else
+    else if (displayInfoStore.homeStatus)
         currMain.value = Main;
-}, { immediate: true });
+}, { immediate: true, deep: true });
 
 </script>
+
 <template>
     <div class="home-container">
         <div class="catalog-container">

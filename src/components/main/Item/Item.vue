@@ -27,132 +27,163 @@ watch(() => productStore.productsFullInfo, async () => {
     }
 }, { immediate: true, deep: true })
 </script>
+
 <template>
-    <div v-if="fullProductInfo !== null" class="item-container">
-        <div class="item">
-            <div class="image-container">
-                <ImageBlock :full-info="fullProductInfo"></ImageBlock>
-            </div>
-            <div class="fast-info">
-                <div class="name-container">
-                    <span class="text-large">{{ fullProductInfo.name }}</span>
+    <div v-if="fullProductInfo !== null" class="primary-container">
+        <div class="item-container">
+            <div class="item">
+                <div class="image-container">
+                    <ImageBlock :full-info="fullProductInfo"></ImageBlock>
                 </div>
-                <div class="bucket-container">
-                    <div class="price-container">
-                        <span class="text-large">{{ fullProductInfo.price }}$</span>
+                <div class="fast-info">
+                    <div class="name-container">
+                        <span class="text-large">{{ fullProductInfo.name }}</span>
                     </div>
-                    <button :disabled="cartStore.isItemInCart(fullProductInfo.id) || !fullProductInfo.isAvailable"
-                        @click="cartStore.addToCart(fullProductInfo.id, 1)" class="buy-button">
-                        <span class="text-large-bold">Buy</span>
-                    </button>
+                    <div class="cart-container">
+                        <div class="price-container">
+                            <span class="text-large">{{ fullProductInfo.price }}$</span>
+                        </div>
+                        <button :disabled="cartStore.isItemInCart(fullProductInfo.id) || !fullProductInfo.isAvailable"
+                            @click="cartStore.addToCart(fullProductInfo.id, 1)" class="buy-button">
+                            <img src="/cart.svg" alt="Buy">
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="item-info">
-            <div class="description">{{ fullProductInfo.description }}</div>
-            <div class="specs">
-                <SpecsBlock></SpecsBlock>
+            <div class="item-info">
+                <div class="description">{{ fullProductInfo.description }}</div>
+                <div class="specs">
+                    <SpecsBlock></SpecsBlock>
+                </div>
             </div>
-        </div>
-        <div @click="editItem" v-if="displayInfo.adminPanelsOn" class="edit-item-button">
-            <span class="text-large">edit</span>
+            <div @click="editItem" v-if="displayInfo.adminPanelsOn" class="edit-item-button">
+                <span class="text-large">edit</span>
+            </div>
         </div>
     </div>
 </template>
 <style scoped lang="scss">
-.item-container {
-    height: 100%;
-    max-width: 1700px;
+.primary-container {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
 
-    & .item {
+
+    & .item-container {
+        height: 100%;
         display: flex;
-        border-radius: 15px;
-        justify-content: center;
+        flex-direction: column;
         gap: 15px;
+        max-width: 1700px;
+        width: max(80%, 1000px);
 
-        & .fast-info {
+        & .item {
             border-radius: 15px;
-            min-width: 400px;
-            text-overflow: ellipsis;
-            display: flex;
-            flex-direction: column;
+            justify-content: center;
             gap: 15px;
+            max-width: 100%;
 
-            & .name-container {
-                padding: 20px;
-                display: flex;
-                width: 400px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                border-radius: 15px 15px 0 0;
-                background-color: aliceblue;
-                box-shadow: 3px 3px 3px rgb(216, 237, 255);
+            @media screen and (max-width: 1000px) {
+                & {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    flex-direction: column;
+                }
             }
 
-            & .bucket-container {
-                padding: 20px;
+            @media screen and (min-width: 1000px) {
+                & {
+                    display: grid;
+                    grid-template-columns: 750px 1fr;
+                }
+            }
+
+
+            & .image-container {
+                max-width: 100%;
+            }
+
+            & .fast-info {
+                border-radius: 15px;
+                text-overflow: ellipsis;
                 display: flex;
-                align-items: center;
-                justify-content: space-around;
-                background-color: aliceblue;
-                border-radius: 0 0 15px 15px;
-                box-shadow: 3px 3px 3px rgb(216, 237, 255);
+                flex-direction: column;
+                gap: 15px;
 
-                & .buy-button {
-                    background-color: skyblue;
-                    user-select: none;
-                    padding: 10px;
-                    border-radius: 15px;
-                    transition: all .5s ease;
+                & .name-container {
+                    padding: 20px;
+                    display: flex;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    border-radius: 15px 15px 0 0;
+                    background-color: aliceblue;
+                    box-shadow: 3px 3px 3px rgb(216, 237, 255);
+                }
 
-                    &:hover {
-                        cursor: pointer;
-                        background-color: rgb(94, 175, 208);
+                & .cart-container {
+                    padding: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-around;
+                    background-color: aliceblue;
+                    border-radius: 0 0 15px 15px;
+                    box-shadow: 3px 3px 3px rgb(216, 237, 255);
+
+                    & .buy-button {
+                        background-color: skyblue;
+                        user-select: none;
+                        width: 100px;
+                        padding: 10px;
+                        border-radius: 15px;
+                        transition: all .5s ease;
+
+                        &:hover {
+                            cursor: pointer;
+                            background-color: rgb(94, 175, 208);
+                        }
                     }
                 }
             }
         }
-    }
 
-    & .item-info {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        justify-content: center;
-        text-align: justify;
-        background-color: aliceblue;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 3px 3px 3px rgb(216, 237, 255);
-
-        & .description {
-            width: 100%;
-            height: 100%;
-            padding: 20px;
+        & .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+            text-align: justify;
+            background-color: aliceblue;
             border-radius: 15px;
-            background-color: rgb(227, 242, 255);
+            padding: 20px;
             box-shadow: 3px 3px 3px rgb(216, 237, 255);
+            width: 100%;
+
+            & .description {
+                width: 100%;
+                height: 100%;
+                padding: 20px;
+                border-radius: 15px;
+                background-color: rgb(227, 242, 255);
+                box-shadow: 3px 3px 3px rgb(216, 237, 255);
+            }
         }
 
+        & .edit-item-button {
+            width: 100%;
+            height: 80px;
+            background-color: skyblue;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all .5s ease;
 
-    }
-
-    & .edit-item-button {
-        width: 100%;
-        height: 80px;
-        background-color: skyblue;
-        border-radius: 15px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: all .5s ease;
-
-        &:hover {
-            cursor: pointer;
-            background-color: rgb(104, 187, 219);
+            &:hover {
+                cursor: pointer;
+                background-color: rgb(104, 187, 219);
+            }
         }
     }
 }

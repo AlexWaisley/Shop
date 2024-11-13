@@ -15,6 +15,7 @@ const openAccount = () => {
     sessionStore.clearAll();
     displayInfoStore.changeAccountInfoStatus(true);
 }
+
 const openHome = () => {
     sessionStore.clearAll();
     displayInfoStore.changeHomeStatus(true);
@@ -29,9 +30,7 @@ const openHome = () => {
             </div>
         </div>
         <div class="section">
-            <div class="searchbar">
-                <SearchBar></SearchBar>
-            </div>
+            <SearchBar></SearchBar>
         </div>
         <div class="section">
             <div class="additional-buttons">
@@ -60,21 +59,23 @@ const openHome = () => {
     z-index: 5555;
     width: 100%;
     height: 80px;
-    display: flex;
+    display: grid;
+    grid-template-columns: 80px 1fr 210px;
     background-color: skyblue;
     align-items: center;
     justify-content: space-between;
-    padding: 10px;
     position: fixed;
+    padding: 0 10px;
 
     & .section {
         height: 80px;
         display: flex;
         align-items: center;
+        justify-content: center;
 
         & .logo-container {
-            max-height: 60px;
-            max-width: 60px;
+            max-height: 70px;
+            max-width: 70px;
             overflow: hidden;
             cursor: pointer;
 
@@ -91,35 +92,6 @@ const openHome = () => {
             align-items: center;
             gap: 15px;
 
-
-            & .button {
-                height: 60px;
-                width: 60px;
-                padding: 10px;
-                display: flex;
-                justify-content: center;
-                border: 1px solid transparent;
-                align-items: center;
-                border-radius: 15px;
-                transition: all .5s ease;
-
-                & .icon-container {
-                    max-width: 100%;
-                    max-height: 100%;
-                    overflow: hidden;
-
-                    & .icon {
-                        max-width: 100%;
-                        max-height: 100%;
-                        object-fit: contain;
-                    }
-                }
-
-                &:hover {
-                    cursor: pointer;
-                    border: 1px solid blue;
-                }
-            }
         }
     }
 

@@ -86,7 +86,7 @@ const deleteCategory = async () => {
 
     & .form-container {
         width: 50%;
-        height: 60%;
+        height: 70%;
         min-height: 200px;
         background-color: rgb(187, 224, 238);
         border-radius: 15px;
@@ -94,6 +94,9 @@ const deleteCategory = async () => {
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-direction: column;
+        gap: 15px;
+
 
         & .form {
             display: flex;
@@ -107,6 +110,10 @@ const deleteCategory = async () => {
                 display: flex;
                 justify-content: space-around;
             }
+        }
+
+        &>button {
+            width: 50%;
         }
 
     }

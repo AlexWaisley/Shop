@@ -158,23 +158,29 @@ export const useSessionStore = defineStore('sessionStore', () => {
         }
     });
 
-
     const pickCategory = async (category: Category) => {
         displayInfoStore.resetAll();
         if (pickedCategories.value === null) {
             pickedCategories.value = [];
         }
-        if (category.parentCategory === 0) {
-            pickedCategories.value = [];
+
+        const existedCategory = pickedCategories.value.findIndex(x => x.id === category.id);
+        if (existedCategory >= 0) {
+            pickedCategories.value.splice(existedCategory + 1);
         }
-        await dataStore.loadCategories(category.id);
-        pickedCategories.value.push(category);
-        if (pickedItem.value !== null) {
-            addToHistory(pickedItem.value.id);
-            pickedItem.value = null;
+        else {
+            if (category.parentCategory === 0) {
+                pickedCategories.value = [];
+            }
+            await dataStore.loadCategories(category.id);
+            pickedCategories.value.push(category);
+            if (pickedItem.value !== null) {
+                addToHistory(pickedItem.value.id);
+                pickedItem.value = null;
+            }
         }
 
-        const parentCategoryId = pickedCategories.value[pickedCategories.value.length - 1].id
+        const parentCategoryId = pickedCategories.value[pickedCategories.value.length - 1].id;
         if (dataStore.categories === null) {
             if (!displayInfoStore.adminPanelsOn) {
                 await productStore.displayProductsByCategoryId(parentCategoryId);
@@ -182,17 +188,22 @@ export const useSessionStore = defineStore('sessionStore', () => {
             }
             return;
         }
+
         const subCategories = dataStore.categories.find(x => x.parentCategory === parentCategoryId);
+
         if (subCategories === undefined) {
             dataStore.displayedCategories = [];
-            console.log(displayInfoStore.adminPanelsOn);
             if (!displayInfoStore.adminPanelsOn) {
                 await productStore.displayProductsByCategoryId(parentCategoryId);
                 displayInfoStore.changeProductPageOpenStatus(true);
+                return;
             }
-            return;
         }
+
+        displayInfoStore.resetAll();
         dataStore.displayedCategories = dataStore.categories.filter(x => x.parentCategory === parentCategoryId);
+        displayInfoStore.changeCategoryPageStatus(true);
+        displayInfoStore.changeHomeStatus(true);
     }
 
     const pickItem = async (productId: string) => {
@@ -203,13 +214,33 @@ export const useSessionStore = defineStore('sessionStore', () => {
         }
         pickedItem.value = product;
         addToHistory(pickedItem.value.id);
+
         displayInfoStore.resetAll()
         displayInfoStore.changeProductFullInfoStatus(true);
+
+        if (pickedCategories.value !== null && pickedCategories.value.length > 0)
+            return;
+
+        if (pickedCategories.value === null)
+            pickedCategories.value = [];
+
+        let category = dataStore.findCategoryById(product.categoryId);
+
+        if (category === null)
+            return;
+
+        pickedCategories.value.unshift(category);
+
+        while (pickedCategories.value[0].parentCategory !== 0) {
+            category = dataStore.findCategoryById(category.parentCategory);
+            if (category === null)
+                return;
+            pickedCategories.value.unshift(category);
+        }
     }
 
     const clearAll = () => {
         pickedCategories.value = [];
-
         if (pickedItem.value !== null) {
             addToHistory(pickedItem.value.id);
             pickedItem.value = null;

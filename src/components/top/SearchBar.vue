@@ -30,9 +30,18 @@ const searchProduct = () => {
     padding: 10px;
     border-radius: 15px;
     gap: 15px;
+    width: 50%;
+    min-width: 200px;
+    border: 2px solid transparent;
+    transition: border .3s ease;
+
+    &:focus-within {
+
+        border: 2px solid rgb(125, 169, 193);
+    }
 
     & .searchbar {
-        width: 350px;
+        width: 100%;
 
         & .bar {
             width: 100%;
@@ -50,11 +59,12 @@ const searchProduct = () => {
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 50px;
-        height: 50px;
+        min-width: 50px;
+        min-height: 50px;
         padding: 5px;
         transition: all .5s ease;
         border-radius: 50%;
+        aspect-ratio: 1/1;
 
         & .icon {
             max-width: 100%;

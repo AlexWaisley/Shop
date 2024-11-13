@@ -25,7 +25,7 @@ onMounted(async () => {
                 <div class="info">
                     <div class="tag"><span class="text-large-bold">Address</span></div>
                     <div class="content">
-                        <span v-for="value in dataStore.shippingAddresses" class="text-default-bold">
+                        <span v-for="value in dataStore.shippingAddresses" class="text-default">
                             {{ value.street }},
                             {{ value.house }}</span>
                     </div>
@@ -89,7 +89,7 @@ onMounted(async () => {
                 & .content {
                     display: flex;
                     flex-direction: column;
-                    gap: 7px;
+                    gap: 2px;
 
                     & .work-hours-table {
 

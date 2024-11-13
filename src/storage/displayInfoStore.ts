@@ -11,7 +11,12 @@ export const useDisplayInfoStore = defineStore('displayInfo', () => {
     const accountInfoStatus = ref<boolean>(false);
     const homeStatus = ref<boolean>(false);
     const productFullInfoPageStatus = ref<boolean>(false);
+    const categoryPageStatus = ref<boolean>(false);
     const adminPanelsOn = useLocalStorage<boolean>("adminPanelsOn", false, { serializer: StorageSerializers.object });
+
+    const changeCategoryPageStatus = (newStatus: boolean) => {
+        categoryPageStatus.value = newStatus;
+    }
 
     const changeProductPageOpenStatus = (newStatus: boolean) => {
         productPageOpen.value = newStatus;
@@ -51,6 +56,7 @@ export const useDisplayInfoStore = defineStore('displayInfo', () => {
         accountInfoStatus.value = false;
         homeStatus.value = false;
         productFullInfoPageStatus.value = false;
+        categoryPageStatus.value = false;
     }
 
 
@@ -62,6 +68,7 @@ export const useDisplayInfoStore = defineStore('displayInfo', () => {
         productFullInfoPageStatus,
         isEditItemPage,
         adminPanelsOn,
+        categoryPageStatus,
         changeProductPageOpenStatus,
         changeIsEditItem,
         changeAccountInfoStatus,
@@ -69,6 +76,7 @@ export const useDisplayInfoStore = defineStore('displayInfo', () => {
         changeHomeStatus,
         changeProductFullInfoStatus,
         resetAll,
-        changeAdminPanelStatus
+        changeAdminPanelStatus,
+        changeCategoryPageStatus
     }
 })

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useCreatingStore, usePreviewImagesStore } from '@storage';
-import { useFileDialog } from '@vueuse/core';
+import { useCreatingStore } from '@storage';
+import AddPhoto from './AddPhoto.vue';
 
 const props = defineProps<{
     id: string,
@@ -14,22 +14,17 @@ const emits = defineEmits<{
 
 const creatingStore = useCreatingStore();
 
-const { files, open, reset, onCancel, onChange } = useFileDialog()
+const file = ref<FormData | null>(null);
 
 const addNewPhoto = async () => {
-    const file = ref<File | null>(null);
-
-    files.value && files.value[0] && (file.value = files.value[0]);
-    if (!file.value) {
-        alert('Please select a file first.');
-        return;
-    }
-    const formData = new FormData();
-    formData.append('formFile', file.value);
-
-    await creatingStore.AddNewProductPhoto(props.id, formData);
+    if (file.value !== null)
+        await creatingStore.AddNewProductPhoto(props.id, file.value);
 
     emits('added');
+}
+
+const updateFile = (fileForm: FormData) => {
+    file.value = fileForm;
 }
 
 </script>
@@ -37,8 +32,11 @@ const addNewPhoto = async () => {
     <div class="container">
         <div class="form-container">
             <form @submit.prevent="addNewPhoto" class="form">
-                <button type="button" @click="open()">Choose file</button>
-                <button type="submit">Add</button>
+                <AddPhoto @file-changed="updateFile"></AddPhoto>
+                <div class="button-container">
+                    <button type="button" @click="$emit('close')">Close</button>
+                    <button type="submit">Add</button>
+                </div>
             </form>
         </div>
     </div>
@@ -69,12 +67,12 @@ const addNewPhoto = async () => {
 
         & .form {
             display: flex;
-            gap: 40px;
+            gap: 15px;
             flex-direction: column;
             justify-content: center;
             width: 50%;
 
-            & .buttons-container {
+            & .button-container {
                 width: 100%;
                 display: flex;
                 justify-content: space-around;

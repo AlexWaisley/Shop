@@ -58,6 +58,8 @@ const changeCategoriesShowStatus = () => {
 
         &:hover {
             box-shadow: 3px 3px 3px rgb(87, 142, 200);
+            background-color: rgb(82, 141, 205);
+            cursor: pointer;
         }
 
     }
@@ -75,7 +77,6 @@ const changeCategoriesShowStatus = () => {
         & .category {
             display: flex;
             flex-direction: column;
-            max-width: 200px;
             min-height: 40px;
             overflow: hidden;
             text-overflow: ellipsis;
