@@ -46,9 +46,11 @@ watch(() => props.info, async () => {
                 <div class="cost">
                     <span class="text-large-bold">{{ props.info.price }}$</span>
                 </div>
-                <button :disabled="cartStore.isItemInCart(props.info.id)" @click="cartStore.addToCart(props.info.id, 1)"
-                    class="buy-button">
-                    <span class="text-large">Buy</span>
+                <button :disabled="(!props.info.isAvailable || cartStore.isItemInCart(props.info.id))"
+                    @click="cartStore.addToCart(props.info.id, 1)" class="buy-button"><!-- 
+                    <span class="text-large">Buy</span> -->
+                    <img src="/cart.svg" width="30px" alt="Buy">
+
                 </button>
             </div>
         </div>
@@ -63,11 +65,11 @@ watch(() => props.info, async () => {
     display: grid;
     grid-template-rows: 200px 1fr;
     gap: 7px;
-    background-color: aqua;
+    background-color: $card-background-color;
 
 
     border-radius: 15px;
-    box-shadow: 3px 3px 3px rgb(55, 230, 230);
+    /* box-shadow: 3px 3px 3px rgb(55, 230, 230); */
     transition: all .5s ease;
 
     & .image-container {
@@ -110,12 +112,18 @@ watch(() => props.info, async () => {
             }
 
             & .buy-button {
-                background-color: skyblue;
-                padding: 7px;
+                background-color: $button-color;
+                padding: 5px;
                 border-radius: 15px;
                 transition: all .5s ease;
                 z-index: 5;
                 user-select: none;
+                width: 70px;
+                height: 40px;
+
+                &:disabled {
+                    background-color: aliceblue;
+                }
 
                 &:hover {
                     cursor: pointer;

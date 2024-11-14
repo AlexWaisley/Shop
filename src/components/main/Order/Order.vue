@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { OrderDto, OrderItemDto } from '@models';
-import { useDataStore, useOrderRecordStore, useSessionStore } from '@storage';
+import { useDataStore, useOrderRecordStore } from '@storage';
 import OrderProductCard from './OrderProductCard.vue';
-import ChangeStatusWindow from '../Admin/ChangeStatusWindow.vue';
 const orderStore = useOrderRecordStore();
 const dataStore = useDataStore();
-const sessionStore = useSessionStore();
 
 const props = defineProps<{
     info: OrderDto;
@@ -35,15 +33,6 @@ const address = dataStore.shippingAddresses?.find(x => x.id === props.info.shipp
 if (address !== undefined)
     addressInfo.value = address.street + ", " + address.house;
 
-
-const statusChangeWindow = ref<boolean>(false);
-const openStatusChangeWindow = () => {
-    statusChangeWindow.value = true;
-}
-const closeStatusChangeWindow = () => {
-    statusChangeWindow.value = false;
-}
-
 </script>
 <template>
     <div class="order-container">
@@ -65,17 +54,11 @@ const closeStatusChangeWindow = () => {
             <OrderProductCard v-for="value in ordersItemsList" :info="value">
             </OrderProductCard>
         </div>
-        <div v-if="sessionStore.isCurrUserAdmin()" @click="openStatusChangeWindow" class="change-status-button">
-            <span class="text-large">Change status</span>
-        </div>
-        <Teleport v-if="statusChangeWindow" to="body">
-            <ChangeStatusWindow @status-changed="closeStatusChangeWindow" :orderId="props.info.id"></ChangeStatusWindow>
-        </Teleport>
     </div>
 </template>
 <style scoped lang="scss">
 .order-container {
-    background-color: skyblue;
+    background-color: $linear-card-background-color;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -104,7 +87,7 @@ const closeStatusChangeWindow = () => {
         justify-content: center;
         align-items: center;
         border-radius: 15px;
-        background-color: aliceblue;
+        background-color: $button-color;
         transition: all .5s ease;
 
         &:hover {

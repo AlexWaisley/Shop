@@ -65,9 +65,8 @@ watch(() => props.info, async () => {
     }
     product.value = productStore.getProductById(props.info.productId);
 })
-
-
 </script>
+
 <template>
     <div class="product-container">
         <div class="image-container">
@@ -92,14 +91,17 @@ watch(() => props.info, async () => {
         </div>
     </div>
 </template>
+
 <style scoped lang="scss">
 .product-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: min(400px, 25%) 1fr;
     width: 100%;
     max-height: 200px;
+    min-width: 600px;
     padding: 10px;
     padding-right: 30px;
-    background-color: aliceblue;
+    background-color: $linear-card-background-color;
     border-radius: 15px;
     position: relative;
 
@@ -108,6 +110,9 @@ watch(() => props.info, async () => {
         min-width: 200px;
         max-height: 150px;
         overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         & .image-preview {
             max-width: 100%;
@@ -119,9 +124,12 @@ watch(() => props.info, async () => {
     & .info-container {
         display: grid;
         grid-template-columns: 2fr 1fr 1fr;
+        flex-grow: 2;
         gap: 15px;
         width: 100%;
         align-items: center;
+
+
 
         & .name {
             display: flex;
@@ -140,10 +148,19 @@ watch(() => props.info, async () => {
 
             & .quantity {
                 border-radius: 7px;
-                border: 1px solid black;
+                border: 1px solid transparent;
                 padding: 7px;
                 text-align: center;
                 width: 50%;
+                transition: all .3s ease;
+                outline: none;
+                background-color: $input-background;
+                ;
+
+                &:focus,
+                &:hover {
+                    border: 1px solid #6e9dbd;
+                }
             }
         }
     }

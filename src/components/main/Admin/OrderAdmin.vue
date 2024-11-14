@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { OrderDto, OrderItemDto } from '@models';
-import { useDataStore, useOrderRecordStore } from '@storage';
+import { useAdminFormStatusStore, useDataStore, useOrderRecordStore } from '@storage';
 import OrderProductCard from '../Order/OrderProductCard.vue';
-import ChangeStatusWindow from './ChangeStatusWindow.vue';
+import WindowForm from './WindowForm.vue';
 const orderStore = useOrderRecordStore();
 const dataStore = useDataStore();
 
@@ -12,6 +12,8 @@ const props = defineProps<{
 }>();
 
 const isExpandOrder = ref<boolean>(false);
+const formStatusStore = useAdminFormStatusStore();
+
 const ordersItemsList = ref<OrderItemDto[]>([]);
 
 watch(isExpandOrder, async () => {
@@ -35,12 +37,9 @@ if (address !== undefined)
     addressInfo.value = address.street + ", " + address.house;
 
 
-const statusChangeWindow = ref<boolean>(false);
-const openStatusChangeWindow = () => {
-    statusChangeWindow.value = true;
-}
-const closeStatusChangeWindow = () => {
-    statusChangeWindow.value = false;
+const editOrder = () => {
+    orderStore.changePickedOrder(props.info);
+    formStatusStore.changeOrderStatusEdit(true);
 }
 
 onMounted(async () => {
@@ -68,11 +67,11 @@ onMounted(async () => {
             <OrderProductCard v-for="value in ordersItemsList" :info="value">
             </OrderProductCard>
         </div>
-        <div @click="openStatusChangeWindow" class="change-status-button">
+        <div @click="editOrder" class="change-status-button">
             <span class="text-large">Change status</span>
         </div>
-        <Teleport v-if="statusChangeWindow" to="body">
-            <ChangeStatusWindow @status-changed="closeStatusChangeWindow" :orderId="props.info.id"></ChangeStatusWindow>
+        <Teleport v-if="formStatusStore.orderStatusEdit" to="body">
+            <WindowForm></WindowForm>
         </Teleport>
     </div>
 </template>

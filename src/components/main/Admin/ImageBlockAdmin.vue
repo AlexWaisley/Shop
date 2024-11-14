@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { usePreviewImagesStore } from '@storage';
-import { onMounted, ref } from 'vue';
-import AddNewPhoto from '@main/Admin/AddForms/NewPhoto.vue';
+import { useAdminFormStatusStore, usePreviewImagesStore } from '@storage';
+import { onMounted, ref, watch } from 'vue';
 import { Product, ProductImage } from '@models';
-
+import WindowForm from './WindowForm.vue';
 
 const props = defineProps<{
     fullInfo: Product
 }>();
 
 const imageStore = usePreviewImagesStore();
+const formStatusStore = useAdminFormStatusStore();
 
 
 const img = ref<ProductImage[] | null>(null);
@@ -17,12 +17,9 @@ const files = ref<string[] | null>(null);
 
 const mainPhotoIndex = ref<number>(0);
 
-const isAddNewPhoto = ref<boolean>(false);
-
 const updatePreviews = async () => {
     img.value = await imageStore.getProductImages(props.fullInfo.id);
     files.value = await imageStore.getImageUrl(img.value);
-    isAddNewPhoto.value = false;
 }
 
 const nextPicture = () => {
@@ -49,7 +46,7 @@ const pickMainPhoto = (index: number) => {
 }
 
 const changeAddNewPhotoStatus = () => {
-    isAddNewPhoto.value = !isAddNewPhoto.value;
+    formStatusStore.changeNewPhotoStatus(true);
 }
 
 onMounted(async () => {
@@ -63,6 +60,10 @@ const previewAdded = async () => {
         return;
     mainPhotoIndex.value = files.value.length - 1;
 }
+
+watch(() => imageStore.productsPreviews?.length, async () => {
+    await previewAdded();
+}, { immediate: true })
 
 const deleteCurrImage = async () => {
     if (files.value === null || imageStore.previews === null)
@@ -103,8 +104,8 @@ const deleteCurrImage = async () => {
                 <img :src="imageSrc" alt="preview" class="preview">
             </div>
         </div>
-        <Teleport v-if="isAddNewPhoto" to="body">
-            <AddNewPhoto @added="previewAdded" :id="fullInfo.id" @close="changeAddNewPhotoStatus"></AddNewPhoto>
+        <Teleport v-if="formStatusStore.newPhoto" to="body">
+            <WindowForm />
         </Teleport>
     </div>
 </template>
@@ -112,9 +113,8 @@ const deleteCurrImage = async () => {
 .image-block-container {
     display: flex;
     flex-direction: column;
-    background-color: aliceblue;
+    background-color: $item-info-background-color;
     border-radius: 15px;
-    box-shadow: 3px 3px 3px rgb(216, 237, 255);
     width: 750px;
     padding: 20px;
     align-items: center;
@@ -140,7 +140,7 @@ const deleteCurrImage = async () => {
             transition: background-color .3s ease;
 
             &:hover {
-                background-color: rgb(162, 210, 252);
+                background-color: $button-color;
                 cursor: pointer;
             }
         }
@@ -159,7 +159,6 @@ const deleteCurrImage = async () => {
                 margin: 0 -50px;
                 justify-content: center;
                 width: 50px;
-                background-color: rgba(255, 255, 255, 0.627);
                 opacity: .2;
                 transition: all .5s ease;
 

@@ -14,6 +14,14 @@ export default defineConfig({
       '@top': path.resolve(__dirname, './src/components/top'),
       '@bottom': path.resolve(__dirname, './src/components/bottom'),
       '@api': path.resolve(__dirname, './src/api'),
+      '@styles': path.resolve(__dirname, './src/styles'),
+    }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@styles/variables.scss";`
+      }
     }
   }
 })

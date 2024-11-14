@@ -29,7 +29,7 @@ const imageUrl = ref<string | null>(null);
 
 watch(() => files.value, (newFiles) => {
     if (!newFiles) {
-        imageUrl.value = null; // Reset image when no file is selected
+        imageUrl.value = null;
     }
 }, { immediate: true });
 </script>

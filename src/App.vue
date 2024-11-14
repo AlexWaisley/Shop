@@ -22,5 +22,6 @@ sessionStore.initSession();
     display: flex;
     flex-direction: column;
     min-width: 530px;
+    background-color: $main-background-color;
 }
 </style>

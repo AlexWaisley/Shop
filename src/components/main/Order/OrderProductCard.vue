@@ -66,7 +66,7 @@ onMounted(async () => {
     max-height: 200px;
     padding: 10px;
     padding-right: 30px;
-    background-color: aliceblue;
+    background-color: $linear-card-background-color;
     border-radius: 15px;
     position: relative;
 

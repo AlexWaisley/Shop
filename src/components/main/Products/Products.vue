@@ -50,7 +50,7 @@ const oneMore = async () => {
 
     & .products {
         padding: 20px;
-        background-color: aliceblue;
+        background-color: $sub-main-background-color;
         box-shadow: 3px 3px 3px rgb(207, 228, 246);
         border-radius: 15px;
         height: 100%;
@@ -90,7 +90,7 @@ const oneMore = async () => {
         & .loader-button {
             width: 100%;
             height: 80px;
-            background-color: skyblue;
+            background-color: $button-color;
             display: flex;
             justify-content: center;
             align-items: center;

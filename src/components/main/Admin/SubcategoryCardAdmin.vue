@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { Category } from '@models';
-import { usePreviewImagesStore, useSessionStore } from '@storage';
+import { useAdminFormStatusStore, useDataStore, usePreviewImagesStore, useSessionStore } from '@storage';
 import { onMounted, ref, Teleport, watch } from 'vue';
-import CategoryEditWindow from './CategoryEditWindow.vue';
+import WindowForm from './WindowForm.vue';
 
 const sessionStore = useSessionStore();
 const file = ref<string | null>(null);
 const imageStore = usePreviewImagesStore();
-const editMenuStatus = ref<boolean>(false);
+const formStatusStore = useAdminFormStatusStore();
+const dataStore = useDataStore();
 
 const props = defineProps<{
     info: Category;
@@ -32,7 +33,8 @@ watch(() => imageStore.categoriesPreviews, async () => {
 })
 
 const switchMenuStatusChange = () => {
-    editMenuStatus.value = !editMenuStatus.value;
+    dataStore.changePickedCategory(props.info);
+    formStatusStore.changeCategoryEdit(true);
 }
 </script>
 
@@ -55,8 +57,8 @@ const switchMenuStatusChange = () => {
                 </div>
             </div>
         </div>
-        <Teleport v-if="editMenuStatus" to="body">
-            <CategoryEditWindow @close="switchMenuStatusChange" :category="props.info"></CategoryEditWindow>
+        <Teleport v-if="formStatusStore.categoryEdit" to="body">
+            <WindowForm></WindowForm>
         </Teleport>
     </div>
 </template>
@@ -68,11 +70,10 @@ const switchMenuStatusChange = () => {
     display: flex;
     flex-direction: column;
     gap: 7px;
-    background-color: aqua;
+    background-color: $card-background-color;
     justify-content: center;
     align-items: center;
     border-radius: 15px;
-    box-shadow: 3px 3px 3px rgb(55, 230, 230);
     transition: all .5s ease;
     position: relative;
 

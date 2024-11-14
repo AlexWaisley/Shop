@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import ItemCard from '@main/Products/ItemCard.vue';
 import Catalog from '../General/Catalog.vue';
-import { useDataStore, useProductStore, useSessionStore } from '@storage';
+import { useAdminFormStatusStore, useDataStore, useProductStore, useSessionStore } from '@storage';
 import { ProductDto } from '@models';
 import { ref, watch } from 'vue';
-import AddNewItem from './AddForms/NewItem.vue';
+import WindowForm from './WindowForm.vue';
 
 const sessionStore = useSessionStore();
 const dataStore = useDataStore();
 const productStore = useProductStore();
+const formStatusStore = useAdminFormStatusStore();
 
 const items = ref<ProductDto[] | null>(productStore.displayedProducts);
 
@@ -16,10 +17,8 @@ watch(() => productStore.displayedProducts, (newVal) => {
     items.value = newVal;
 }, { immediate: true });
 
-const addNewItem = ref<boolean>(false);
-
 const changeAddNewItemShowStatus = () => {
-    addNewItem.value = !addNewItem.value;
+    formStatusStore.changeNewItemStatus(true);
 }
 
 const oneMore = async () => {
@@ -44,9 +43,8 @@ const oneMore = async () => {
                 <span class="text-large">Load more</span>
             </div>
         </div>
-        <Teleport v-if="addNewItem" to="body">
-            <AddNewItem @close="changeAddNewItemShowStatus">
-            </AddNewItem>
+        <Teleport v-if="formStatusStore.newItem" to="body">
+            <WindowForm> </WindowForm>
         </Teleport>
     </div>
 </template>
@@ -64,7 +62,7 @@ const oneMore = async () => {
 
     & .products {
         padding: 20px;
-        background-color: aliceblue;
+        background-color: $sub-main-background-color;
         box-shadow: 3px 3px 3px rgb(207, 228, 246);
         border-radius: 15px;
         height: 100%;
@@ -82,7 +80,7 @@ const oneMore = async () => {
             overflow: hidden;
             display: grid;
             gap: 7px;
-            background-color: aqua;
+            background-color: $card-background-color;
 
             border-radius: 15px;
             box-shadow: 3px 3px 3px rgb(55, 230, 230);
@@ -104,7 +102,7 @@ const oneMore = async () => {
         & .loader-button {
             width: 100%;
             height: 80px;
-            background-color: skyblue;
+            background-color: $button-color;
             display: flex;
             justify-content: center;
             align-items: center;

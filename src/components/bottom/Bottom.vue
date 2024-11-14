@@ -62,7 +62,7 @@ onMounted(async () => {
     width: 100%;
     display: flex;
     flex-direction: column;
-    background-color: skyblue;
+    background-color: $bottom-background-color;
     gap: 7px;
 
     & .bottom {

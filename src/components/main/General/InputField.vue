@@ -8,7 +8,7 @@ const inputText = defineModel({ required: true });
 </script>
 <template>
     <div class="group">
-        <input required="true" :type="props.type" v-model="inputText" class="input">
+        <input required="true" :type="props.type" v-model="inputText" class="s-input">
         <span class="highlight"></span>
         <span class="bar"></span>
         <label>{{ props.placeholder }}</label>
@@ -18,8 +18,7 @@ const inputText = defineModel({ required: true });
 .group {
     position: relative;
 
-
-    & .input {
+    & .s-input {
         font-size: 16px;
         padding: 10px 10px 10px 5px;
         display: block;

@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import SubcategoryCard from './SubcategoryCardAdmin.vue';
-import { useDataStore, useSessionStore, useProductStore } from '@storage';
-import { computed, ref, } from 'vue';
-import AddNewCategoryForm from './AddForms/NewCategory.vue';
+import { useDataStore, useSessionStore, useProductStore, useAdminFormStatusStore } from '@storage';
+import { computed, } from 'vue';
+import WindowForm from './WindowForm.vue';
 
 const sessionStore = useSessionStore();
 const dataStore = useDataStore();
 const productStore = useProductStore();
-
-const addNewCategory = ref<boolean>(false);
+const formStatusStore = useAdminFormStatusStore();
 
 const parentCategoryId = computed<number>(() => {
     if (sessionStore.pickedCategories === null || sessionStore.pickedCategories.length === 0) {
@@ -22,7 +21,7 @@ const openProductsPage = async () => {
 }
 
 const changeAddNewCategoryShowStatus = () => {
-    addNewCategory.value = !addNewCategory.value;
+    formStatusStore.changeNewCategoryStatus(true);
 }
 </script>
 <template>
@@ -35,9 +34,8 @@ const changeAddNewCategoryShowStatus = () => {
         <div v-if="dataStore.displayedCategories.length === 0" @click="openProductsPage" class="add-button">
             <img src="/switch.svg" alt="Go to products">
         </div>
-        <Teleport v-if="addNewCategory" to="body">
-            <AddNewCategoryForm :parent-category-id="parentCategoryId" @close="changeAddNewCategoryShowStatus">
-            </AddNewCategoryForm>
+        <Teleport v-if="formStatusStore.newCategory" to="body">
+            <WindowForm> </WindowForm>
         </Teleport>
     </div>
 </template>
@@ -50,7 +48,8 @@ const changeAddNewCategoryShowStatus = () => {
     gap: 15px;
     padding: 20px;
     justify-content: center;
-    background-color: aquamarine;
+    background-color: $sub-main-background-color;
+    border-radius: 5px;
 
     & .add-button {
         min-width: 250px;
@@ -59,11 +58,10 @@ const changeAddNewCategoryShowStatus = () => {
         display: flex;
         flex-direction: column;
         gap: 7px;
-        background-color: aqua;
+        background-color: $card-background-color;
         justify-content: center;
         align-items: center;
         border-radius: 15px;
-        box-shadow: 3px 3px 3px rgb(55, 230, 230);
         transition: all .5s ease;
 
         & img {

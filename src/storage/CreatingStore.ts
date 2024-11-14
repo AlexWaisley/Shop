@@ -4,10 +4,12 @@ import { categoriesApi, imagesApi, productsApi } from "@api/index";
 import { useDataStore } from "./DataStorage";
 import { useProductStore } from "./ProductStore";
 import toastr from 'toastr';
+import { usePreviewImagesStore } from "./PreviewsStore";
 
 export const useCreatingStore = defineStore('creatingStore', () => {
     const dataStorage = useDataStore();
     const productStore = useProductStore();
+    const imageStore = usePreviewImagesStore();
     const AddNewRootCategory = async (name: string) => {
         const result = await categoriesApi.AddNewCategory({ name, parentCategoryId: 0 });
         if (result) {
@@ -38,6 +40,7 @@ export const useCreatingStore = defineStore('creatingStore', () => {
             const result1 = await imagesApi.AddNewProductPhoto({ productId, fileId: result });
             if (result1) {
                 toastr.success("New product photo successfully added");
+                await imageStore.LoadProductsPreviews(productId);
                 return;
             }
             toastr.error("Something went wrong");

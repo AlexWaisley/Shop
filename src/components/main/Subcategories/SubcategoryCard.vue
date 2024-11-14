@@ -27,7 +27,8 @@ watch(() => props.info, async () => {
 <template>
     <div @click="sessionStore.pickCategory(props.info)" class="subcategory-card-container">
         <div class="image-container">
-            <img v-if="file !== undefined && file !== null" :src="file" alt="Subcategory image" class="subcategory-image">
+            <img v-if="file !== undefined && file !== null" :src="file" alt="Subcategory image"
+                class="subcategory-image">
             <img v-else src="/logo.jpg" alt="Subcategory image" class="subcategory-image">
         </div>
         <div class="info-container">
@@ -49,11 +50,9 @@ watch(() => props.info, async () => {
     display: flex;
     flex-direction: column;
     gap: 7px;
-    background-color: aqua;
     justify-content: center;
     align-items: center;
     border-radius: 15px;
-    box-shadow: 3px 3px 3px rgb(55, 230, 230);
     transition: all .5s ease;
 
     & .image-container {

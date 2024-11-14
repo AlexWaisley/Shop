@@ -24,10 +24,10 @@ const searchProduct = () => {
 <style scoped lang="scss">
 .searchbar-container {
     display: flex;
-    background-color: aliceblue;
+    background-color: $input-background;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 5px;
     border-radius: 15px;
     gap: 15px;
     width: 50%;
@@ -36,7 +36,6 @@ const searchProduct = () => {
     transition: border .3s ease;
 
     &:focus-within {
-
         border: 2px solid rgb(125, 169, 193);
     }
 

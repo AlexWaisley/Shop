@@ -2,30 +2,23 @@
 import { Category, Product } from '@models';
 import ImageBlockAdmin from './ImageBlockAdmin.vue';
 import SpecsBlock from '../Item/SpecsBlock.vue';
-import { useSessionStore, useCartStore, useCreatingStore, useProductStore, useDataStore, useDisplayInfoStore } from '@storage';
-import { computed, onMounted, ref, watch } from 'vue';
-import AvailabilityStatusWindow from './AvailabilityStatusWindow.vue';
+import { useSessionStore, useCreatingStore, useProductStore, useDataStore, useDisplayInfoStore, useAdminFormStatusStore } from '@storage';
+import { computed, ref, watch } from 'vue';
+import WindowForm from './WindowForm.vue';
+
 const sessionStore = useSessionStore();
 const createStore = useCreatingStore();
 const productStore = useProductStore();
-const cartStore = useCartStore();
 const dataStore = useDataStore();
-const fullProductInfo = ref<Product | null>(null);
 
-const id = sessionStore.pickedItem?.id;
-const availabilityStatus = ref<boolean>(false);
-const temp = ref<Product | null>(null);
+const fullProductInfo = ref<Product | null>(sessionStore.pickedItem);
+const pickedCategory = ref<Category | null>(dataStore.pickedCategory);
+
+const formStatusStore = useAdminFormStatusStore();
 const displayInfo = useDisplayInfoStore()
 
-onMounted(async () => {
-    if (id !== undefined) {
-        temp.value = await productStore.getFullProductById(id);
-        fullProductInfo.value = JSON.parse(JSON.stringify(temp.value));
-    }
-})
-
 const submitProductChanges = () => {
-    if (fullProductInfo.value !== null)
+    if (fullProductInfo.value !== null && pickedCategory.value !== null)
         createStore.UpdateProduct({
             id: fullProductInfo.value.id,
             name: fullProductInfo.value.name,
@@ -36,41 +29,32 @@ const submitProductChanges = () => {
         });
 
     displayInfo.changeIsEditItem(false);
+    console.log(displayInfo);
 }
 
 const switchAvailabilityStatus = () => {
-    availabilityStatus.value = !availabilityStatus.value;
+    formStatusStore.changeAvailabilityEdit(true);
 }
 
-const changeStatus = (status: string) => {
-    if (fullProductInfo.value === null) {
-        return;
-    }
-    if (status === "Available") {
-        fullProductInfo.value.isAvailable = true;
-    }
-    if (status === "Not available") {
-        fullProductInfo.value.isAvailable = false;
-    }
-    switchAvailabilityStatus();
-}
-
-watch(() => productStore.productsFullInfo, async () => {
-    if (id !== undefined) {
-        temp.value = await productStore.getFullProductById(id);
-        fullProductInfo.value = JSON.parse(JSON.stringify(temp.value));
-    }
+watch(() => productStore.productsFullInfo, () => {
+    if (sessionStore.pickedItem !== null)
+        fullProductInfo.value = sessionStore.pickedItem;
 }, { immediate: true, deep: true })
 
+watch(() => sessionStore.pickedItem, () => {
+    if (sessionStore.pickedItem !== null)
+        fullProductInfo.value = sessionStore.pickedItem;
+}, { immediate: true, deep: true })
 
-const pickedCategory = ref<Category>(sessionStore.pickedCategories![sessionStore.pickedCategories!.length - 1]);
 const isOpen = computed<string>((): string => {
     return openList.value ? "opened" : "";
 });
+
 const openList = ref<boolean>(false);
 const openListSwitch = () => {
     openList.value = !openList.value;
 }
+
 const changePicked = (category: Category) => {
     pickedCategory.value = category;
     openListSwitch();
@@ -96,7 +80,7 @@ const changePicked = (category: Category) => {
                             <span class="text-large-bold">Change availability</span>
                         </button>
                         <div class="select">
-                            <div @click="openListSwitch" :class="['picked', isOpen]">
+                            <div v-if="pickedCategory !== null" @click="openListSwitch" :class="['picked', isOpen]">
                                 <span class="text-default">{{ pickedCategory.name }}</span>
                             </div>
                             <div :class="['list', isOpen]">
@@ -120,8 +104,8 @@ const changePicked = (category: Category) => {
             <div @click="submitProductChanges" class="submit-btn">
                 <span class="text-large">Submit changes</span>
             </div>
-            <Teleport v-if="availabilityStatus" to="body">
-                <AvailabilityStatusWindow @status-changed="changeStatus"></AvailabilityStatusWindow>
+            <Teleport v-if="formStatusStore.availabilityEdit" to="body">
+                <WindowForm></WindowForm>
             </Teleport>
         </div>
     </div>
@@ -184,7 +168,7 @@ const changePicked = (category: Category) => {
                     overflow: hidden;
                     text-overflow: ellipsis;
                     border-radius: 15px 15px 0 0;
-                    background-color: aliceblue;
+                    background-color: $item-info-background-color;
                     box-shadow: 3px 3px 3px rgb(216, 237, 255);
                 }
 
@@ -195,12 +179,11 @@ const changePicked = (category: Category) => {
                     flex-direction: column;
                     gap: 15px;
                     justify-content: space-around;
-                    background-color: aliceblue;
+                    background-color: $item-info-background-color;
                     border-radius: 0 0 15px 15px;
-                    box-shadow: 3px 3px 3px rgb(216, 237, 255);
 
                     & .buy-button {
-                        background-color: skyblue;
+                        background-color: $button-color;
                         user-select: none;
                         padding: 10px;
                         border-radius: 15px;
@@ -208,7 +191,7 @@ const changePicked = (category: Category) => {
 
                         &:hover {
                             cursor: pointer;
-                            background-color: rgb(94, 175, 208);
+                            background-color: $button-color;
                         }
                     }
                 }
@@ -221,7 +204,7 @@ const changePicked = (category: Category) => {
             gap: 15px;
             justify-content: center;
             text-align: justify;
-            background-color: aliceblue;
+            background-color: $item-info-background-color;
             border-radius: 15px;
             padding: 20px;
             box-shadow: 3px 3px 3px rgb(216, 237, 255);
@@ -243,10 +226,9 @@ const changePicked = (category: Category) => {
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: skyblue;
+            background-color: $button-color;
             transition: all .5s ease;
             border-radius: 15px;
-            box-shadow: 3px 3px 3px rgb(98, 169, 198);
 
             &:hover {
                 cursor: pointer;

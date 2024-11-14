@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useDataStore, useDisplayInfoStore, useSessionStore } from '@storage';
-import AddNewCategoryForm from '../Admin/AddForms/NewCategory.vue';
+import { useAdminFormStatusStore, useDataStore, useDisplayInfoStore, useSessionStore } from '@storage';
+import WindowForm from '../Admin/WindowForm.vue';
 
 const sessionStore = useSessionStore();
 const displayInfoStore = useDisplayInfoStore();
+const formStatusStore = useAdminFormStatusStore();
 const dataStore = useDataStore();
 
 const showCategories = ref<boolean>(true);
-const addNewCategory = ref<boolean>(false);
-
-const changeAddNewCategoryShowStatus = () => {
-    addNewCategory.value = !addNewCategory.value;
-}
 
 const changeCategoriesShowStatus = () => {
     showCategories.value = !showCategories.value;
+}
+
+const changeAddNewCategoryShowStatus = () => {
+    formStatusStore.changeNewCategoryStatus(true);
 }
 
 </script>
@@ -36,8 +36,8 @@ const changeCategoriesShowStatus = () => {
                 </div>
             </div>
         </div>
-        <Teleport v-if="addNewCategory" to="body">
-            <AddNewCategoryForm :parent-category-id="0" @close="changeAddNewCategoryShowStatus"></AddNewCategoryForm>
+        <Teleport v-if="formStatusStore.newCategory" to="body">
+            <WindowForm></WindowForm>
         </Teleport>
     </div>
 </template>
@@ -50,7 +50,7 @@ const changeCategoriesShowStatus = () => {
     user-select: none;
 
     & .head {
-        background-color: rgb(110, 168, 231);
+        background-color: $catalog-head-background-color;
         max-width: 250px;
         border-top-right-radius: 15px;
         padding: 10px;
@@ -66,7 +66,7 @@ const changeCategoriesShowStatus = () => {
 
     & .category-container {
         max-width: 250px;
-        background-color: rgb(82, 189, 232);
+        background-color: $catalog-background;
         display: flex;
         flex-direction: column;
         gap: 7px;
@@ -96,7 +96,7 @@ const changeCategoriesShowStatus = () => {
             & .catalog-over {
                 z-index: 2;
                 position: absolute;
-                background-color: aliceblue;
+                background-color: rgb(226, 241, 255);
                 border-bottom-right-radius: 30px 40px;
                 width: 90%;
                 height: 40px;

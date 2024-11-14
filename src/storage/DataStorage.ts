@@ -9,9 +9,12 @@ import toastr from "toastr";
 export const useDataStore = defineStore('dataStore', () => {
     const categories = useLocalStorage<Category[] | null>('categoryList', null, { serializer: StorageSerializers.object });
     const rootCategories = useLocalStorage<Category[] | null>('rootCategoryList', null, { serializer: StorageSerializers.object });
+    const lastCategory = ref<Category | null>(null);
+    const pickedCategory = ref<Category | null>(null);
     const shippingAddresses = useLocalStorage<ShippingAddress[] | null>('shippingAddresses', null, { serializer: StorageSerializers.object });
     const displayedCategories = ref<Category[]>([]);
     const sessionStore = useSessionStore();
+
 
     const findCategoryByName = (name: string): Category | null => {
         if (rootCategories.value === null)
@@ -65,7 +68,11 @@ export const useDataStore = defineStore('dataStore', () => {
         categories.value = Array.from(map.values());
     }
 
-    const categoryUpdate = async (id: number, parentCategoryId: number, name: string) => {
+    const categoryUpdate = async (parentCategoryId: number, name: string) => {
+        if (pickedCategory.value === null)
+            return;
+
+        const id = pickedCategory.value.id;
         const result = await categoriesApi.UpdateCategory({ id, parentId: parentCategoryId, name });
         if (result) {
             if (categories.value === null)
@@ -82,7 +89,16 @@ export const useDataStore = defineStore('dataStore', () => {
         toastr.error("Something went wrong");
     }
 
-    const deleteCategory = async (id: number) => {
+    const changePickedCategory = (category: Category) => {
+        pickedCategory.value = category;
+        console.log(pickedCategory.value);
+    }
+
+    const deleteCategory = async () => {
+        if (pickedCategory.value === null)
+            return;
+
+        const id = pickedCategory.value.id;
         const result = await categoriesApi.DeleteCategory(id);
         if (result) {
             if (categories.value === null)
@@ -118,6 +134,9 @@ export const useDataStore = defineStore('dataStore', () => {
         findCategoryByName,
         findCategoryById,
         categoryUpdate,
-        deleteCategory
+        deleteCategory,
+        lastCategory,
+        pickedCategory,
+        changePickedCategory
     };
 })

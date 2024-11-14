@@ -7,7 +7,7 @@
 
 button {
   padding: .5rem;
-  background: skyblue;
+  background: $button-color;
   border: none;
   font-size: 16px;
   font-weight: 500;
@@ -48,6 +48,8 @@ button {
   border: 1px solid transparent;
   border-radius: 15px;
   transition: all .5s ease;
+  background-color: $button-color;
+
 
   & .icon-container {
     max-width: 100%;
@@ -69,6 +71,7 @@ button {
   }
 }
 
+
 .input {
   border: 2px solid transparent;
   width: 15em;
@@ -76,7 +79,7 @@ button {
   padding-left: 0.8em;
   outline: none;
   overflow: hidden;
-  background-color: #ffffff;
+  background-color: $input-background;
   border-radius: 10px;
   transition: all 0.5s;
 }
@@ -85,9 +88,8 @@ button {
 .input:focus {
   border: 2px solid #4A9DEC;
   box-shadow: 0px 0px 0px 7px rgb(74, 157, 236, 20%);
-  background-color: white;
+  background-color: #f4f4f4;
 }
-
 
 .text-large {
   @extend .text-default;

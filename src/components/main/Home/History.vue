@@ -38,7 +38,7 @@ const isNeededToShow = computed<boolean>(() => {
 .history-container {
     height: 430px;
     padding: 20px;
-    background-color: rgb(0, 225, 255);
+    background-color: $sub-main-background-color;
     border-radius: 15px;
     width: 100%;
     overflow-x: auto;

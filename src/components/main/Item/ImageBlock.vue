@@ -14,12 +14,10 @@ const files = ref<string[] | null>(null);
 
 const mainPhotoIndex = ref<number>(0);
 
-const isAddNewPhoto = ref<boolean>(false);
 
 const updatePreviews = async () => {
     img.value = await imageStore.getProductImages(props.fullInfo.id);
     files.value = await imageStore.getImageUrl(img.value);
-    isAddNewPhoto.value = false;
 }
 
 const nextPicture = () => {
@@ -31,6 +29,7 @@ const nextPicture = () => {
     }
     mainPhotoIndex.value++;
 }
+
 const previousPicture = () => {
     if (files.value === null)
         return;
@@ -78,9 +77,8 @@ onMounted(async () => {
 .image-block-container {
     display: flex;
     flex-direction: column;
-    background-color: aliceblue;
+    background-color: $item-info-background-color;
     border-radius: 15px;
-    box-shadow: 3px 3px 3px rgb(216, 237, 255);
     width: 750px;
     padding: 20px;
     align-items: center;
@@ -107,7 +105,6 @@ onMounted(async () => {
                 margin: 0 -50px;
                 justify-content: center;
                 width: 50px;
-                background-color: rgba(255, 255, 255, 0.627);
                 opacity: .2;
                 transition: all .5s ease;
 

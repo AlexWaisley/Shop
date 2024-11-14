@@ -129,7 +129,7 @@ const switchAdminPanelsStatus = () => {
     }
 
     & .main-block {
-        background-color: aliceblue;
+        background-color: $sub-main-background-color;
         border-radius: 15px;
         padding: 15px;
         display: grid;

@@ -3,28 +3,20 @@ import { Product } from '@models';
 import ImageBlock from './ImageBlock.vue';
 import SpecsBlock from './SpecsBlock.vue';
 import { useSessionStore, useCartStore, useDisplayInfoStore, useProductStore } from '@storage';
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 const sessionStore = useSessionStore();
 const productStore = useProductStore();
 const cartStore = useCartStore();
 const displayInfo = useDisplayInfoStore();
-const fullProductInfo = ref<Product | null>(null);
-
-const id = sessionStore.pickedItem?.id;
-
-onMounted(async () => {
-    if (id !== undefined)
-        fullProductInfo.value = await productStore.getFullProductById(id);
-})
+const fullProductInfo = ref<Product | null>(sessionStore.pickedItem);
 
 const editItem = () => {
     displayInfo.changeIsEditItem(true);
 }
 
-watch(() => productStore.productsFullInfo, async () => {
-    if (id !== undefined) {
-        fullProductInfo.value = await productStore.getFullProductById(id);
-    }
+watch(() => productStore.productsFullInfo, () => {
+    if (sessionStore.pickedItem !== null)
+        fullProductInfo.value = sessionStore.pickedItem;
 }, { immediate: true, deep: true })
 </script>
 
@@ -118,7 +110,7 @@ watch(() => productStore.productsFullInfo, async () => {
                     overflow: hidden;
                     text-overflow: ellipsis;
                     border-radius: 15px 15px 0 0;
-                    background-color: aliceblue;
+                    background-color: $item-info-background-color;
                     box-shadow: 3px 3px 3px rgb(216, 237, 255);
                 }
 
@@ -127,12 +119,12 @@ watch(() => productStore.productsFullInfo, async () => {
                     display: flex;
                     align-items: center;
                     justify-content: space-around;
-                    background-color: aliceblue;
+                    background-color: $item-info-background-color;
                     border-radius: 0 0 15px 15px;
                     box-shadow: 3px 3px 3px rgb(216, 237, 255);
 
                     & .buy-button {
-                        background-color: skyblue;
+                        background-color: $button-color;
                         user-select: none;
                         width: 100px;
                         padding: 10px;
@@ -154,7 +146,7 @@ watch(() => productStore.productsFullInfo, async () => {
             gap: 15px;
             justify-content: center;
             text-align: justify;
-            background-color: aliceblue;
+            background-color: $item-info-background-color;
             border-radius: 15px;
             padding: 20px;
             box-shadow: 3px 3px 3px rgb(216, 237, 255);
@@ -165,7 +157,6 @@ watch(() => productStore.productsFullInfo, async () => {
                 height: 100%;
                 padding: 20px;
                 border-radius: 15px;
-                background-color: rgb(227, 242, 255);
                 box-shadow: 3px 3px 3px rgb(216, 237, 255);
             }
         }
@@ -173,7 +164,7 @@ watch(() => productStore.productsFullInfo, async () => {
         & .edit-item-button {
             width: 100%;
             height: 80px;
-            background-color: skyblue;
+            background-color: $button-color;
             border-radius: 15px;
             display: flex;
             justify-content: center;

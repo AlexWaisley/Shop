@@ -19,6 +19,7 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
     const orderFullList = ref<OrderFull[] | null>(null);
     const orderItemsList = ref<OrderItemDto[] | null>(null);
     const allOrders = ref<OrderDto[] | null>(null);
+    const pickedOrder = ref<OrderDto | null>(null);
 
     const loadUserOrders = async () => {
         const result = await ordersApi.GetUserOrders();
@@ -30,6 +31,10 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
         orderList.value.forEach(async (x) => {
             await loadOrderItems(x.id);
         })
+    }
+
+    const changePickedOrder = (order: OrderDto) => {
+        pickedOrder.value = order;
     }
 
     const loadAllOrders = async () => {
@@ -153,7 +158,9 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
         loadAllOrders,
         UpdateOrderStatus,
         loadOrdersPart,
-        allOrders
+        allOrders,
+        pickedOrder,
+        changePickedOrder
 
     };
 });

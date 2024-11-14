@@ -61,7 +61,7 @@ const openHome = () => {
     height: 80px;
     display: grid;
     grid-template-columns: 80px 1fr 210px;
-    background-color: skyblue;
+    background-color: $header-background-color;
     align-items: center;
     justify-content: space-between;
     position: fixed;

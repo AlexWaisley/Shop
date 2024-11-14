@@ -111,7 +111,7 @@ export const useProductStore = defineStore('productStore', () => {
             if (productsFullInfo.value === null)
                 productsFullInfo.value = []
             productsFullInfo.value.push(result);
-            return result
+            return { ...result }
         }
 
         const product = productsFullInfo.value.find((p) => p.id === id);
@@ -124,10 +124,10 @@ export const useProductStore = defineStore('productStore', () => {
             if (productsFullInfo.value === null)
                 productsFullInfo.value = []
             productsFullInfo.value.push(result);
-            return result
+            return { ...result }
         }
 
-        return product;
+        return { ...product };
     }
 
     const loadProducts = async (categoryId: number) => {
@@ -157,9 +157,9 @@ export const useProductStore = defineStore('productStore', () => {
             return 0;
         }
         const categoryId = sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id;
-        displayProductsByCategoryId(categoryId);
+        if (displayStore.productPageOpen)
+            displayProductsByCategoryId(categoryId);
     })
-
 
     return {
         products,

@@ -180,6 +180,8 @@ export const useSessionStore = defineStore('sessionStore', () => {
             }
         }
 
+        dataStore.lastCategory = category;
+
         const parentCategoryId = pickedCategories.value[pickedCategories.value.length - 1].id;
         if (dataStore.categories === null) {
             if (!displayInfoStore.adminPanelsOn) {
@@ -230,7 +232,8 @@ export const useSessionStore = defineStore('sessionStore', () => {
             return;
 
         pickedCategories.value.unshift(category);
-
+        dataStore.lastCategory = category;
+        dataStore.pickedCategory = category;
         while (pickedCategories.value[0].parentCategory !== 0) {
             category = dataStore.findCategoryById(category.parentCategory);
             if (category === null)
@@ -246,7 +249,6 @@ export const useSessionStore = defineStore('sessionStore', () => {
             pickedItem.value = null;
         }
         displayInfoStore.resetAll();
-        displayInfoStore.changeHomeStatus(true);
     }
 
     const addToHistory = (productId: string) => {

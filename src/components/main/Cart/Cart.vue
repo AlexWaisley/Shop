@@ -71,12 +71,20 @@ const changeQuantity = async (id: string, quantity: number, productId: string) =
 </template>
 <style scoped lang="scss">
 .cart-container {
-    display: grid;
-    grid-template-columns: 1fr 400px;
+    @media screen and (min-width:1050px) {
+        display: grid;
+        gap: 15px;
+        grid-template-columns: 1fr 400px;
+    }
+
+    @media screen and (max-width:1050px) {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
 
 
     & .products-list {
-        max-width: 90%;
         display: flex;
         flex-direction: column;
         gap: 15px;
@@ -87,7 +95,7 @@ const changeQuantity = async (id: string, quantity: number, productId: string) =
         display: flex;
         flex-direction: column;
         border-radius: 15px;
-        background-color: aliceblue;
+        background-color: $sub-main-background-color;
         gap: 15px;
         text-align: center;
         justify-content: space-around;
@@ -117,7 +125,7 @@ const changeQuantity = async (id: string, quantity: number, productId: string) =
         & .submit {
             & .buy-button {
                 padding: 10px;
-                background-color: skyblue;
+                background-color: $button-color;
                 border-radius: 15px;
                 width: 100%;
                 height: 100%;
