@@ -249,6 +249,7 @@ export const useSessionStore = defineStore('sessionStore', () => {
             pickedItem.value = null;
         }
         displayInfoStore.resetAll();
+        displayInfoStore.changeHomeStatus(true);
     }
 
     const addToHistory = (productId: string) => {

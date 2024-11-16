@@ -21,17 +21,18 @@ const searchProduct = () => {
         </div>
     </div>
 </template>
+
 <style scoped lang="scss">
 .searchbar-container {
     display: flex;
     background-color: $input-background;
-    justify-content: center;
     align-items: center;
     padding: 5px;
     border-radius: 15px;
     gap: 15px;
     width: 50%;
     min-width: 200px;
+
     border: 2px solid transparent;
     transition: border .3s ease;
 

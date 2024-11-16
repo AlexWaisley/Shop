@@ -1,36 +1,16 @@
 <script setup lang="ts">
 import { Category } from '@models';
-import { useAdminFormStatusStore, useDataStore, usePreviewImagesStore, useSessionStore } from '@storage';
-import { onMounted, ref, Teleport, watch } from 'vue';
+import { useAdminFormStatusStore, useDataStore, useSessionStore } from '@storage';
+import SubcategoryImage from '@main/General/SubcategoryImage.vue';
 import WindowForm from './WindowForm.vue';
 
 const sessionStore = useSessionStore();
-const file = ref<string | null>(null);
-const imageStore = usePreviewImagesStore();
 const formStatusStore = useAdminFormStatusStore();
 const dataStore = useDataStore();
 
 const props = defineProps<{
     info: Category;
 }>();
-
-onMounted(async () => {
-    const temp = await imageStore.getCategoryImages(props.info.id);
-    const url = await imageStore.getImageUrl(temp);
-    file.value = url[0];
-})
-
-watch(() => props.info, async () => {
-    const temp = await imageStore.getCategoryImages(props.info.id);
-    const url = await imageStore.getImageUrl(temp);
-    file.value = url[0];
-})
-
-watch(() => imageStore.categoriesPreviews, async () => {
-    const temp = await imageStore.getCategoryImages(props.info.id);
-    const url = await imageStore.getImageUrl(temp);
-    file.value = url[0];
-})
 
 const switchMenuStatusChange = () => {
     dataStore.changePickedCategory(props.info);
@@ -43,11 +23,7 @@ const switchMenuStatusChange = () => {
         <div @click="switchMenuStatusChange" class="edit-button">
             <img src="/dots.svg" alt="Edit">
         </div>
-        <div @click="sessionStore.pickCategory(props.info)" class="image-container">
-            <img v-if="file !== undefined && file !== null" :src="file" alt="Subcategory image"
-                class="subcategory-image">
-            <img v-else src="/logo.jpg" alt="Subcategory image" class="subcategory-image">
-        </div>
+        <SubcategoryImage @click="sessionStore.pickCategory(props.info)" :info="props.info"></SubcategoryImage>
         <div @click="sessionStore.pickCategory(props.info)" class="info-container">
             <div class="info">
                 <div class="name">
@@ -76,18 +52,6 @@ const switchMenuStatusChange = () => {
     border-radius: 15px;
     transition: all .5s ease;
     position: relative;
-
-    & .image-container {
-        max-height: 200px;
-        max-width: 200px;
-        overflow: hidden;
-
-        & .subcategory-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-    }
 
     & .info-container {
         display: flex;

@@ -1,0 +1,92 @@
+@mixin icon-button($width, $height) {
+    & .button {
+        height: $height;
+        width: $width;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid transparent;
+        border-radius: 15px;
+        transition: all .5s ease;
+        background-color: $button-color;
+
+        @include center-image(100%, 100%);
+
+        &:disabled {
+            background-color: aliceblue;
+        }
+
+        &:hover {
+            cursor: pointer;
+            background-color: aliceblue
+        }
+    }
+}
+
+@mixin input-style {
+    .input {
+        border: 2px solid transparent;
+        width: 15em;
+        height: 2.5em;
+        padding-left: 0.8em;
+        outline: none;
+        overflow: hidden;
+        background-color: $input-background;
+        border-radius: 10px;
+        transition: all 0.5s;
+
+        &:hover,
+        &:focus {
+            border: 2px solid #4A9DEC;
+            box-shadow: 0px 0px 0px 7px rgb(74, 157, 236, 20%);
+            background-color: #f4f4f4;
+        }
+    }
+}
+
+@mixin hidden-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+}
+
+@mixin center-image($height, $width) {
+    .image-container {
+        display: flex;
+        justify-content: center;
+        max-height: $height;
+        max-width: $width;
+        overflow: hidden;
+
+        & .image {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+    }
+}
+
+@mixin text-button($height, $width) {
+    .text-button {
+        width: 100%;
+        height: 80px;
+        background-color: $button-color;
+        border-radius: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all .5s ease;
+
+        &:hover {
+            cursor: pointer;
+            background-color: rgb(104, 187, 219);
+        }
+    }
+}

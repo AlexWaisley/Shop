@@ -1,9 +1,23 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import History from './History.vue';
+
+const isShowScroll = ref<boolean>(true);
+
+const showScroll = () => {
+    isShowScroll.value = true;
+}
+const closeScroll = () => {
+    setTimeout(() => {
+        isShowScroll.value = false;
+    }, 500);
+}
+
+closeScroll();
 
 </script>
 <template>
-    <div class="main">
+    <div @mouseover="showScroll" @mouseleave="closeScroll" :class="['main', isShowScroll ? 'show-scrollbar' : '']">
         <History></History>
     </div>
 </template>
@@ -14,6 +28,8 @@ import History from './History.vue';
     display: flex;
     flex-direction: column;
     gap: 30px;
+    transition: all 0.3s ease;
 
+    @include hidden-scroll;
 }
 </style>

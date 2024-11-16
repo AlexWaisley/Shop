@@ -31,8 +31,8 @@ watch(() => props.info, async () => {
 <template>
     <div class="item-card-container">
         <div @click="pickItem()" class="image-container">
-            <img v-if="file !== null && file !== undefined" :src="file" alt="Item image" class="item-image">
-            <img v-else src="/logo.jpg" alt="not loaded">
+            <img v-if="file !== null && file !== undefined" :src="file" alt="Item image" class="image">
+            <img v-else src="/logo.jpg" class="image" alt="not loaded">
         </div>
         <div class="info-container">
             <div @click="pickItem()" class="info">
@@ -47,10 +47,8 @@ watch(() => props.info, async () => {
                     <span class="text-large-bold">{{ props.info.price }}$</span>
                 </div>
                 <button :disabled="(!props.info.isAvailable || cartStore.isItemInCart(props.info.id))"
-                    @click="cartStore.addToCart(props.info.id, 1)" class="buy-button"><!-- 
-                    <span class="text-large">Buy</span> -->
+                    @click="cartStore.addToCart(props.info.id, 1)" class="button">
                     <img src="/cart.svg" width="30px" alt="Buy">
-
                 </button>
             </div>
         </div>
@@ -65,27 +63,13 @@ watch(() => props.info, async () => {
     display: grid;
     grid-template-rows: 200px 1fr;
     gap: 7px;
+    padding: 10px;
     background-color: $card-background-color;
 
-
     border-radius: 15px;
-    /* box-shadow: 3px 3px 3px rgb(55, 230, 230); */
     transition: all .5s ease;
 
-    & .image-container {
-        max-height: 200px;
-        max-width: 100%;
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        padding: 10px;
-
-        & .item-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-    }
+    @include center-image(200px, 100%);
 
     & .info-container {
         display: grid;
@@ -111,33 +95,13 @@ watch(() => props.info, async () => {
                 max-height: 54px;
             }
 
-            & .buy-button {
-                background-color: $button-color;
-                padding: 5px;
-                border-radius: 15px;
-                transition: all .5s ease;
-                z-index: 5;
-                user-select: none;
-                width: 70px;
-                height: 40px;
-
-                &:disabled {
-                    background-color: aliceblue;
-                }
-
-                &:hover {
-                    cursor: pointer;
-                    background-color: rgb(94, 175, 208);
-                }
-            }
-
+            @include icon-button(70px, 40px);
         }
     }
 
     &:hover {
         cursor: pointer;
         box-shadow: 12px 12px 12px rgb(97, 185, 220);
-
     }
 }
 </style>

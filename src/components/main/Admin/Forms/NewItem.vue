@@ -20,12 +20,15 @@ const parentCategoryId = computed<number>(() => {
 });
 
 const addNewProduct = () => {
-    creatingStore.AddNewProduct({
-        name: itemName.value,
-        description: description.value,
-        price: new Decimal(price.value),
-        categoryId: parentCategoryId.value
-    });
+    const regex = /^[0-9]+(\.[0-9]+)?$/;
+    const priceValid = regex.test(price.value);
+    if (priceValid)
+        creatingStore.AddNewProduct({
+            name: itemName.value,
+            description: description.value,
+            price: new Decimal(price.value),
+            categoryId: parentCategoryId.value
+        });
     closeWindow();
 }
 

@@ -4,11 +4,12 @@ import Main from './Main.vue';
 import Subcategories from '../Subcategories/Subcategories.vue';
 import SubcategoriesAdmin from '@main/Admin/SubcategoriesAdmin.vue';
 import { shallowRef, watch } from 'vue';
-import { useDisplayInfoStore, useSessionStore } from '@storage';
+import { useDisplayInfoStore } from '@storage';
+import Query from '@main/General/Query.vue';
 
-const sessionStore = useSessionStore();
 const currMain = shallowRef(Main);
 const displayInfoStore = useDisplayInfoStore();
+
 
 watch(() => displayInfoStore.categoryPageStatus, () => {
     if (displayInfoStore.categoryPageStatus && !displayInfoStore.adminPanelsOn)
@@ -27,6 +28,7 @@ watch(() => displayInfoStore.categoryPageStatus, () => {
             <Catalog />
         </div>
         <div class="main-container">
+            <Query />
             <component :is="currMain" />
         </div>
     </div>
@@ -42,6 +44,8 @@ watch(() => displayInfoStore.categoryPageStatus, () => {
         max-width: 100%;
         height: 100%;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }
 }
 </style>

@@ -14,7 +14,6 @@ const files = ref<string[] | null>(null);
 
 const mainPhotoIndex = ref<number>(0);
 
-
 const updatePreviews = async () => {
     img.value = await imageStore.getProductImages(props.fullInfo.id);
     files.value = await imageStore.getImageUrl(img.value);
@@ -62,12 +61,12 @@ onMounted(async () => {
                 </div>
             </div>
             <div class="image-container">
-                <img v-if="files !== null" :src="files[mainPhotoIndex]" type="file" alt="Stuff image" class="preview">
+                <img v-if="files !== null" :src="files[mainPhotoIndex]" type="file" alt="Stuff image" class="image">
             </div>
         </div>
         <div class="all-pictures">
-            <div v-for="(imageSrc, index) in files" @click="pickMainPhoto(index)" class="image-container-small">
-                <img :src="imageSrc" alt="preview" class="preview">
+            <div v-for="(imageSrc, index) in files" @click="pickMainPhoto(index)" class="image-container">
+                <img :src="imageSrc" alt="preview" class="image">
             </div>
         </div>
     </div>
@@ -119,18 +118,7 @@ onMounted(async () => {
             }
         }
 
-        & .image-container {
-            max-height: 100%;
-            max-width: 100%;
-            overflow: hidden;
-            z-index: 5;
-
-            & .preview {
-                max-width: 600px;
-                max-height: 600px;
-                object-fit: contain;
-            }
-        }
+        @include center-image(600px, 600px);
     }
 
     & .all-pictures {
@@ -141,39 +129,12 @@ onMounted(async () => {
         padding: 10px;
         overflow-x: auto;
 
-        & .add-container {
-            & .add_preview {
-                width: 80px;
-                max-height: 80px;
-                border-radius: 7px;
-                overflow: hidden;
-                border: 1px solid transparent;
-                transition: all .5s ease;
-                display: flex;
-                justify-content: center;
+        @include center-image(80px, 80px);
 
-                &:hover {
-                    border: 1px solid blue;
-                }
-            }
-        }
-
-        & .image-container-small {
-            width: 80px;
-            min-width: 80px;
-            min-height: 80px;
+        & .image-container {
             border-radius: 7px;
-            overflow: hidden;
             border: 1px solid transparent;
             transition: all .5s ease;
-            display: flex;
-            justify-content: center;
-
-            & .preview {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-            }
 
             &:hover {
                 border: 1px solid blue;

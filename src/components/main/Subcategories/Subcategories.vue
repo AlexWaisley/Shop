@@ -21,6 +21,7 @@ const dataStore = useDataStore();
     gap: 15px;
     padding: 20px;
     justify-content: center;
-    background-color: aquamarine;
+    background-color: $sub-main-background-color;
+    border-radius: 5px;
 }
 </style>

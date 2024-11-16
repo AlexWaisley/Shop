@@ -3,6 +3,7 @@ import { useSessionStore, useOrderRecordStore, useDisplayInfoStore } from '@stor
 import { onMounted, ref } from 'vue';
 import InputField from '../General/InputField.vue';
 import Order from '../Order/Order.vue';
+import OrderAdmin from '@main/Admin/OrderAdmin.vue';
 import ChangePassword from './ChangePassword.vue';
 const sessionStore = useSessionStore();
 const orderStore = useOrderRecordStore();
@@ -11,15 +12,15 @@ const displayInfoStore = useDisplayInfoStore();
 const userName = ref<string>("");
 onMounted(async () => {
     await orderStore.loadUserOrders();
+    if (sessionStore.currUser !== null)
+        userName.value = sessionStore.currUser.name;
+
 })
 
-if (sessionStore.currUser !== null) {
-    userName.value = sessionStore.currUser.name;
-}
 
 const userEmail = ref<string>("");
 const changePassRequired = ref<boolean>(false);
-const orderListStatus = ref<boolean>(false);
+const orderListStatus = ref<boolean>(true);
 const allOrderListStatus = ref<boolean>(false);
 
 if (sessionStore.currUser !== null) {
@@ -96,15 +97,16 @@ const switchAdminPanelsStatus = () => {
                 </button>
             </div>
             <div v-if="!changePassRequired" class="section">
-                <div v-if="orderStore.orderList !== null && orderStore.orderList.length !== 0" class="orders-list">
+                <div v-if="orderStore.orderList !== null && orderStore.orderList.length !== 0 && orderListStatus"
+                    class="orders-list">
                     <Order v-for="value in orderStore.orderList" :info="value"></Order>
+                </div>
+                <div v-else-if="orderStore.allOrders !== null && orderStore.allOrders.length !== 0 && allOrderListStatus"
+                    class="orders-list">
+                    <OrderAdmin v-for="value in orderStore.allOrders" :info="value"></OrderAdmin>
                 </div>
                 <div v-else class="plain">
                     <span class="text-large">You have no orders.</span>
-                </div>
-                <div v-if="orderStore.allOrders !== null && orderStore.allOrders.length !== 0 && allOrderListStatus"
-                    class="orders-list">
-                    <Order v-for="value in orderStore.allOrders" :info="value"></Order>
                 </div>
                 <div v-if="sessionStore.isCurrUserAdmin() && orderListStatus && orderStore.allOrders !== null && orderStore.allOrders.length % 20 === 0 && orderStore.allOrders.length !== 0"
                     @click="oneMore" class="loader-button">

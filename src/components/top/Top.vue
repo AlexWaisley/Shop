@@ -35,18 +35,18 @@ const openHome = () => {
         <div class="section">
             <div class="additional-buttons">
                 <div v-if="sessionStore.currUser !== null" class="button">
-                    <div @click="sessionStore.logOut" class="icon-container">
-                        <img src="/logout.svg" alt="account" class="icon">
+                    <div @click="sessionStore.logOut" class="image-container">
+                        <img src="/logout.svg" alt="account" class="image">
                     </div>
                 </div>
                 <div class="button">
-                    <div @click="openAccount" class="icon-container">
-                        <img src="/account.svg" alt="account" class="icon">
+                    <div @click="openAccount" class="image-container">
+                        <img src="/account.svg" alt="account" class="image">
                     </div>
                 </div>
                 <div @click="openCart" class="button">
-                    <div class="icon-container">
-                        <img src="/cart.svg" alt="cart" class="icon">
+                    <div class="image-container">
+                        <img src="/cart.svg" alt="cart" class="image">
                     </div>
                 </div>
             </div>
@@ -56,15 +56,12 @@ const openHome = () => {
 
 <style scoped lang="scss">
 .top-container {
-    z-index: 5555;
     width: 100%;
-    height: 80px;
+    max-height: 80px;
     display: grid;
     grid-template-columns: 80px 1fr 210px;
     background-color: $header-background-color;
-    align-items: center;
     justify-content: space-between;
-    position: fixed;
     padding: 0 10px;
 
     & .section {
@@ -76,13 +73,11 @@ const openHome = () => {
         & .logo-container {
             max-height: 70px;
             max-width: 70px;
-            overflow: hidden;
             cursor: pointer;
 
             & .logo-img {
                 max-height: 100%;
                 max-width: 100%;
-                object-fit: contain;
             }
         }
 
@@ -92,8 +87,8 @@ const openHome = () => {
             align-items: center;
             gap: 15px;
 
+            @include icon-button(60px, 60px);
         }
     }
-
 }
 </style>

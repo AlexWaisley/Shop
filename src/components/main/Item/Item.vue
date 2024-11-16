@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Product } from '@models';
 import ImageBlock from './ImageBlock.vue';
-import SpecsBlock from './SpecsBlock.vue';
 import { useSessionStore, useCartStore, useDisplayInfoStore, useProductStore } from '@storage';
 import { ref, watch } from 'vue';
+import Query from '@main/General/Query.vue';
 const sessionStore = useSessionStore();
 const productStore = useProductStore();
 const cartStore = useCartStore();
@@ -22,6 +22,9 @@ watch(() => productStore.productsFullInfo, () => {
 
 <template>
     <div v-if="fullProductInfo !== null" class="primary-container">
+        <div class="head">
+            <Query></Query>
+        </div>
         <div class="item-container">
             <div class="item">
                 <div class="image-container">
@@ -36,19 +39,16 @@ watch(() => productStore.productsFullInfo, () => {
                             <span class="text-large">{{ fullProductInfo.price }}$</span>
                         </div>
                         <button :disabled="cartStore.isItemInCart(fullProductInfo.id) || !fullProductInfo.isAvailable"
-                            @click="cartStore.addToCart(fullProductInfo.id, 1)" class="buy-button">
-                            <img src="/cart.svg" alt="Buy">
+                            @click="cartStore.addToCart(fullProductInfo.id, 1)" class="button">
+                            <img src="/cart.svg" alt="Buy" class="icon">
                         </button>
                     </div>
                 </div>
             </div>
             <div class="item-info">
                 <div class="description">{{ fullProductInfo.description }}</div>
-                <div class="specs">
-                    <SpecsBlock></SpecsBlock>
-                </div>
             </div>
-            <div @click="editItem" v-if="displayInfo.adminPanelsOn" class="edit-item-button">
+            <div @click="editItem" v-if="displayInfo.adminPanelsOn" class="text-button">
                 <span class="text-large">edit</span>
             </div>
         </div>
@@ -57,10 +57,15 @@ watch(() => productStore.productsFullInfo, () => {
 <style scoped lang="scss">
 .primary-container {
     display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
     justify-content: center;
+    align-items: center;
 
+    & .head {
+        width: max(80%, 1000px);
+    }
 
     & .item-container {
         height: 100%;
@@ -92,11 +97,6 @@ watch(() => productStore.productsFullInfo, () => {
                 }
             }
 
-
-            & .image-container {
-                max-width: 100%;
-            }
-
             & .fast-info {
                 border-radius: 15px;
                 text-overflow: ellipsis;
@@ -122,20 +122,7 @@ watch(() => productStore.productsFullInfo, () => {
                     background-color: $item-info-background-color;
                     border-radius: 0 0 15px 15px;
                     box-shadow: 3px 3px 3px rgb(216, 237, 255);
-
-                    & .buy-button {
-                        background-color: $button-color;
-                        user-select: none;
-                        width: 100px;
-                        padding: 10px;
-                        border-radius: 15px;
-                        transition: all .5s ease;
-
-                        &:hover {
-                            cursor: pointer;
-                            background-color: rgb(94, 175, 208);
-                        }
-                    }
+                    @include icon-button(100px, 60px);
                 }
             }
         }
@@ -161,21 +148,7 @@ watch(() => productStore.productsFullInfo, () => {
             }
         }
 
-        & .edit-item-button {
-            width: 100%;
-            height: 80px;
-            background-color: $button-color;
-            border-radius: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all .5s ease;
-
-            &:hover {
-                cursor: pointer;
-                background-color: rgb(104, 187, 219);
-            }
-        }
+        @include text-button(80px, 100%);
     }
 }
 </style>

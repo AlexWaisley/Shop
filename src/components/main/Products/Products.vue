@@ -4,6 +4,7 @@ import Catalog from '../General/Catalog.vue';
 import { useDataStore, useProductStore, useSessionStore } from '@storage';
 import { ProductDto } from '@models';
 import { ref, watch } from 'vue';
+import Query from '@main/General/Query.vue';
 
 const sessionStore = useSessionStore();
 const dataStore = useDataStore();
@@ -27,6 +28,7 @@ const oneMore = async () => {
             <div class="filter-container"></div>
         </div>
         <div class="products">
+            <Query></Query>
             <ItemCard v-if="items !== null && items.length !== 0" v-for="value in items" :info="value"></ItemCard>
             <span v-else class="text-large">Sorry, there doesn't seem to be
                 anything like that</span>
@@ -59,33 +61,6 @@ const oneMore = async () => {
         flex-wrap: wrap;
         gap: 15px;
         justify-content: center;
-
-        & .add-button {
-
-            min-width: 250px;
-            max-width: 250px;
-            height: 320px;
-            overflow: hidden;
-            display: grid;
-            gap: 7px;
-            background-color: aqua;
-
-            border-radius: 15px;
-            box-shadow: 3px 3px 3px rgb(55, 230, 230);
-            transition: all .5s ease;
-            justify-content: center;
-            align-items: center;
-
-            & img {
-                transform: rotateZ(45deg);
-            }
-
-            &:hover {
-                cursor: pointer;
-                box-shadow: 12px 12px 12px rgb(97, 185, 220);
-
-            }
-        }
 
         & .loader-button {
             width: 100%;
