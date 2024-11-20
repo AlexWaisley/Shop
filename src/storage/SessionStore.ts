@@ -23,11 +23,11 @@ export const useSessionStore = defineStore('sessionStore', () => {
     const currUser = useLocalStorage<User | null>('currUser', null, { serializer: StorageSerializers.object });
 
 
-    watch(() => cookies.get('ultra-shop-token-refresh'), async (newVal) => {
-        if (newVal === undefined) {
-            logOut();
-        }
-    }, { immediate: true })
+    // watch(() => cookies.get('ultra-shop-token-refresh'), async (newVal) => {
+    //     if (newVal === undefined) {
+    //         logOut();
+    //     }
+    // }, { immediate: true })
 
     const pickedCategories = ref<Category[] | null>(null);
     const pickedItem = ref<Product | null>(null);
