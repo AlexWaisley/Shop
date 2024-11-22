@@ -68,20 +68,28 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
         })
     }
 
-    const calcTotal = (orderId: string) => {
+    const calcTotal = async (reqOrderId: string): Promise<Decimal> => {
         if (orderItemsList.value === null) {
-            return;
+            return new Decimal(-1);
         }
-
-        const orderItems = orderItemsList.value.filter(x => x.orderId === orderId);
+        const orderItems = orderItemsList.value.filter(x => x.orderId === reqOrderId);
         if (orderItems === undefined || orderItems.length === 0)
             return new Decimal(-1);
 
+        const res = async () => {
+            let total = new Decimal(0);
 
-        return orderItems.reduce((acc, item) => {
-            const productPrice = new Decimal(productStore.getProductPriceById(item.productId));
-            return acc.plus(productPrice.mul(item.quantity));
-        }, new Decimal(0));
+            for (const item of orderItems) {
+                const productPrice = new Decimal(await productStore.getProductPriceById(item.productId));
+                total = total.plus(productPrice.mul(item.quantity));
+            }
+
+            return total;
+        };
+
+        const total = await res();
+
+        return total;
     }
 
     const loadFullOrderInfo = async (orderId: string) => {
@@ -98,6 +106,7 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
     const loadOrderItems = async (orderId: string) => {
         if (orderItemsList.value === null) {
             orderItemsList.value = [];
+            return;
         }
         const orderItems = orderItemsList.value.filter(item => item.orderId === orderId);
         if (orderItems !== undefined && orderItems.length > 0)

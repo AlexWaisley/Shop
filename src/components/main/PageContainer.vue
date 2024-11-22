@@ -28,12 +28,14 @@ function updatePage() {
             currPage.value = Products;
             break;
         case displayInfoStore.cartStatus:
+            console.log("aboba");
             currPage.value = Cart;
             break;
         case displayInfoStore.accountInfoStatus:
             currPage.value = Account;
             break;
         case displayInfoStore.homeStatus:
+            console.log("sugoma");
             currPage.value = Home;
             break;
         default:
@@ -45,7 +47,7 @@ function updatePage() {
 
 watch(() => displayInfoStore.accountInfoStatus, updatePage, { immediate: true });
 watch(() => displayInfoStore.productPageOpen, updatePage, { immediate: true });
-watch(() => displayInfoStore.cartStatus, updatePage);
+watch(() => displayInfoStore.cartStatus, updatePage, { immediate: true });
 watch(() => displayInfoStore.productFullInfoPageStatus, updatePage);
 watch(() => displayInfoStore.isEditItemPage, updatePage, { immediate: true });
 watch(() => displayInfoStore.homeStatus, updatePage, { immediate: true });

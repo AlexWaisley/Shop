@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { OrderDto, OrderItemDto } from '@models';
 import { useDataStore, useOrderRecordStore } from '@storage';
 import OrderProductCard from './OrderProductCard.vue';
+import Decimal from 'decimal.js';
 const orderStore = useOrderRecordStore();
 const dataStore = useDataStore();
 
@@ -14,7 +15,6 @@ const isExpandOrder = ref<boolean>(false);
 const ordersItemsList = ref<OrderItemDto[]>([]);
 
 watch(isExpandOrder, async () => {
-    await orderStore.loadOrderItems(props.info.id);
     const itemList = orderStore.orderItemsList?.filter(x => x.orderId === props.info.id);
     if (itemList === undefined) {
         return;
@@ -33,6 +33,13 @@ const address = dataStore.shippingAddresses?.find(x => x.id === props.info.shipp
 if (address !== undefined)
     addressInfo.value = address.street + ", " + address.house;
 
+const total = ref<Decimal | null>(null);
+onMounted(async () => {
+    await orderStore.loadOrderItems(props.info.id);
+    const smt = await orderStore.calcTotal(props.info.id);
+    total.value = smt;
+});
+
 </script>
 <template>
     <div class="order-container">
@@ -44,7 +51,7 @@ if (address !== undefined)
                 <span class="text-large">{{ props.info.status }}</span>
             </div>
             <div class="price-container">
-                <span class="text-large">{{ orderStore.calcTotal(props.info.id) }}$</span>
+                <span class="text-large">{{ total }}$</span>
             </div>
             <div class="address-container">
                 <span class="text-large">Address info: {{ addressInfo }}</span>

@@ -6,9 +6,9 @@ const cartStore = useCartStore();
 const displayInfoStore = useDisplayInfoStore();
 
 const openCart = async () => {
+    await cartStore.loadCart();
     sessionStore.clearAll();
     displayInfoStore.changeCartStatus(true);
-    await cartStore.loadCart();
 }
 
 const openAccount = () => {

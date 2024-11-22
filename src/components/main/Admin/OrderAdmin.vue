@@ -4,6 +4,7 @@ import { OrderDto, OrderItemDto } from '@models';
 import { useAdminFormStatusStore, useDataStore, useOrderRecordStore } from '@storage';
 import OrderProductCard from '../Order/OrderProductCard.vue';
 import WindowForm from './WindowForm.vue';
+import Decimal from 'decimal.js';
 const orderStore = useOrderRecordStore();
 const dataStore = useDataStore();
 
@@ -46,6 +47,13 @@ onMounted(async () => {
     await orderStore.loadOrderItems(props.info.id);
 })
 
+
+const total = ref<Decimal | null>(null);
+onMounted(async () => {
+    await orderStore.loadOrderItems(props.info.id);
+    const smt = await orderStore.calcTotal(props.info.id);
+    total.value = smt;
+});
 </script>
 <template>
     <div class="order-container">
@@ -57,7 +65,7 @@ onMounted(async () => {
                 <span class="text-large">{{ props.info.status }}</span>
             </div>
             <div class="price-container">
-                <span class="text-large">{{ orderStore.calcTotal(props.info.id) }}$</span>
+                <span class="text-large">{{ total }}$</span>
             </div>
             <div class="address-container">
                 <span class="text-large">Address info: {{ addressInfo }}</span>

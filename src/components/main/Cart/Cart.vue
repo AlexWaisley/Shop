@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import ProductCard from './ProductCard.vue';
 import { useCartStore, useDataStore, useOrderRecordStore } from '@storage';
 import Decimal from 'decimal.js';
@@ -13,6 +13,7 @@ const isBucketContainsItems = computed<boolean>(() => {
     return cartStore.cart !== null && cartStore.cart.items.length !== 0;
 });
 
+
 const orderSubmitted = ref<boolean>(false);
 
 const submitOrder = () => {
@@ -20,18 +21,22 @@ const submitOrder = () => {
     orderSubmitted.value = true;
 }
 
-const totalPrice = ref<Decimal>(cartStore.calcTotal());
+const totalPrice = ref<Decimal>(new Decimal(0));
+console.log(isBucketContainsItems.value);
 const totalQuantity = ref<number>(cartStore.calcTotalQuantity());
 
-watch(() => cartStore.cart, () => {
-    totalPrice.value = cartStore.calcTotal();
+watch(() => cartStore.cart, async () => {
+    totalPrice.value = await cartStore.calcTotal();
     totalQuantity.value = cartStore.calcTotalQuantity();
 }, { deep: true });
+
+onMounted(async () => {
+    totalPrice.value = await cartStore.calcTotal();
+});
 
 const changeQuantity = async (id: string, quantity: number, productId: string) => {
     await cartStore.changeProductQuantity(id, quantity, productId);
 }
-
 </script>
 <template>
     <div v-if="isBucketContainsItems" class="cart-container">

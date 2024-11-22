@@ -14,12 +14,12 @@
         @include center-image(100%, 100%);
 
         &:disabled {
-            background-color: aliceblue;
+            background-color: $button-color-disable;
         }
 
         &:hover {
             cursor: pointer;
-            background-color: aliceblue
+            background-color: $button-color-hover
         }
     }
 }

@@ -13,7 +13,7 @@ const props = defineProps<{
 
 const quantity = ref<number>(props.info.quantity);
 
-const product = ref<ProductDto | null>(productStore.getProductById(props.info.productId));
+const product = ref<ProductDto | null>(null);
 const totalCost = computed<Decimal>(() => {
     if (product.value === null) {
         return new Decimal(1);
@@ -24,6 +24,7 @@ const totalCost = computed<Decimal>(() => {
 const file = ref<string | null>(null);
 
 onMounted(async () => {
+    product.value = await productStore.getProductById(props.info.productId);
     if (previewStore.productsPreviews === null) {
         await previewStore.LoadProductsPreviews(props.info.productId);
     }
@@ -45,6 +46,7 @@ onMounted(async () => {
     <div class="product-container">
         <div class="image-container">
             <img v-if="file !== null" :src="file" alt="product preview" class="image-preview" />
+            <img v-else src="/logo.jpg" alt="product preview" class="image-preview" />
         </div>
         <div v-if="product !== null" class="info-container">
             <div @click="sessionStorage.pickItem(product.id)" class="name">

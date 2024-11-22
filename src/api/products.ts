@@ -25,6 +25,18 @@ export const GetProductInfoById = async (id: string): Promise<Product | null> =>
     }
 };
 
+export const GetProductById = async (id: string): Promise<Product | null> => {
+    try {
+        const { data, status } = await apiInstance.get(`/products/general/id=${id}`);
+        console.log('[api]', 'User valid status:', status);
+        return data;
+    }
+    catch (e) {
+        console.log(e);
+        return null;
+    }
+};
+
 export const GetProductList = async (count: number, offset: number): Promise<Product[] | null> => {
     try {
         const { data, status } = await apiInstance.get(`/products/general/count=${count}&offset=${offset}`);

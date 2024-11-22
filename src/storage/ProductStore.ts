@@ -82,22 +82,40 @@ export const useProductStore = defineStore('productStore', () => {
     };
 
 
-    const getProductPriceById = (id: string): Decimal => {
-        if (products.value === null || products.value.length === 0) {
-            return new Decimal(0);
+    const getProductPriceById = async (id: string): Promise<Decimal> => {
+        let product: ProductDto | undefined;
+        if (products.value !== null) {
+            product = products.value.find((p) => p.id === id);
+            if (product === undefined) {
+                const temp = await productsApi.GetProductById(id);
+                if (temp !== null) {
+                    product = temp;
+                    products.value.push(product);
+                }
+            }
         }
-        const product = products.value.find((p) => p.id === id);
+        else {
+            const temp = await productsApi.GetProductById(id);
+            if (temp !== null)
+                product = temp;
+        }
         return product ? product.price : new Decimal(0);
     }
 
-    const getProductById = (id: string): ProductDto | null => {
+    const getProductById = async (id: string): Promise<ProductDto | null> => {
         if (products.value === null || products.value.length === 0) {
             return null;
         }
 
         const product = products.value.find((p) => p.id === id);
-        if (product === undefined)
+        if (product === undefined) {
+            const temp = await productsApi.GetProductById(id);
+            if (temp !== null) {
+                products.value.push(temp);
+                return temp;
+            }
             return null;
+        }
 
         return product;
     }

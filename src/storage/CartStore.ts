@@ -16,16 +16,19 @@ export const useCartStore = defineStore('cartStore', () => {
 
     const cart = useLocalStorage<CartDto | null>('cart', null, { serializer: StorageSerializers.object });
 
-    const calcTotal = (): Decimal => {
+    const calcTotal = async (): Promise<Decimal> => {
         if (cart.value === null || cart.value.items.length === 0) {
             return new Decimal(-1);
         }
 
-        return cart.value.items.reduce((acc, item) => {
-            const productPrice = new Decimal(productStore.getProductPriceById(item.productId));
-            return acc.plus(productPrice.times(new Decimal(item.quantity)));
-        }, new Decimal(0));
-    }
+        let total = new Decimal(0);
+
+        for (const item of cart.value.items) {
+            const productPrice = new Decimal(await productStore.getProductPriceById(item.productId));
+            total = total.plus(productPrice.times(new Decimal(item.quantity)));
+        }
+        return total;
+    };
 
     const calcTotalQuantity = (): number => {
         if (cart.value === null || cart.value.items.length === 0)
@@ -41,10 +44,17 @@ export const useCartStore = defineStore('cartStore', () => {
         if (dataStorage.shippingAddresses === null) {
             await dataStorage.loadShippingAddresses();
         }
-        if (result === null || cart.value === null) {
+        if (result === null) {
             return;
         }
         cart.value = result;
+        for (const item of cart.value.items) {
+            const temp = await productStore.getProductById(item.productId);
+            if (temp) {
+                continue;
+            }
+
+        }
     }
 
     const isItemInCart = (productId: string) => {
@@ -59,6 +69,11 @@ export const useCartStore = defineStore('cartStore', () => {
     }
 
     const addToCart = async (productId: string, quantity: number) => {
+
+        if (sessionStore.currUser !== null) {
+            await loadCart();
+        }
+
         if (cart.value === null) {
             cart.value = { id: "0", items: [] };
         }
