@@ -92,12 +92,12 @@ const deleteCurrImage = async () => {
             <div class="image-container">
                 <img v-if="files !== null" :src="files[mainPhotoIndex]" type="file" alt="Stuff image" class="preview">
             </div>
-            <div @click="deleteCurrImage" class="delete-button">
+            <div v-if="files !== null && files.length > 0" @click="deleteCurrImage" class="delete-button">
                 <img src="/cross.svg" alt="Delete image" class="add_preview">
             </div>
         </div>
         <div class="all-pictures">
-            <div @click="changeAddNewPhotoStatus" class="add-container">
+            <div @click="changeAddNewPhotoStatus" class="button">
                 <img src="/cross.svg" alt="Add image" class="add_preview">
             </div>
             <div v-for="(imageSrc, index) in files" @click="pickMainPhoto(index)" class="image-container-small">
@@ -195,21 +195,11 @@ const deleteCurrImage = async () => {
         padding: 10px;
         overflow-x: auto;
 
-        & .add-container {
-            & .add_preview {
-                width: 80px;
-                max-height: 80px;
-                border-radius: 7px;
-                overflow: hidden;
-                border: 1px solid transparent;
-                transition: all .5s ease;
-                display: flex;
-                justify-content: center;
+        @include icon-button(80px, 80px);
 
-                &:hover {
-                    border: 1px solid blue;
-                }
-            }
+        & .button>img {
+            transform: rotateZ(45deg);
+
         }
 
         & .image-container-small {

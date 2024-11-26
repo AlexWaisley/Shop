@@ -5,6 +5,7 @@ import { useAdminFormStatusStore, useDataStore, useProductStore, useSessionStore
 import { ProductDto } from '@models';
 import { ref, watch } from 'vue';
 import WindowForm from './WindowForm.vue';
+import Query from '@main/General/Query.vue';
 
 const sessionStore = useSessionStore();
 const dataStore = useDataStore();
@@ -34,13 +35,18 @@ const oneMore = async () => {
             <div class="filter-container"></div>
         </div>
         <div class="products">
-            <div @click="changeAddNewItemShowStatus" class="add-button">
-                <img src="/cross.svg" alt="add new category">
+            <div class="products-query">
+                <Query />
             </div>
-            <ItemCard v-if="items !== null && items.length !== 0" v-for="value in items" :info="value"></ItemCard>
-            <div v-if="items !== null && items.length % 20 === 0 && items.length !== 0" @click="oneMore"
-                class="loader-button">
-                <span class="text-large">Load more</span>
+            <div class="products-main">
+                <div @click="changeAddNewItemShowStatus" class="add-button">
+                    <img src="/cross.svg" alt="add new category">
+                </div>
+                <ItemCard v-if="items !== null && items.length !== 0" v-for="value in items" :info="value"></ItemCard>
+                <div v-if="items !== null && items.length % 20 === 0 && items.length !== 0" @click="oneMore"
+                    class="loader-button">
+                    <span class="text-large">Load more</span>
+                </div>
             </div>
         </div>
         <Teleport v-if="formStatusStore.newItem" to="body">
@@ -61,57 +67,60 @@ const oneMore = async () => {
     }
 
     & .products {
-        padding: 20px;
-        background-color: $sub-main-background-color;
-        box-shadow: 3px 3px 3px rgb(207, 228, 246);
-        border-radius: 15px;
-        height: 100%;
-        width: 100%;
         display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        justify-content: center;
+        flex-direction: column;
+        width: 100%;
 
-        & .add-button {
-
-            min-width: 250px;
-            max-width: 250px;
-            height: 320px;
-            overflow: hidden;
-            display: grid;
-            gap: 7px;
-            background-color: $card-background-color;
-
+        & .products-main {
+            padding: 20px;
+            background-color: $sub-main-background-color;
+            box-shadow: 3px 3px 3px rgb(207, 228, 246);
             border-radius: 15px;
-            box-shadow: 3px 3px 3px rgb(55, 230, 230);
-            transition: all .5s ease;
-            justify-content: center;
-            align-items: center;
-
-            & img {
-                transform: rotateZ(45deg);
-            }
-
-            &:hover {
-                cursor: pointer;
-                box-shadow: 12px 12px 12px rgb(97, 185, 220);
-
-            }
-        }
-
-        & .loader-button {
+            height: 100%;
             width: 100%;
-            height: 80px;
-            background-color: $button-color;
             display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
             justify-content: center;
-            align-items: center;
-            border-radius: 15px;
-            transition: all .5s ease;
 
-            &:hover {
-                background-color: rgb(95, 157, 181);
-                cursor: pointer;
+            & .add-button {
+                min-width: 250px;
+                max-width: 250px;
+                height: 320px;
+                overflow: hidden;
+                display: grid;
+                gap: 7px;
+                background-color: $card-background-color;
+
+                border-radius: 15px;
+                transition: all .5s ease;
+                justify-content: center;
+                align-items: center;
+
+                & img {
+                    transform: rotateZ(45deg);
+                }
+
+                &:hover {
+                    cursor: pointer;
+                    box-shadow: rgb(80, 160, 192) 0px 0px 7px 0px;
+                }
+            }
+
+            & .loader-button {
+                width: 100%;
+                height: 80px;
+                background-color: $button-color;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 15px;
+                transition: all .5s ease;
+
+                &:hover {
+                    background-color: rgb(95, 157, 181);
+                    cursor: pointer;
+                }
             }
         }
     }

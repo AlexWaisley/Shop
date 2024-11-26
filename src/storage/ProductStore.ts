@@ -104,7 +104,7 @@ export const useProductStore = defineStore('productStore', () => {
 
     const getProductById = async (id: string): Promise<ProductDto | null> => {
         if (products.value === null || products.value.length === 0) {
-            return null;
+            products.value = [];
         }
 
         const product = products.value.find((p) => p.id === id);

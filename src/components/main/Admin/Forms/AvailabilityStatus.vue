@@ -27,6 +27,8 @@ const setStatus = async (status: string) => {
     flex-direction: column;
     justify-content: center;
     width: 50%;
+    padding-top: 20px;
+    overflow: auto;
 
     & .buttons-container {
         width: 100%;

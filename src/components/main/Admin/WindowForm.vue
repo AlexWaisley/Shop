@@ -74,22 +74,6 @@ watch(() => formStatusStore.categoryEdit, updatePage, { immediate: true });
         display: flex;
         justify-content: center;
         align-items: center;
-        /* 
-        & .form {
-            display: flex;
-            gap: 40px;
-            flex-direction: column;
-            justify-content: center;
-            width: 50%;
-
-            & .buttons-container {
-                width: 100%;
-                display: flex;
-                justify-content: space-around;
-            }
-        } */
-
     }
-
 }
 </style>

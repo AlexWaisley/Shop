@@ -68,7 +68,7 @@ onMounted(async () => {
     max-height: 200px;
     padding: 10px;
     padding-right: 30px;
-    background-color: $linear-card-background-color;
+    background-color: $linear-product-card-background-color;
     border-radius: 15px;
     position: relative;
 

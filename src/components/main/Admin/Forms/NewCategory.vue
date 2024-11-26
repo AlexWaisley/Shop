@@ -36,8 +36,12 @@ const closeWindow = () => {
         <InputField v-model="categoryName" type="text" placeholder="Category name"></InputField>
         <AddPhoto @file-changed="updateFile"></AddPhoto>
         <div class="buttons-container">
-            <button type="reset" @click="closeWindow">Cancel</button>
-            <button type="submit">Submit</button>
+            <button class="text-button" type="reset" @click="closeWindow">
+                <span class="text-large">Cancel</span>
+            </button>
+            <button class="text-button" type="submit">
+                <span class="text-large">Submit</span>
+            </button>
         </div>
     </form>
 </template>
@@ -46,13 +50,16 @@ const closeWindow = () => {
     display: flex;
     gap: 40px;
     flex-direction: column;
-    justify-content: center;
     width: 50%;
+    overflow: auto;
+    max-height: 100%;
+    padding: 20px;
 
     & .buttons-container {
         width: 100%;
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
+        @include text-button(40px, 45%);
     }
 }
 </style>

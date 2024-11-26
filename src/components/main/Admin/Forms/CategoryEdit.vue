@@ -14,15 +14,21 @@ const parentCategory = ref<string>("");
 const buttonText = ref<string>("Delete");
 
 const category = dataStore.lastCategory;
-if (category !== null)
+if (category !== null) {
     parentCategory.value = category.name;
+}
+if (dataStore.pickedCategory !== null)
+    name.value = dataStore.pickedCategory.name;
 const file = ref<FormData | null>(null);
 
 const submitChanges = async () => {
-    const tempCategory = dataStore.findCategoryByName(parentCategory.value)
-    if (tempCategory === null || name.value === "") {
-        toastr.error("broken");
-        return;
+    let tempCategory = dataStore.findCategoryByName(parentCategory.value);
+
+    if ((tempCategory === null || name.value === "")) {
+        if (tempCategory === null) {
+            toastr.error("Bruh");
+            return;
+        }
     }
 
     await dataStore.categoryUpdate(tempCategory.id, name.value);
@@ -59,9 +65,15 @@ const closeWindow = () => {
             <InputField v-model="parentCategory" placeholder="Parent category name" type="text"></InputField>
             <AddPhoto @file-changed="updateFile"></AddPhoto>
         </div>
-        <button @click="submitChanges">Submit changes</button>
-        <button @click="closeWindow">Cancel</button>
-        <button @click="deleteCategory">{{ buttonText }}</button>
+        <button class="text-button" @click="submitChanges">
+            <span class="text-large">Submit changes</span>
+        </button>
+        <button class="text-button" @click="closeWindow">
+            <span class="text-large">Cancel</span>
+        </button>
+        <button class="text-button" @click="deleteCategory">
+            <span class="text-large">{{ buttonText }}</span>
+        </button>
     </div>
 </template>
 
@@ -73,10 +85,11 @@ const closeWindow = () => {
     border-radius: 15px;
     padding: 7px;
     display: flex;
-    justify-content: center;
     align-items: center;
     flex-direction: column;
     gap: 15px;
+    padding-top: 20px;
+    overflow: auto;
 
     & .form {
         display: flex;
@@ -92,8 +105,6 @@ const closeWindow = () => {
         }
     }
 
-    &>button {
-        width: 50%;
-    }
+    @include text-button(40px, 50%);
 }
 </style>

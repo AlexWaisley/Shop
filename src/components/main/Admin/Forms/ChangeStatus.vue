@@ -17,10 +17,18 @@ const setStatus = async (status: string) => {
 
 <template>
     <div class="form">
-        <button @click="setStatus('Processing')">Processing</button>
-        <button @click="setStatus('In transit')">In transit</button>
-        <button @click="setStatus('Awaiting for pickup')">Awaiting for pickup</button>
-        <button @click="setStatus('Picked up')">Picked up</button>
+        <button class="text-button" @click="setStatus('Processing')">
+            <span class="text-large">Processing</span>
+        </button>
+        <button class="text-button" @click="setStatus('In transit')">
+            <span class="text-large">In transit</span>
+        </button>
+        <button class="text-button" @click="setStatus('Awaiting for pickup')">
+            <span class="text-large">Awaiting for pickup</span>
+        </button>
+        <button class="text-button" @click="setStatus('Picked up')">
+            <span class="text-large">Picked up</span>
+        </button>
     </div>
 </template>
 <style scoped lang="scss">
@@ -28,13 +36,10 @@ const setStatus = async (status: string) => {
     display: flex;
     gap: 40px;
     flex-direction: column;
-    justify-content: center;
-    width: 50%;
-
-    & .buttons-container {
-        width: 100%;
-        display: flex;
-        justify-content: space-around;
-    }
+    padding: 20px;
+    width: 80%;
+    max-height: 100%;
+    overflow: auto;
+    @include text-button(40px, 100%);
 }
 </style>

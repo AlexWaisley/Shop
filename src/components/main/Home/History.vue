@@ -55,7 +55,7 @@ const isNeededToShow = computed<boolean>(() => {
             max-width: 100%;
             gap: 15px;
             padding-bottom: 10px;
-            overflow-x: auto;
+            padding-left: 5px;
         }
     }
 }

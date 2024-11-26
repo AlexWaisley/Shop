@@ -144,7 +144,7 @@ watch(() => productStore.productsFullInfo, () => {
                 height: 100%;
                 padding: 20px;
                 border-radius: 15px;
-                box-shadow: 3px 3px 3px rgb(216, 237, 255);
+                background-color: $input-background;
             }
         }
 

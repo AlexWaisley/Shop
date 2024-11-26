@@ -30,7 +30,6 @@ const props = defineProps<{
     min-width: 250px;
     width: 250px;
     height: 250px;
-    overflow: hidden;
     gap: 7px;
     display: flex;
     flex-direction: column;
@@ -38,6 +37,7 @@ const props = defineProps<{
     align-items: center;
     border-radius: 15px;
     transition: all .5s ease;
+    background-color: $card-background-color;
 
     & .info-container {
         display: flex;
@@ -54,7 +54,8 @@ const props = defineProps<{
 
     &:hover {
         cursor: pointer;
-        box-shadow: 12px 12px 12px rgb(97, 185, 220);
+        box-shadow: rgb(80, 160, 192) 0px 0px 7px 0px;
+
     }
 }
 </style>

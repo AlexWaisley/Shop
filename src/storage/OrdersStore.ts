@@ -118,8 +118,13 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
         if (result === null) {
             return;
         }
+        console.log(orderItemsList.value);
 
-        orderItemsList.value.push(...result);
+        orderItemsList.value.push(
+            ...result.filter(
+                (item) => !orderItemsList.value!.some(existingItem => existingItem.orderId === item.orderId && existingItem.productId === item.productId)
+            )
+        );
     };
 
     const UpdateOrderStatus = async (orderId: string, status: string): Promise<boolean> => {

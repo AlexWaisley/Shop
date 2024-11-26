@@ -36,8 +36,12 @@ watch(() => files.value, (newFiles) => {
 <template>
     <div class="photo-container">
         <div class="buttons-container">
-            <button type="button" @click="open()">Choose image</button>
-            <button type="button" @click="reset()">Reset</button>
+            <button class="text-button" type="button" @click="open()">
+                <span class="text-large">Choose image</span>
+            </button>
+            <button class="text-button" type="button" @click="reset()">
+                <span class="text-large">Reset</span>
+            </button>
         </div>
         <div v-if="imageUrl !== null && files !== null" class="preview-info">
             <img v-if="imageUrl !== null" :src="imageUrl" alt="pic" class="preview">
@@ -57,7 +61,10 @@ watch(() => files.value, (newFiles) => {
         gap: 15px;
         width: 100%;
         justify-content: center;
+        align-items: center;
+        @include text-button(40px, 100%);
     }
+
 
     & .preview-info {
         display: flex;

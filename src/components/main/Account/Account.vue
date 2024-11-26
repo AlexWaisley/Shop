@@ -30,8 +30,12 @@ const register = () => {
                     <InputField v-model="password" placeholder="Password" type="password"></InputField>
                 </div>
                 <div class="submit-btns">
-                    <button type="button" @click="register">Register</button>
-                    <button type="submit">Login</button>
+                    <button class="text-button" type="button" @click="register">
+                        <span class="text-large">Register</span>
+                    </button>
+                    <button class="text-button" type="submit">
+                        <span class="text-large">Login</span>
+                    </button>
                 </div>
             </form>
 
@@ -49,7 +53,6 @@ const register = () => {
 
 
     & .load-account {
-
         display: flex;
         width: 100%;
         align-items: center;
@@ -74,6 +77,7 @@ const register = () => {
                 display: flex;
                 width: 100%;
                 justify-content: space-between;
+                @include text-button(40px, 40%);
 
             }
         }

@@ -26,12 +26,12 @@ const changeAddNewCategoryShowStatus = () => {
 </script>
 <template>
     <div class="subcategories-container">
-        <div @click="changeAddNewCategoryShowStatus" class="add-button">
+        <div @click="changeAddNewCategoryShowStatus" class="button add">
             <img src="/cross.svg" alt="add new subcategory">
         </div>
         <SubcategoryCard v-if="dataStore.displayedCategories !== null && dataStore.displayedCategories.length !== 0"
             v-for="value in dataStore.displayedCategories" :info="value" />
-        <div v-if="dataStore.displayedCategories.length === 0" @click="openProductsPage" class="add-button">
+        <div v-if="dataStore.displayedCategories.length === 0" @click="openProductsPage" class="button continue">
             <img src="/switch.svg" alt="Go to products">
         </div>
         <Teleport v-if="formStatusStore.newCategory" to="body">
@@ -51,7 +51,7 @@ const changeAddNewCategoryShowStatus = () => {
     background-color: $sub-main-background-color;
     border-radius: 5px;
 
-    & .add-button {
+    & .button {
         min-width: 250px;
         height: 250px;
         overflow: hidden;
@@ -64,14 +64,16 @@ const changeAddNewCategoryShowStatus = () => {
         border-radius: 15px;
         transition: all .5s ease;
 
-        & img {
-            transform: rotateZ(45deg);
+        &.continue > img{
+                transform: rotateZ(180deg);            
+        }
+        &.add> img{
+            transform: rotateZ(45deg);            
         }
 
         &:hover {
             cursor: pointer;
-            box-shadow: 12px 12px 12px rgb(97, 185, 220);
-
+            box-shadow: rgb(80, 160, 192) 0px 0px 7px 0px;
         }
     }
 }

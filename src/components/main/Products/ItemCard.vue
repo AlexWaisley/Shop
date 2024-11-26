@@ -101,7 +101,7 @@ watch(() => props.info, async () => {
 
     &:hover {
         cursor: pointer;
-        box-shadow: 12px 12px 12px rgb(97, 185, 220);
+        box-shadow: rgb(80, 160, 192) 0px 0px 7px 0px;
     }
 }
 </style>

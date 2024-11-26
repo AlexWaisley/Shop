@@ -76,7 +76,7 @@ const changePicked = (category: Category) => {
                         <div class="price-container">
                             <input class="input" type="text" v-model="fullProductInfo.price" />
                         </div>
-                        <button @click="switchAvailabilityStatus" class="buy-button">
+                        <button @click="switchAvailabilityStatus" class="text-button">
                             <span class="text-large-bold">Change availability</span>
                         </button>
                         <div class="select">
@@ -162,6 +162,8 @@ const changePicked = (category: Category) => {
                 flex-direction: column;
                 gap: 15px;
 
+                @include input-style(100%);
+
                 & .name-container {
                     padding: 20px;
                     display: flex;
@@ -169,7 +171,6 @@ const changePicked = (category: Category) => {
                     text-overflow: ellipsis;
                     border-radius: 15px 15px 0 0;
                     background-color: $item-info-background-color;
-                    box-shadow: 3px 3px 3px rgb(216, 237, 255);
                 }
 
                 & .cart-container {
@@ -181,19 +182,7 @@ const changePicked = (category: Category) => {
                     justify-content: space-around;
                     background-color: $item-info-background-color;
                     border-radius: 0 0 15px 15px;
-
-                    & .buy-button {
-                        background-color: $button-color;
-                        user-select: none;
-                        padding: 10px;
-                        border-radius: 15px;
-                        transition: all .5s ease;
-
-                        &:hover {
-                            cursor: pointer;
-                            background-color: $button-color;
-                        }
-                    }
+                    @include text-button(60px, 90%);
                 }
             }
         }
@@ -207,16 +196,15 @@ const changePicked = (category: Category) => {
             background-color: $item-info-background-color;
             border-radius: 15px;
             padding: 20px;
-            box-shadow: 3px 3px 3px rgb(216, 237, 255);
             width: 100%;
+            @include input-style(100%);
 
             & .description {
                 width: 100%;
                 height: 100%;
                 padding: 20px;
                 border-radius: 15px;
-                background-color: rgb(227, 242, 255);
-                box-shadow: 3px 3px 3px rgb(216, 237, 255);
+                background-color: $input-background;
             }
         }
 

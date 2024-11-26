@@ -17,7 +17,7 @@ const dataStore = useDataStore();
 .subcategories-container {
     display: flex;
     flex-wrap: wrap;
-    max-width: 100%;
+    width: 100%;
     gap: 15px;
     padding: 20px;
     justify-content: center;

@@ -29,8 +29,12 @@ const closeWindow = () => {
     <form @submit.prevent="addNewPhoto" class="form">
         <AddPhoto @file-changed="updateFile"></AddPhoto>
         <div class="button-container">
-            <button type="button" @click="closeWindow">Close</button>
-            <button type="submit">Add</button>
+            <button class="text-button" type="button" @click="closeWindow">
+                <span class="text-large">Close</span>
+            </button>
+            <button class="text-button" type="submit">
+                <span class="text-large">Add</span>
+            </button>
         </div>
     </form>
 </template>
@@ -39,13 +43,16 @@ const closeWindow = () => {
     display: flex;
     gap: 15px;
     flex-direction: column;
-    justify-content: center;
-    width: 50%;
+    width: 60%;
+    padding: 20px;
+    max-height: 100%;
+    overflow: auto;
 
     & .button-container {
         width: 100%;
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
+        @include text-button(40px, 45%);
     }
 }
 </style>

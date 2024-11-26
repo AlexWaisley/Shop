@@ -57,13 +57,29 @@ onMounted(async () => {
                 <span class="text-large">Address info: {{ addressInfo }}</span>
             </div>
         </div>
-        <div v-if="isExpandOrder" class="content">
-            <OrderProductCard v-for="value in ordersItemsList" :info="value">
-            </OrderProductCard>
-        </div>
+        <transition name="slide-fade">
+            <div v-if="isExpandOrder" class="content">
+                <OrderProductCard v-for="value in ordersItemsList" :info="value">
+                </OrderProductCard>
+            </div>
+        </transition>
     </div>
 </template>
 <style scoped lang="scss">
+.slide-fade-enter-active {
+    transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+    transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+    transform: translateX(20px);
+    opacity: 0;
+}
+
 .order-container {
     background-color: $linear-card-background-color;
     width: 100%;

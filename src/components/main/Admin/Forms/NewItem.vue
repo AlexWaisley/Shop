@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import InputField from '@main/General/InputField.vue';
 import { useAdminFormStatusStore, useCreatingStore, useSessionStore } from '@storage';
 import Decimal from 'decimal.js';
+import toastr from 'toastr';
 
 const creatingStore = useCreatingStore();
 const sessionStore = useSessionStore();
@@ -22,14 +23,18 @@ const parentCategoryId = computed<number>(() => {
 const addNewProduct = () => {
     const regex = /^[0-9]+(\.[0-9]+)?$/;
     const priceValid = regex.test(price.value);
-    if (priceValid)
+    if (priceValid) {
         creatingStore.AddNewProduct({
             name: itemName.value,
             description: description.value,
             price: new Decimal(price.value),
             categoryId: parentCategoryId.value
         });
-    closeWindow();
+        closeWindow();
+    }
+    else {
+        toastr.error("Price is invalid");
+    }
 }
 
 const closeWindow = () => {
@@ -42,8 +47,12 @@ const closeWindow = () => {
         <InputField v-model="description" type="text" placeholder="Description"></InputField>
         <InputField v-model="price" type="text" placeholder="Price"></InputField>
         <div class="buttons-container">
-            <button type="reset" @click="closeWindow">Cancel</button>
-            <button type="submit">Submit</button>
+            <button class="text-button" type="reset" @click="closeWindow">
+                <span class="text-large">Cancel</span>
+            </button>
+            <button class="text-button" type="submit">
+                <span class="text-large">Submit</span>
+            </button>
         </div>
     </form>
 </template>
@@ -52,13 +61,16 @@ const closeWindow = () => {
     display: flex;
     gap: 40px;
     flex-direction: column;
-    justify-content: center;
     width: 50%;
+    padding: 20px;
+    overflow: auto;
+    max-height: 100%;
 
     & .buttons-container {
         width: 100%;
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
+        @include text-button(50px, 45%);
     }
 }
 </style>

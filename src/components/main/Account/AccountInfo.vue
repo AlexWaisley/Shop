@@ -72,27 +72,27 @@ const switchAdminPanelsStatus = () => {
                 <InputField placeholder="Name" v-model="userName" type="text"></InputField>
                 <InputField placeholder="Email" v-model="userEmail" type="text"></InputField>
 
-                <button @click="submitChanges">
+                <button class="text-button" @click="submitChanges">
                     <span class="text-large">Submit changes</span>
                 </button>
 
-                <button @click="changePassword">
+                <button class="text-button" @click="changePassword">
                     <span class="text-large">Change password</span>
                 </button>
 
-                <button @click="openOrders">
+                <button class="text-button" @click="openOrders">
                     <span class="text-large">Open orders</span>
                 </button>
 
-                <button v-if="!sessionStore.currUser?.email.isActive" @click="validateEmail">
+                <button v-if="!sessionStore.currUser?.email.isActive" class="text-button" @click="validateEmail">
                     <span class="text-large">Validate email</span>
                 </button>
 
-                <button v-if="sessionStore.currUser?.isAdmin" @click="openAllOrders">
+                <button v-if="sessionStore.currUser?.isAdmin" class="text-button" @click="openAllOrders">
                     <span class="text-large">Open All Orders</span>
                 </button>
 
-                <button v-if="sessionStore.currUser?.isAdmin" @click="switchAdminPanelsStatus">
+                <button v-if="sessionStore.currUser?.isAdmin" class="text-button" @click="switchAdminPanelsStatus">
                     <span class="text-large">Switch admin panels status</span>
                 </button>
             </div>
@@ -142,6 +142,8 @@ const switchAdminPanelsStatus = () => {
             display: flex;
             flex-direction: column;
             gap: 50px;
+
+            @include text-button(60px, 100%);
         }
 
         & .section {

@@ -87,7 +87,7 @@ body,
     &:hover,
     &.opened {
       cursor: pointer;
-      border: 2px solid gray;
+      border: 2px solid $select-border-color;
     }
 
     &.opened {
@@ -108,13 +108,13 @@ body,
     flex-direction: column;
     opacity: 0;
     transition: all .5s ease;
-    background-color: #4A9DEC;
+    background-color: $item-info-background-color;
     padding: 5px;
     z-index: -5;
 
     &.opened {
       opacity: 1;
-      border: 2px solid gray;
+      border: 2px solid $select-border-color;
       transform: translateY(37px);
       border-radius: 0 0 7px 7px;
       z-index: 10;
@@ -128,7 +128,7 @@ body,
 
       &:hover {
         cursor: pointer;
-        background-color: aliceblue;
+        background-color: $button-color-hover;
       }
     }
   }

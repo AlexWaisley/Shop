@@ -71,11 +71,13 @@ onMounted(async () => {
                 <span class="text-large">Address info: {{ addressInfo }}</span>
             </div>
         </div>
-        <div v-if="isExpandOrder" class="content">
-            <OrderProductCard v-for="value in ordersItemsList" :info="value">
-            </OrderProductCard>
-        </div>
-        <div @click="editOrder" class="change-status-button">
+        <transition name="slide-fade">
+            <div v-if="isExpandOrder" class="content">
+                <OrderProductCard v-for="value in ordersItemsList" :info="value">
+                </OrderProductCard>
+            </div>
+        </transition>
+        <div @click="editOrder" class="text-button">
             <span class="text-large">Change status</span>
         </div>
         <Teleport v-if="formStatusStore.orderStatusEdit" to="body">
@@ -84,8 +86,22 @@ onMounted(async () => {
     </div>
 </template>
 <style scoped lang="scss">
+.slide-fade-enter-active {
+    transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+    transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+    transform: translateX(20px);
+    opacity: 0;
+}
+
 .order-container {
-    background-color: skyblue;
+    background-color: $linear-card-background-color;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -107,20 +123,10 @@ onMounted(async () => {
         gap: 7px;
     }
 
-    & .change-status-button {
-        display: flex;
-        width: 100%;
-        height: 80px;
-        justify-content: center;
-        align-items: center;
-        border-radius: 15px;
-        background-color: aliceblue;
-        transition: all .5s ease;
+    @include text-button(80px, 100%);
 
-        &:hover {
-            background-color: rgb(189, 218, 243);
-            cursor: pointer;
-        }
+    & .text-button:hover {
+        background-color: #b2daf5;
     }
 }
 </style>
