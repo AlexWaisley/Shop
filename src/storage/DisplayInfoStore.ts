@@ -41,8 +41,8 @@ export const useDisplayInfoStore = defineStore('displayInfo', () => {
         productFullInfoPageStatus.value = newStatus;
     }
 
-    const changeAdminPanelStatus = () => {
-        adminPanelsOn.value = !adminPanelsOn.value;
+    const changeAdminPanelStatus = (newStatus: boolean) => {
+        adminPanelsOn.value = newStatus;
         const mode = adminPanelsOn.value ? "on" : "off";
         const info = "Edit mode " + mode;
         toastr.info(info);

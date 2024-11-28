@@ -55,7 +55,7 @@ export const useCreatingStore = defineStore('creatingStore', () => {
             await dataStorage.loadCategories(categoryCreateRequest.parentCategoryId);
             return;
         }
-        toastr.error("Something went wrong");
+        toastr.error("Something went wrong(maybe category with this name already exists)");
     }
 
     const AddNewProduct = async (productCreateRequest: ProductCreateRequest) => {

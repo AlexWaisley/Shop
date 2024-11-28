@@ -87,7 +87,7 @@ watch(() => props.info, async () => {
             </div>
         </div>
         <div v-if="!props.isQuantityFixed" class="additional-buttons-container">
-            <div @click="cartStore.removeFromCart(props.info.id)" class="delete-button">
+            <div @click="cartStore.removeFromCart(props.info.productId)" class="delete-button">
                 <img src="/cross.svg" alt="delete" class="icon">
             </div>
         </div>

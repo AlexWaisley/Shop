@@ -70,6 +70,7 @@ const oneMore = async () => {
             flex-wrap: wrap;
             gap: 15px;
             justify-content: center;
+            align-items: center;
 
             & .loader-button {
                 width: 100%;

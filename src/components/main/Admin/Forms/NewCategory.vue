@@ -10,10 +10,12 @@ const categoryName = ref<string>("");
 const file = ref<FormData | null>(null);
 
 const addNewCategory = async () => {
-    if (dataStore.lastCategory === null)
-        return
-    await creatingStore.AddNewCategory({ name: categoryName.value, parentCategoryId: dataStore.lastCategory.id });
-
+    if (dataStore.lastCategory === null) {
+        await creatingStore.AddNewCategory({ name: categoryName.value, parentCategoryId: 0 });
+    }
+    else {
+        await creatingStore.AddNewCategory({ name: categoryName.value, parentCategoryId: dataStore.lastCategory.id });
+    }
     const category = dataStore.findCategoryByName(categoryName.value);
 
     if (category !== null && file.value !== null) {
@@ -50,7 +52,7 @@ const closeWindow = () => {
     display: flex;
     gap: 40px;
     flex-direction: column;
-    width: 50%;
+    width: 70%;
     overflow: auto;
     max-height: 100%;
     padding: 20px;

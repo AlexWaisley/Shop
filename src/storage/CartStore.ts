@@ -94,10 +94,27 @@ export const useCartStore = defineStore('cartStore', () => {
         }
     }
 
-    const removeFromCart = async (cartItemId: string) => {
+    const removeFromCart = async (productId: string) => {
         if (cart.value === null) {
             cart.value = { id: "0", items: [] };
         }
+        if (cart.value.items.length > 0) {
+            const index = cart.value.items.findIndex(x => x.productId === productId);
+            if (index !== undefined) {
+                cart.value.items.splice(index, 1);
+            }
+        }
+
+        if (sessionStore.currUser === null) {
+            return;
+        }
+
+        const temp = cart.value.items.find(x => x.productId === productId);
+        if (temp === undefined) {
+            return;
+        }
+
+        const cartItemId = temp.id;
 
         const result = await cartApi.RemoveFromCart(cartItemId);
         if (result)
@@ -120,6 +137,11 @@ export const useCartStore = defineStore('cartStore', () => {
         calcTotalQuantity();
     }
 
+    const cleanCart = () => {
+        if (cart.value !== null)
+            cart.value.items = [];
+    }
+
     return {
         addToCart,
         removeFromCart,
@@ -128,6 +150,7 @@ export const useCartStore = defineStore('cartStore', () => {
         loadCart,
         calcTotalQuantity,
         isItemInCart,
-        changeProductQuantity
+        changeProductQuantity,
+        cleanCart
     };
 });

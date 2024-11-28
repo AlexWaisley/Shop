@@ -23,11 +23,11 @@ export const useSessionStore = defineStore('sessionStore', () => {
     const currUser = useLocalStorage<User | null>('currUser', null, { serializer: StorageSerializers.object });
 
 
-    // watch(() => cookies.get('ultra-shop-token-refresh'), async (newVal) => {
-    //     if (newVal === undefined) {
-    //         logOut();
-    //     }
-    // }, { immediate: true })
+    watch(() => cookies.get('ultra-shop-token-refresh'), async (newVal) => {
+        if (newVal === undefined || newVal === null) {
+            logOut();
+        }
+    }, { immediate: true })
 
     const pickedCategories = ref<Category[] | null>(null);
     const pickedItem = ref<Product | null>(null);
@@ -45,6 +45,10 @@ export const useSessionStore = defineStore('sessionStore', () => {
         currUser.value = null;
         cookies.remove('ultra-shop-token-refresh');
         cookies.remove('ultra-shop-token');
+        if (displayInfoStore.adminPanelsOn)
+            displayInfoStore.changeAdminPanelStatus(false);
+
+        cartStore.cleanCart();
     }
 
     const isCurrUserAdmin = (): boolean => {
@@ -59,8 +63,12 @@ export const useSessionStore = defineStore('sessionStore', () => {
             return;
         }
 
+        if (password === "") {
+            toastr.error("Fill all fields");
+            return;
+        }
+
         const user = await userApi.login({ email, password });
-        tokenStore.jwt = cookies.get('ultra-shop-token');
 
         if (user === null) {
             toastr.error("Email or password is wrong");
@@ -78,7 +86,12 @@ export const useSessionStore = defineStore('sessionStore', () => {
             toastr.error("Enter valid email");
             return;
         }
-        tokenStore.jwt = cookies.get('ultra-shop-token');
+
+        if (name === "" || password === "") {
+            toastr.error("Fill all fields");
+            return;
+        }
+
         const user = await userApi.register({
             name, email, password
         });

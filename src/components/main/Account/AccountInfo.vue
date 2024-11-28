@@ -14,7 +14,6 @@ onMounted(async () => {
     await orderStore.loadUserOrders();
     if (sessionStore.currUser !== null)
         userName.value = sessionStore.currUser.name;
-
 })
 
 
@@ -58,7 +57,7 @@ const oneMore = async () => {
 }
 
 const switchAdminPanelsStatus = () => {
-    displayInfoStore.changeAdminPanelStatus();
+    displayInfoStore.changeAdminPanelStatus(!displayInfoStore.adminPanelsOn);
 }
 
 </script>
