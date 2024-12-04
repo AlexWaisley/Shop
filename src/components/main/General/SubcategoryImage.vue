@@ -11,22 +11,26 @@ const props = defineProps<{
 }>();
 
 onMounted(async () => {
-    const temp = await imageStore.getCategoryImages(props.info.id);
-    const url = await imageStore.getImageUrl(temp);
-    file.value = url[0];
+    await getPreview();
 })
 
 watch(() => props.info, async () => {
-    const temp = await imageStore.getCategoryImages(props.info.id);
-    const url = await imageStore.getImageUrl(temp);
-    file.value = url[0];
+    await getPreview();
 })
 
 watch(() => imageStore.categoriesPreviews, async () => {
+    await getPreview();
+})
+
+
+const getPreview = async () => {
     const temp = await imageStore.getCategoryImages(props.info.id);
+    if (temp.length === 0)
+        return;
     const url = await imageStore.getImageUrl(temp);
     file.value = url[0];
-})
+}
+
 defineEmits<{
     (e: 'click'): void
 }>();

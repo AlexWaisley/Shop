@@ -22,12 +22,12 @@ export const useSessionStore = defineStore('sessionStore', () => {
     const history = useLocalStorage<string[] | null>('userHistory', null, { serializer: StorageSerializers.object });
     const currUser = useLocalStorage<User | null>('currUser', null, { serializer: StorageSerializers.object });
 
-
-    watch(() => cookies.get('ultra-shop-token-refresh'), async (newVal) => {
-        if (newVal === undefined || newVal === null) {
-            logOut();
-        }
-    }, { immediate: true })
+    /* 
+        watch(() => cookies.get('ultra-shop-token-refresh'), async (newVal) => {
+            if (!newVal) {
+                logOut();
+            }
+        }, { immediate: true }); */
 
     const pickedCategories = ref<Category[] | null>(null);
     const pickedItem = ref<Product | null>(null);
@@ -173,20 +173,14 @@ export const useSessionStore = defineStore('sessionStore', () => {
 
     const pickCategory = async (category: Category) => {
         displayInfoStore.resetAll();
-        if (pickedCategories.value === null) {
-            pickedCategories.value = [];
+        if (dataStore.categories === null) {
+            await dataStore.loadCategories(category.id);
+            return;
         }
 
-        const existedCategory = pickedCategories.value.findIndex(x => x.id === category.id);
-        if (existedCategory >= 0) {
-            pickedCategories.value.splice(existedCategory + 1);
-        }
-        else {
-            if (category.parentCategory === 0) {
-                pickedCategories.value = [];
-            }
+        const existedCategory = dataStore.categories!.findIndex(x => x.id === category.id);
+        if (existedCategory < 0) {
             await dataStore.loadCategories(category.id);
-            pickedCategories.value.push(category);
             if (pickedItem.value !== null) {
                 addToHistory(pickedItem.value.id);
                 pickedItem.value = null;
@@ -195,74 +189,24 @@ export const useSessionStore = defineStore('sessionStore', () => {
 
         dataStore.lastCategory = category;
 
-        const parentCategoryId = pickedCategories.value[pickedCategories.value.length - 1].id;
-        if (dataStore.categories === null) {
-            if (!displayInfoStore.adminPanelsOn) {
-                await productStore.displayProductsByCategoryId(parentCategoryId);
-                displayInfoStore.changeProductPageOpenStatus(true);
-            }
-            return;
-        }
-
-        const subCategories = dataStore.categories.find(x => x.parentCategory === parentCategoryId);
-
-        if (subCategories === undefined) {
-            dataStore.displayedCategories = [];
-            if (!displayInfoStore.adminPanelsOn) {
-                await productStore.displayProductsByCategoryId(parentCategoryId);
-                displayInfoStore.changeProductPageOpenStatus(true);
-                return;
-            }
-        }
-
         displayInfoStore.resetAll();
-        dataStore.displayedCategories = dataStore.categories.filter(x => x.parentCategory === parentCategoryId);
-        displayInfoStore.changeCategoryPageStatus(true);
-        displayInfoStore.changeHomeStatus(true);
     }
 
     const pickItem = async (productId: string) => {
-        const product = await productStore.getFullProductById(productId);
-        if (product === null) {
-            toastr.error("Something went wrong");
-            return;
-        }
-        pickedItem.value = product;
-        addToHistory(pickedItem.value.id);
 
-        displayInfoStore.resetAll()
-        displayInfoStore.changeProductFullInfoStatus(true);
 
-        if (pickedCategories.value !== null && pickedCategories.value.length > 0)
-            return;
-
-        if (pickedCategories.value === null)
-            pickedCategories.value = [];
-
-        let category = dataStore.findCategoryById(product.categoryId);
-
-        if (category === null)
-            return;
-
-        pickedCategories.value.unshift(category);
-        dataStore.lastCategory = category;
-        dataStore.pickedCategory = category;
-        while (pickedCategories.value[0].parentCategory !== 0) {
-            category = dataStore.findCategoryById(category.parentCategory);
-            if (category === null)
-                return;
-            pickedCategories.value.unshift(category);
-        }
+        displayInfoStore.resetAll();
     }
 
     const clearAll = () => {
         pickedCategories.value = [];
+        dataStore.cleanPath();
+
         if (pickedItem.value !== null) {
             addToHistory(pickedItem.value.id);
             pickedItem.value = null;
         }
         displayInfoStore.resetAll();
-        displayInfoStore.changeHomeStatus(true);
     }
 
     const addToHistory = (productId: string) => {

@@ -4,7 +4,6 @@ import Top from '@top/Top.vue';
 import Bottom from '@bottom/Bottom.vue';
 import { useSessionStore } from '@storage';
 import { ref } from 'vue';
-
 const sessionStore = useSessionStore();
 sessionStore.initSession();
 

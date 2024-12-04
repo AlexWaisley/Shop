@@ -1,24 +1,29 @@
 <script setup lang="ts">
 import ItemCard from './ItemCard.vue';
 import Catalog from '../General/Catalog.vue';
-import { useDataStore, useProductStore, useSessionStore } from '@storage';
+import { useDataStore, useProductStore } from '@storage';
 import { ProductDto } from '@models';
 import { ref, watch } from 'vue';
 import Query from '@main/General/Query.vue';
+import { useRoute } from 'vue-router';
 
-const sessionStore = useSessionStore();
 const dataStore = useDataStore();
 const productStore = useProductStore();
+const route = useRoute();
 
 const items = ref<ProductDto[] | null>(productStore.displayedProducts);
 
-watch(() => productStore.displayedProducts, (newVal) => {
-    items.value = newVal;
+watch(() => route.params, async () => {
+    if (route.params.name) {
+        const category = dataStore.findCategoryByName(route.params.name.toString());
+        if (!category)
+            return;
+        await productStore.displayProductsByCategoryId(category.id);
+    }
+    items.value = productStore.displayedProducts;
 }, { immediate: true });
 
 const oneMore = async () => {
-    if (sessionStore.pickedCategories !== null)
-        await dataStore.loadCategories(sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id);
 }
 </script>
 <template>

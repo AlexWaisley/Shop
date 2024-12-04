@@ -27,7 +27,6 @@ export const useProductStore = defineStore('productStore', () => {
         }
         displayedProducts.value = products.value.filter(x => x.name.toLocaleLowerCase().includes(name.toLocaleLowerCase()));
         let page = 1;
-        displayStore.productPageOpen = true;
         while (displayedProducts.value.length < 20) {
             const additionalProducts = await productsApi.GetProductList(20, page * 20);
             if (additionalProducts === null || additionalProducts.length === 0) {
@@ -56,7 +55,6 @@ export const useProductStore = defineStore('productStore', () => {
         product = products.value.filter((p) => p.categoryId === categoryId);
         displayedProducts.value = product;
         displayStore.resetAll();
-        displayStore.changeProductPageOpenStatus(true);
 
         return product;
     }
@@ -169,15 +167,6 @@ export const useProductStore = defineStore('productStore', () => {
         });
         products.value = Array.from(map.values());
     }
-
-    watch(() => products.value?.length, () => {
-        if (sessionStore.pickedCategories === null || sessionStore.pickedCategories.length === 0) {
-            return 0;
-        }
-        const categoryId = sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id;
-        if (displayStore.productPageOpen)
-            displayProductsByCategoryId(categoryId);
-    })
 
     return {
         products,

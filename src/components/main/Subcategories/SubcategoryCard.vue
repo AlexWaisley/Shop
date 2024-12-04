@@ -12,18 +12,20 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div @click="sessionStore.pickCategory(props.info)" class="subcategory-card-container">
-        <SubcategoryImage :info="props.info"></SubcategoryImage>
-        <div class="info-container">
-            <div class="info">
-                <div class="name">
-                    <span class="text-large-bold">
-                        {{ props.info.name }}
-                    </span>
+    <RouterLink :to="'/' + props.info.name + '/products'">
+        <div @click="sessionStore.pickCategory(props.info)" class="subcategory-card-container">
+            <SubcategoryImage :info="props.info"></SubcategoryImage>
+            <div class="info-container">
+                <div class="info">
+                    <div class="name">
+                        <span class="text-large-bold">
+                            {{ props.info.name }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </RouterLink>
 </template>
 <style scoped lang="scss">
 .subcategory-card-container {

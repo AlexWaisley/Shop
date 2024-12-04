@@ -1,23 +1,27 @@
 <script setup lang="ts">
 import { Product } from '@models';
 import ImageBlock from './ImageBlock.vue';
-import { useSessionStore, useCartStore, useDisplayInfoStore, useProductStore } from '@storage';
-import { ref, watch } from 'vue';
+import { useCartStore, useDisplayInfoStore, useProductStore, useSessionStore } from '@storage';
+import { onMounted, ref, watch } from 'vue';
 import Query from '@main/General/Query.vue';
-const sessionStore = useSessionStore();
+import { useRoute } from 'vue-router';
 const productStore = useProductStore();
 const cartStore = useCartStore();
 const displayInfo = useDisplayInfoStore();
-const fullProductInfo = ref<Product | null>(sessionStore.pickedItem);
+const fullProductInfo = ref<Product | null>(null);
+const route = useRoute();
+const sessionStore = useSessionStore();
 
 const editItem = () => {
     displayInfo.changeIsEditItem(true);
 }
 
-watch(() => productStore.productsFullInfo, () => {
-    if (sessionStore.pickedItem !== null)
-        fullProductInfo.value = sessionStore.pickedItem;
-}, { immediate: true, deep: true })
+onMounted(async () => {
+    if (route.params.id) {
+        fullProductInfo.value = await productStore.getFullProductById(route.params.id.toString());
+        sessionStore.addToHistory(route.params.id.toString());
+    }
+});
 </script>
 
 <template>

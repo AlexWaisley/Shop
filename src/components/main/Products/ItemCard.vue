@@ -1,47 +1,55 @@
 <script setup lang="ts">
 import { ProductDto } from '@models';
-import { useSessionStore, useCartStore, usePreviewImagesStore } from '@storage';
+import { useCartStore, usePreviewImagesStore } from '@storage';
 import { onMounted, ref, watch } from 'vue';
 
-const sessionStore = useSessionStore();
 const cartStore = useCartStore();
 const imageStore = usePreviewImagesStore();
 const file = ref<string | null>(null);
+
 
 const props = defineProps<{
     info: ProductDto;
 }>();
 
 const pickItem = async () => {
-    await sessionStore.pickItem(props.info.id);
 }
 
 onMounted(async () => {
-    const temp = await imageStore.getProductImages(props.info.id);
-    const url = await imageStore.getImageUrl(temp);
-    file.value = url[0];
+    await previewLoader();
 })
 
 watch(() => props.info, async () => {
+    await previewLoader();
+})
+
+const previewLoader = async () => {
     const temp = await imageStore.getProductImages(props.info.id);
+    if (temp.length === 0)
+        return;
     const url = await imageStore.getImageUrl(temp);
     file.value = url[0];
-})
+}
+
 </script>
 <template>
     <div class="item-card-container">
-        <div @click="pickItem()" class="image-container">
-            <img v-if="file !== null && file !== undefined" :src="file" alt="Item image" class="image">
-            <img v-else src="/logo.jpg" class="image" alt="not loaded">
-        </div>
-        <div class="info-container">
-            <div @click="pickItem()" class="info">
-                <div class="name">
-                    <span class="text-large">
-                        {{ props.info.name }}
-                    </span>
-                </div>
+        <RouterLink :to="'/item/' + props.info.id">
+            <div @click="pickItem()" class="image-container">
+                <img v-if="file !== null && file !== undefined" :src="file" alt="Item image" class="image">
+                <img v-else src="/logo.jpg" class="image" alt="not loaded">
             </div>
+        </RouterLink>
+        <div class="info-container">
+            <RouterLink :to="'/item/' + props.info.id">
+                <div @click="pickItem()" class="info">
+                    <div class="name">
+                        <span class="text-large">
+                            {{ props.info.name }}
+                        </span>
+                    </div>
+                </div>
+            </RouterLink>
             <div class="info">
                 <div class="cost">
                     <span class="text-large-bold">{{ props.info.price }}$</span>

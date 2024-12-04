@@ -48,10 +48,11 @@ const isNeededToShow = computed<boolean>(() => {
         max-width: 100%;
         flex-direction: column;
         gap: 15px;
-        overflow-x: auto;
+
 
         & .items-container {
             display: flex;
+            overflow-x: auto;
             max-width: 100%;
             gap: 15px;
             padding-bottom: 10px;

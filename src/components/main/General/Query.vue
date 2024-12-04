@@ -1,20 +1,36 @@
 <script setup lang="ts">
-import { useSessionStore } from '@storage';
-import { computed } from 'vue';
+import { useSessionStore, useDataStore } from '@storage';
+import { watch } from 'vue';
+import { useRoute } from 'vue-router';
 
 const sessionStore = useSessionStore();
+const dataStore = useDataStore();
+const route = useRoute();
 
-const hasPickedCategories = computed(() => (sessionStore.pickedCategories?.length || 0) > 0);
+if (route.params.name) {
+    dataStore.getFullCategoryPath(route.params.name.toString());
+}
+
+watch(() => route.params, () => {
+
+    if (route.params.name) {
+        dataStore.getFullCategoryPath(route.params.name.toString());
+    }
+})
 
 </script>
 <template>
-    <nav v-if="hasPickedCategories" class="query">
-        <div @click="sessionStore.clearAll" class="prop">
-            <span class="text-small">Home</span>
-        </div>
-        <div v-for="category in sessionStore.pickedCategories" @click="sessionStore.pickCategory(category)"
-            class="prop">
-            <span class="text-small">{{ category.name }}</span>
+    <nav v-if="dataStore.categoryPath.length > 0" class="query">
+        <RouterLink to="/main">
+            <div @click="sessionStore.clearAll" class="prop">
+                <span class="text-small">Home</span>
+            </div>
+        </RouterLink>
+        <div v-for="category in dataStore.categoryPath" @click="sessionStore.pickCategory(category)" class="prop">
+
+            <RouterLink :to="'/' + category.name">
+                <span class="text-small">{{ category.name }}</span>
+            </RouterLink>
         </div>
     </nav>
 </template>

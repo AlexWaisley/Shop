@@ -15,13 +15,14 @@ export const useDataStore = defineStore('dataStore', () => {
     const displayedCategories = ref<Category[]>([]);
     const sessionStore = useSessionStore();
 
+    const categoryPath = ref<Category[]>([]);
 
     const findCategoryByName = (name: string): Category | null => {
         if (rootCategories.value === null)
             return null;
         let category = rootCategories.value?.find(x => x.name === name);
         if (category === undefined && categories.value !== null)
-            category = categories.value?.find(x => x.name === name);
+            category = categories.value.find(x => x.name === name);
 
         if (category === undefined)
             return null;
@@ -31,9 +32,9 @@ export const useDataStore = defineStore('dataStore', () => {
     const findCategoryById = (id: number): Category | null => {
         if (rootCategories.value === null)
             return null;
-        let category = rootCategories.value?.find(x => x.id === id);
+        let category = rootCategories.value.find(x => x.id === id);
         if (category === undefined && categories.value !== null)
-            category = categories.value?.find(x => x.id === id);
+            category = categories.value.find(x => x.id === id);
 
         if (category === undefined)
             return null;
@@ -116,13 +117,50 @@ export const useDataStore = defineStore('dataStore', () => {
         shippingAddresses.value = await api.GetAddresses();
     }
 
-    watch(() => categories.value, () => {
-        if (categories.value === null || categories.value.length < 1 || sessionStore.pickedCategories === null || sessionStore.pickedCategories === undefined || sessionStore.pickedCategories.length < 1) {
+
+    const getFullCategoryPath = (categoryName: string) => {
+        if (!categories.value)
             return;
+
+        let temp = findCategoryByName(categoryName);
+        if (temp === null)
+            return;
+        let categoryId = temp.parentCategory;
+
+        if (categoryPath.value.length > 0) {
+            const existingId = categoryPath.value.findIndex(x => x.name === categoryName);
+            if (!existingId) {
+                categoryPath.value = [];
+            }
+            else {
+                categoryPath.value.splice(existingId);
+            }
         }
-        const parentCategoryId = sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id
-        displayedCategories.value = categories.value.filter(x => x.parentCategory === parentCategoryId);
-    }, { immediate: true, deep: true });
+
+        categoryPath.value.unshift(temp);
+
+        while (categoryId !== 0) {
+            let temp = findCategoryById(categoryId);
+            if (temp === null)
+                return;
+            categoryId = temp.parentCategory;
+            categoryPath.value.unshift(temp);
+        }
+        console.log(categoryPath.value);
+    }
+
+    const cleanPath = () => {
+        categoryPath.value = [];
+    }
+
+    /* 
+        watch(() => categories.value, () => {
+            if (categories.value === null || categories.value.length < 1 || sessionStore.pickedCategories === null || sessionStore.pickedCategories === undefined || sessionStore.pickedCategories.length < 1) {
+                return;
+            }
+            const parentCategoryId = sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id
+            displayedCategories.value = categories.value.filter(x => x.parentCategory === parentCategoryId);
+        }, { immediate: true, deep: true }); */
 
     return {
         loadCategories,
@@ -137,6 +175,9 @@ export const useDataStore = defineStore('dataStore', () => {
         deleteCategory,
         lastCategory,
         pickedCategory,
-        changePickedCategory
+        changePickedCategory,
+        getFullCategoryPath,
+        categoryPath,
+        cleanPath
     };
 })

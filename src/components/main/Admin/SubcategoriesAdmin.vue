@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import SubcategoryCard from './SubcategoryCardAdmin.vue';
 import { useDataStore, useSessionStore, useProductStore, useAdminFormStatusStore } from '@storage';
-import { computed, } from 'vue';
+import { computed, ref, watch, } from 'vue';
 import WindowForm from './WindowForm.vue';
+import { useRoute } from 'vue-router';
+import { Category } from '@models';
 
 const sessionStore = useSessionStore();
 const dataStore = useDataStore();
@@ -23,14 +25,44 @@ const openProductsPage = async () => {
 const changeAddNewCategoryShowStatus = () => {
     formStatusStore.changeNewCategoryStatus(true);
 }
+
+const route = useRoute();
+const displayedCategories = ref<Category[] | null>(null);
+const load = () => {
+    console.log(route.params.name);
+    if (route.params.name) {
+        let parentCategory = dataStore.categories?.find(x => x.name === route.params.name);
+        if (parentCategory !== undefined) {
+            const res = dataStore.categories?.filter(x => x.parentCategory === parentCategory!.id);
+            if (res) {
+                displayedCategories.value = res;
+                return;
+            }
+        }
+        parentCategory = dataStore.rootCategories?.find(x => x.name === route.params.name);
+        if (parentCategory !== undefined) {
+            const res = dataStore.categories?.filter(x => x.parentCategory === parentCategory!.id);
+            if (res) {
+                displayedCategories.value = res;
+                return;
+            }
+        }
+    }
+    displayedCategories.value = [];
+};
+
+watch(() => route.params.name, () => {
+    load();
+    console.log(displayedCategories.value);
+}, { immediate: true });
 </script>
 <template>
     <div class="subcategories-container">
         <div @click="changeAddNewCategoryShowStatus" class="button add">
             <img src="/cross.svg" alt="add new subcategory">
         </div>
-        <SubcategoryCard v-if="dataStore.displayedCategories !== null && dataStore.displayedCategories.length !== 0"
-            v-for="value in dataStore.displayedCategories" :info="value" />
+        <SubcategoryCard v-if="displayedCategories !== null && displayedCategories.length !== 0"
+            v-for="value in displayedCategories" :info="value" />
         <div v-if="dataStore.displayedCategories.length === 0" @click="openProductsPage" class="button continue">
             <img src="/switch.svg" alt="Go to products">
         </div>
@@ -64,11 +96,12 @@ const changeAddNewCategoryShowStatus = () => {
         border-radius: 15px;
         transition: all .5s ease;
 
-        &.continue > img{
-                transform: rotateZ(180deg);            
+        &.continue>img {
+            transform: rotateZ(180deg);
         }
-        &.add> img{
-            transform: rotateZ(45deg);            
+
+        &.add>img {
+            transform: rotateZ(45deg);
         }
 
         &:hover {

@@ -17,7 +17,6 @@ const changeCategoriesShowStatus = () => {
 const changeAddNewCategoryShowStatus = () => {
     formStatusStore.changeNewCategoryStatus(true);
 }
-
 </script>
 
 <template>
@@ -29,11 +28,14 @@ const changeAddNewCategoryShowStatus = () => {
             <div v-if="displayInfoStore.adminPanelsOn" @click="changeAddNewCategoryShowStatus" class="add-button">
                 <img src="/cross.svg" alt="add new category">
             </div>
+
             <div v-for="value in dataStore.rootCategories" @click="sessionStore.pickCategory(value)" class="category">
-                <div class="catalog-over"></div>
-                <div class="over">
-                    <span class="text-default">{{ value.name }}</span>
-                </div>
+                <RouterLink :to="'/' + (displayInfoStore.adminPanelsOn ? 'admin/' : '') + value.name">
+                    <div class="catalog-over"></div>
+                    <div class="over">
+                        <span class="text-default">{{ value.name }}</span>
+                    </div>
+                </RouterLink>
             </div>
         </div>
         <Teleport v-if="formStatusStore.newCategory" to="body">

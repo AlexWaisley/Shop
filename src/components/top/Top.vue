@@ -1,33 +1,27 @@
 <script setup lang="ts">
-import { useCartStore, useDisplayInfoStore, useSessionStore } from '@storage';
+import { useCartStore, useSessionStore } from '@storage';
 import SearchBar from './SearchBar.vue';
 const sessionStore = useSessionStore();
 const cartStore = useCartStore();
-const displayInfoStore = useDisplayInfoStore();
 
 const openCart = async () => {
     await cartStore.loadCart();
     sessionStore.clearAll();
-    displayInfoStore.changeCartStatus(true);
 }
 
-const openAccount = () => {
+const save = () => {
     sessionStore.clearAll();
-    displayInfoStore.changeAccountInfoStatus(true);
-}
-
-const openHome = () => {
-    sessionStore.clearAll();
-    displayInfoStore.changeHomeStatus(true);
 }
 </script>
 
 <template>
     <div class="top-container">
         <div class="section">
-            <div @click="openHome" class="logo-container">
-                <img src="/logo.jpg" alt="logo" class="logo-img">
-            </div>
+            <RouterLink to="/main" @click="save">
+                <div class="logo-container">
+                    <img src="/logo.jpg" alt="logo" class="logo-img">
+                </div>
+            </RouterLink>
         </div>
         <div class="section">
             <SearchBar></SearchBar>
@@ -39,16 +33,20 @@ const openHome = () => {
                         <img src="/logout.svg" alt="account" class="image">
                     </div>
                 </div>
-                <div class="button">
-                    <div @click="openAccount" class="image-container">
-                        <img src="/account.svg" alt="account" class="image">
+                <RouterLink to="/account">
+                    <div class="button">
+                        <div @click="save" class="image-container">
+                            <img src="/account.svg" alt="account" class="image">
+                        </div>
                     </div>
-                </div>
-                <div @click="openCart" class="button">
-                    <div class="image-container">
-                        <img src="/cart.svg" alt="cart" class="image">
+                </RouterLink>
+                <RouterLink to="/cart">
+                    <div @click="openCart" class="button">
+                        <div class="image-container">
+                            <img src="/cart.svg" alt="cart" class="image">
+                        </div>
                     </div>
-                </div>
+                </RouterLink>
             </div>
         </div>
     </div>
