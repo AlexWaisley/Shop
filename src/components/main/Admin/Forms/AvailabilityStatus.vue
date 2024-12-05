@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { useAdminFormStatusStore, useSessionStore } from '@storage';
+import { useAdminFormStatusStore, useProductStore } from '@storage';
+import { useRoute } from 'vue-router';
 
-const sessionStore = useSessionStore();
 const formStatusStore = useAdminFormStatusStore();
-
+const productStore = useProductStore();
+const route = useRoute();
 
 const setStatus = async (status: string) => {
-    if (sessionStore.pickedItem === null)
+    if (route.params.id === null)
         return;
-    sessionStore.pickedItem.isAvailable = status === "Available";
-    console.log(sessionStore.pickedItem.isAvailable);
+    const temp = await productStore.getFullProductById(route.params.id.toString());
+    if (temp === null)
+        return;
+    temp.isAvailable = status === "Available";
     formStatusStore.changeAvailabilityEdit(false);
 }
 

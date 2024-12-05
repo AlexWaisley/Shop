@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useAdminFormStatusStore, useCreatingStore, useSessionStore } from '@storage';
+import { useAdminFormStatusStore, useCreatingStore, useProductStore } from '@storage';
 import AddPhoto from './AddPhoto.vue';
+import { useRoute } from 'vue-router';
 
 const creatingStore = useCreatingStore();
 const formStatusStore = useAdminFormStatusStore();
-
+const productStore = useProductStore();
+const route = useRoute();
 const file = ref<FormData | null>(null);
 
-const sessionStore = useSessionStore();
-
 const addNewPhoto = async () => {
-    const item = sessionStore.pickedItem;
+    if (!route.params.id)
+        return;
+    const item = await productStore.getProductById(route.params.id.toString());
     if (file.value !== null && item !== null)
         await creatingStore.AddNewProductPhoto(item.id, file.value);
     closeWindow();

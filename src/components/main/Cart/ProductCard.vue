@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { useCartStore, usePreviewImagesStore, useProductStore, useSessionStore } from '@storage';
+import { useCartStore, usePreviewImagesStore, useProductStore } from '@storage';
 import { CartItemDto, ProductDto } from '@models';
 import Decimal from 'decimal.js';
-const sessionStorage = useSessionStore();
 const cartStore = useCartStore();
 const productStore = useProductStore();
 const imageStore = usePreviewImagesStore();
@@ -75,9 +74,11 @@ watch(() => props.info, async () => {
             <img v-else src="/logo.jpg" alt="product preview" class="image-preview" />
         </div>
         <div v-if="product !== null" class="info-container">
-            <div @click="sessionStorage.pickItem(product.id)" class="name">
-                <span class="text-large">{{ product.name }}</span>
-            </div>
+            <RouterLink :to="'/item/' + product.id">
+                <div class="name">
+                    <span class="text-large">{{ product.name }}</span>
+                </div>
+            </RouterLink>
             <div class="quantity-container">
                 <input type="number" :min="1" class="quantity text-large" v-model="quantity"
                     v-on:input="$emit('changeQuantity', props.info.id, quantity, product.id)" />

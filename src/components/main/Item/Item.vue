@@ -2,9 +2,9 @@
 import { Product } from '@models';
 import ImageBlock from './ImageBlock.vue';
 import { useCartStore, useDisplayInfoStore, useProductStore, useSessionStore } from '@storage';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import Query from '@main/General/Query.vue';
-import { useRoute } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 const productStore = useProductStore();
 const cartStore = useCartStore();
 const displayInfo = useDisplayInfoStore();
@@ -22,6 +22,12 @@ onMounted(async () => {
         sessionStore.addToHistory(route.params.id.toString());
     }
 });
+
+const isProductAvailable = computed(() => {
+    if (fullProductInfo.value)
+        return cartStore.isItemInCart(fullProductInfo.value.id) || !fullProductInfo.value.isAvailable;
+    return false;
+})
 </script>
 
 <template>
@@ -42,8 +48,8 @@ onMounted(async () => {
                         <div class="price-container">
                             <span class="text-large">{{ fullProductInfo.price }}$</span>
                         </div>
-                        <button :disabled="cartStore.isItemInCart(fullProductInfo.id) || !fullProductInfo.isAvailable"
-                            @click="cartStore.addToCart(fullProductInfo.id, 1)" class="button">
+                        <button :disabled="isProductAvailable" @click="cartStore.addToCart(fullProductInfo.id)"
+                            class="button">
                             <img src="/cart.svg" alt="Buy" class="icon">
                         </button>
                     </div>
@@ -52,9 +58,11 @@ onMounted(async () => {
             <div class="item-info">
                 <div class="description">{{ fullProductInfo.description }}</div>
             </div>
-            <div @click="editItem" v-if="displayInfo.adminPanelsOn" class="text-button">
-                <span class="text-large">edit</span>
-            </div>
+            <RouterLink :to="'/admin/item/' + route.params.id">
+                <div @click="editItem" v-if="displayInfo.adminPanelsOn" class="text-button">
+                    <span class="text-large">edit</span>
+                </div>
+            </RouterLink>
         </div>
     </div>
 </template>

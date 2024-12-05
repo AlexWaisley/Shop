@@ -49,7 +49,7 @@ const routes = [
     },
     {
         name: 'ItemAdmin',
-        path: '/admin/item',
+        path: '/admin/item/:id',
         component: ItemAdmin
     },
     {

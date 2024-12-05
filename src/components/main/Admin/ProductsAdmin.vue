@@ -1,22 +1,32 @@
 <script setup lang="ts">
 import ItemCard from '@main/Products/ItemCard.vue';
-import Catalog from '../General/Catalog.vue';
+import Catalog from '@main/General/Catalog.vue';
 import { useAdminFormStatusStore, useDataStore, useProductStore, useSessionStore } from '@storage';
 import { ProductDto } from '@models';
 import { ref, watch } from 'vue';
 import WindowForm from './WindowForm.vue';
 import Query from '@main/General/Query.vue';
+import { useRoute } from 'vue-router';
 
 const sessionStore = useSessionStore();
 const dataStore = useDataStore();
 const productStore = useProductStore();
 const formStatusStore = useAdminFormStatusStore();
+const route = useRoute();
 
 const items = ref<ProductDto[] | null>(productStore.displayedProducts);
 
-watch(() => productStore.displayedProducts, (newVal) => {
-    items.value = newVal;
+
+watch(() => route.params, async () => {
+    if (route.params.name) {
+        const category = dataStore.findCategoryByName(route.params.name.toString());
+        if (!category)
+            return;
+        await productStore.displayProductsByCategoryId(category.id);
+    }
+    items.value = productStore.displayedProducts;
 }, { immediate: true });
+
 
 const changeAddNewItemShowStatus = () => {
     formStatusStore.changeNewItemStatus(true);

@@ -68,7 +68,7 @@ export const useCartStore = defineStore('cartStore', () => {
         return true;
     }
 
-    const addToCart = async (productId: string, quantity: number) => {
+    const addToCart = async (productId: string, quantity: number = 1) => {
 
         if (sessionStore.currUser !== null) {
             await loadCart();

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { usePreviewImagesStore, useProductStore, useSessionStore } from '@storage';
+import { usePreviewImagesStore, useProductStore } from '@storage';
 import { OrderItemDto, ProductDto } from '@models';
 import Decimal from 'decimal.js';
-const sessionStorage = useSessionStore();
 const previewStore = usePreviewImagesStore();
 const productStore = useProductStore();
 
@@ -49,9 +48,11 @@ onMounted(async () => {
             <img v-else src="/logo.jpg" alt="product preview" class="image-preview" />
         </div>
         <div v-if="product !== null" class="info-container">
-            <div @click="sessionStorage.pickItem(product.id)" class="name">
-                <span class="text-large">{{ product.name }}</span>
-            </div>
+            <RouterLink :to="'/item/' + product.id">
+                <div class="name">
+                    <span class="text-large">{{ product.name }}</span>
+                </div>
+            </RouterLink>
             <div class="quantity-container">
                 <span class="text-large">{{ quantity }}</span>
             </div>

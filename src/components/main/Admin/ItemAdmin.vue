@@ -2,17 +2,18 @@
 import { Category, Product } from '@models';
 import ImageBlockAdmin from './ImageBlockAdmin.vue';
 import SpecsBlock from '../Item/SpecsBlock.vue';
-import { useSessionStore, useCreatingStore, useProductStore, useDataStore, useDisplayInfoStore, useAdminFormStatusStore } from '@storage';
-import { computed, ref, watch } from 'vue';
+import { useCreatingStore, useProductStore, useDataStore, useDisplayInfoStore, useAdminFormStatusStore } from '@storage';
+import { computed, onMounted, ref } from 'vue';
 import WindowForm from './WindowForm.vue';
+import { useRoute } from 'vue-router';
 
-const sessionStore = useSessionStore();
 const createStore = useCreatingStore();
 const productStore = useProductStore();
 const dataStore = useDataStore();
 
-const fullProductInfo = ref<Product | null>(sessionStore.pickedItem);
-const pickedCategory = ref<Category | null>(dataStore.pickedCategory);
+const fullProductInfo = ref<Product | null>(null);
+const pickedCategory = ref<Category | null>(null);
+const route = useRoute();
 
 const formStatusStore = useAdminFormStatusStore();
 const displayInfo = useDisplayInfoStore()
@@ -29,22 +30,11 @@ const submitProductChanges = () => {
         });
 
     displayInfo.changeIsEditItem(false);
-    console.log(displayInfo);
 }
 
 const switchAvailabilityStatus = () => {
     formStatusStore.changeAvailabilityEdit(true);
 }
-
-watch(() => productStore.productsFullInfo, () => {
-    if (sessionStore.pickedItem !== null)
-        fullProductInfo.value = sessionStore.pickedItem;
-}, { immediate: true, deep: true })
-
-watch(() => sessionStore.pickedItem, () => {
-    if (sessionStore.pickedItem !== null)
-        fullProductInfo.value = sessionStore.pickedItem;
-}, { immediate: true, deep: true })
 
 const isOpen = computed<string>((): string => {
     return openList.value ? "opened" : "";
@@ -59,6 +49,14 @@ const changePicked = (category: Category) => {
     pickedCategory.value = category;
     openListSwitch();
 }
+
+onMounted(async () => {
+    if (route.params.id) {
+        fullProductInfo.value = await productStore.getFullProductById(route.params.id.toString());
+        if (fullProductInfo.value)
+            pickedCategory.value = dataStore.findCategoryById(fullProductInfo.value.categoryId);
+    }
+});
 </script>
 
 <template>

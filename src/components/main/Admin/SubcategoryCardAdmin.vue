@@ -1,42 +1,41 @@
 <script setup lang="ts">
 import { Category } from '@models';
-import { useAdminFormStatusStore, useDataStore, useSessionStore } from '@storage';
+import { useAdminFormStatusStore } from '@storage';
 import SubcategoryImage from '@main/General/SubcategoryImage.vue';
 import WindowForm from './WindowForm.vue';
 
-const sessionStore = useSessionStore();
 const formStatusStore = useAdminFormStatusStore();
-const dataStore = useDataStore();
 
 const props = defineProps<{
     info: Category;
 }>();
 
 const switchMenuStatusChange = () => {
-    dataStore.changePickedCategory(props.info);
     formStatusStore.changeCategoryEdit(true);
 }
 </script>
 
 <template>
-    <div class="subcategory-card-container">
-        <div @click="switchMenuStatusChange" class="edit-button">
-            <img src="/dots.svg" alt="Edit">
-        </div>
-        <SubcategoryImage @click="sessionStore.pickCategory(props.info)" :info="props.info"></SubcategoryImage>
-        <div @click="sessionStore.pickCategory(props.info)" class="info-container">
-            <div class="info">
-                <div class="name">
-                    <span class="text-large-bold">
-                        {{ props.info.name }}
-                    </span>
+    <RouterLink :to="'/admin/' + props.info.name">
+        <div class="subcategory-card-container">
+            <div @click="switchMenuStatusChange" class="edit-button">
+                <img src="/dots.svg" alt="Edit">
+            </div>
+            <SubcategoryImage :info="props.info"></SubcategoryImage>
+            <div class="info-container">
+                <div class="info">
+                    <div class="name">
+                        <span class="text-large-bold">
+                            {{ props.info.name }}
+                        </span>
+                    </div>
                 </div>
             </div>
+            <Teleport v-if="formStatusStore.categoryEdit" to="body">
+                <WindowForm></WindowForm>
+            </Teleport>
         </div>
-        <Teleport v-if="formStatusStore.categoryEdit" to="body">
-            <WindowForm></WindowForm>
-        </Teleport>
-    </div>
+    </RouterLink>
 </template>
 <style scoped lang="scss">
 .subcategory-card-container {

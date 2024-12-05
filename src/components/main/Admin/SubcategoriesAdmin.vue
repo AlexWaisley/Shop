@@ -53,7 +53,6 @@ const load = () => {
 
 watch(() => route.params.name, () => {
     load();
-    console.log(displayedCategories.value);
 }, { immediate: true });
 </script>
 <template>
@@ -63,9 +62,12 @@ watch(() => route.params.name, () => {
         </div>
         <SubcategoryCard v-if="displayedCategories !== null && displayedCategories.length !== 0"
             v-for="value in displayedCategories" :info="value" />
-        <div v-if="dataStore.displayedCategories.length === 0" @click="openProductsPage" class="button continue">
-            <img src="/switch.svg" alt="Go to products">
-        </div>
+        <RouterLink :to="'/' + route.params.name + '/admin/products'">
+            <div v-if="!displayedCategories || displayedCategories.length < 1" @click="openProductsPage"
+                class="button continue">
+                <img src="/switch.svg" alt="Go to products">
+            </div>
+        </RouterLink>
         <Teleport v-if="formStatusStore.newCategory" to="body">
             <WindowForm> </WindowForm>
         </Teleport>

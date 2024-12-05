@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { Category } from '@models';
-import { useSessionStore } from '@storage';
 import SubcategoryImage from '@main/General/SubcategoryImage.vue';
-
-const sessionStore = useSessionStore();
 
 const props = defineProps<{
     info: Category;
@@ -13,7 +10,7 @@ const props = defineProps<{
 
 <template>
     <RouterLink :to="'/' + props.info.name + '/products'">
-        <div @click="sessionStore.pickCategory(props.info)" class="subcategory-card-container">
+        <div class="subcategory-card-container">
             <SubcategoryImage :info="props.info"></SubcategoryImage>
             <div class="info-container">
                 <div class="info">

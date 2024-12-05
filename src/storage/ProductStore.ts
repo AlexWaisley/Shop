@@ -6,16 +6,14 @@ import {
 import { StorageSerializers, useLocalStorage } from "@vueuse/core";
 import Decimal from "decimal.js";
 import { defineStore } from "pinia";
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { productsApi } from "@api/index";
-import { useSessionStore } from "./SessionStore";
 import { useDisplayInfoStore } from "./DisplayInfoStore";
 
 export const useProductStore = defineStore('productStore', () => {
     const displayedProducts = ref<ProductDto[] | null>(null);
     const products = useLocalStorage<ProductDto[] | null>('products', null, { serializer: StorageSerializers.object });
     const productsFullInfo = useLocalStorage<Product[] | null>('productsFullInfo', null, { serializer: StorageSerializers.object });
-    const sessionStore = useSessionStore();
     const displayStore = useDisplayInfoStore();
 
     const startSearch = async (name: string) => {

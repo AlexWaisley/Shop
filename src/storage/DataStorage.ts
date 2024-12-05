@@ -2,8 +2,7 @@ import { Category, ShippingAddress } from "@models";
 import { StorageSerializers, useLocalStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { categoriesApi, api } from "@api/index";
-import { ref, watch } from "vue";
-import { useSessionStore } from "./SessionStore";
+import { ref } from "vue";
 import toastr from "toastr";
 
 export const useDataStore = defineStore('dataStore', () => {
@@ -13,7 +12,6 @@ export const useDataStore = defineStore('dataStore', () => {
     const pickedCategory = ref<Category | null>(null);
     const shippingAddresses = useLocalStorage<ShippingAddress[] | null>('shippingAddresses', null, { serializer: StorageSerializers.object });
     const displayedCategories = ref<Category[]>([]);
-    const sessionStore = useSessionStore();
 
     const categoryPath = ref<Category[]>([]);
 
@@ -90,11 +88,6 @@ export const useDataStore = defineStore('dataStore', () => {
         toastr.error("Something went wrong");
     }
 
-    const changePickedCategory = (category: Category) => {
-        pickedCategory.value = category;
-        console.log(pickedCategory.value);
-    }
-
     const deleteCategory = async () => {
         if (pickedCategory.value === null)
             return;
@@ -117,7 +110,6 @@ export const useDataStore = defineStore('dataStore', () => {
         shippingAddresses.value = await api.GetAddresses();
     }
 
-
     const getFullCategoryPath = (categoryName: string) => {
         if (!categories.value)
             return;
@@ -133,7 +125,8 @@ export const useDataStore = defineStore('dataStore', () => {
                 categoryPath.value = [];
             }
             else {
-                categoryPath.value.splice(existingId);
+                categoryPath.value = [];
+                categoryPath.value = categoryPath.value.slice(0, existingId);
             }
         }
 
@@ -146,21 +139,11 @@ export const useDataStore = defineStore('dataStore', () => {
             categoryId = temp.parentCategory;
             categoryPath.value.unshift(temp);
         }
-        console.log(categoryPath.value);
     }
 
     const cleanPath = () => {
         categoryPath.value = [];
     }
-
-    /* 
-        watch(() => categories.value, () => {
-            if (categories.value === null || categories.value.length < 1 || sessionStore.pickedCategories === null || sessionStore.pickedCategories === undefined || sessionStore.pickedCategories.length < 1) {
-                return;
-            }
-            const parentCategoryId = sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id
-            displayedCategories.value = categories.value.filter(x => x.parentCategory === parentCategoryId);
-        }, { immediate: true, deep: true }); */
 
     return {
         loadCategories,
@@ -175,7 +158,6 @@ export const useDataStore = defineStore('dataStore', () => {
         deleteCategory,
         lastCategory,
         pickedCategory,
-        changePickedCategory,
         getFullCategoryPath,
         categoryPath,
         cleanPath

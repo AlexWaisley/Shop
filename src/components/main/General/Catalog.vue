@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useAdminFormStatusStore, useDataStore, useDisplayInfoStore, useSessionStore } from '@storage';
+import { useAdminFormStatusStore, useDataStore, useDisplayInfoStore } from '@storage';
 import WindowForm from '../Admin/WindowForm.vue';
 
-const sessionStore = useSessionStore();
 const displayInfoStore = useDisplayInfoStore();
 const formStatusStore = useAdminFormStatusStore();
 const dataStore = useDataStore();
@@ -29,7 +28,7 @@ const changeAddNewCategoryShowStatus = () => {
                 <img src="/cross.svg" alt="add new category">
             </div>
 
-            <div v-for="value in dataStore.rootCategories" @click="sessionStore.pickCategory(value)" class="category">
+            <div v-for="value in dataStore.rootCategories" class="category">
                 <RouterLink :to="'/' + (displayInfoStore.adminPanelsOn ? 'admin/' : '') + value.name">
                     <div class="catalog-over"></div>
                     <div class="over">

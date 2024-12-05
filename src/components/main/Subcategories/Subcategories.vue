@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, ref } from 'vue';
+import { watch, ref, onMounted } from 'vue';
 import SubcategoryCard from './SubcategoryCard.vue';
 import { useDataStore } from '@storage';
 import { useRoute } from 'vue-router';
@@ -29,6 +29,17 @@ const load = () => {
     }
     displayedCategories.value = [];
 };
+
+onMounted(async () => {
+    load();
+    if (displayedCategories.value === null) {
+        if (route.params.name) {
+            const category = dataStore.findCategoryByName(route.params.name.toString());
+            if (category !== null)
+                dataStore.loadCategories(category.id);
+        }
+    }
+});
 
 watch(() => route.params.name, () => {
     load();

@@ -11,7 +11,6 @@ const props = defineProps<{
 const imageStore = usePreviewImagesStore();
 const formStatusStore = useAdminFormStatusStore();
 
-
 const img = ref<ProductImage[] | null>(null);
 const files = ref<string[] | null>(null);
 

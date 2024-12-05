@@ -1,4 +1,4 @@
-import { Category, Product, User } from "@models";
+import { Category, User } from "@models";
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import { useCookies } from '@vueuse/integrations/useCookies';
@@ -9,7 +9,6 @@ import { useDataStore } from "./DataStorage";
 import { useDisplayInfoStore } from "./DisplayInfoStore";
 import { useCartStore } from "./CartStore";
 import { useTokenStore } from "./TokenStorage";
-import { useProductStore } from "./ProductStore";
 
 export const useSessionStore = defineStore('sessionStore', () => {
     const cookies = useCookies();
@@ -17,7 +16,6 @@ export const useSessionStore = defineStore('sessionStore', () => {
     const displayInfoStore = useDisplayInfoStore();
     const cartStore = useCartStore();
     const tokenStore = useTokenStore();
-    const productStore = useProductStore();
 
     const history = useLocalStorage<string[] | null>('userHistory', null, { serializer: StorageSerializers.object });
     const currUser = useLocalStorage<User | null>('currUser', null, { serializer: StorageSerializers.object });
@@ -30,7 +28,6 @@ export const useSessionStore = defineStore('sessionStore', () => {
         }, { immediate: true }); */
 
     const pickedCategories = ref<Category[] | null>(null);
-    const pickedItem = ref<Product | null>(null);
 
     const initSession = async () => {
         tokenStore.initSession();
@@ -171,41 +168,8 @@ export const useSessionStore = defineStore('sessionStore', () => {
         }
     });
 
-    const pickCategory = async (category: Category) => {
-        displayInfoStore.resetAll();
-        if (dataStore.categories === null) {
-            await dataStore.loadCategories(category.id);
-            return;
-        }
-
-        const existedCategory = dataStore.categories!.findIndex(x => x.id === category.id);
-        if (existedCategory < 0) {
-            await dataStore.loadCategories(category.id);
-            if (pickedItem.value !== null) {
-                addToHistory(pickedItem.value.id);
-                pickedItem.value = null;
-            }
-        }
-
-        dataStore.lastCategory = category;
-
-        displayInfoStore.resetAll();
-    }
-
-    const pickItem = async (productId: string) => {
-
-
-        displayInfoStore.resetAll();
-    }
-
     const clearAll = () => {
-        pickedCategories.value = [];
         dataStore.cleanPath();
-
-        if (pickedItem.value !== null) {
-            addToHistory(pickedItem.value.id);
-            pickedItem.value = null;
-        }
         displayInfoStore.resetAll();
     }
 
@@ -240,10 +204,7 @@ export const useSessionStore = defineStore('sessionStore', () => {
         changeCurrUserInfo,
         register,
         login,
-        pickCategory,
-        pickItem,
         clearAll,
-        pickedItem,
         pickedCategories,
         isCurrUserAdmin,
         logOut

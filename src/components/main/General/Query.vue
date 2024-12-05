@@ -12,13 +12,12 @@ if (route.params.name) {
 }
 
 watch(() => route.params, () => {
-
     if (route.params.name) {
         dataStore.getFullCategoryPath(route.params.name.toString());
     }
 })
-
 </script>
+
 <template>
     <nav v-if="dataStore.categoryPath.length > 0" class="query">
         <RouterLink to="/main">
@@ -26,8 +25,7 @@ watch(() => route.params, () => {
                 <span class="text-small">Home</span>
             </div>
         </RouterLink>
-        <div v-for="category in dataStore.categoryPath" @click="sessionStore.pickCategory(category)" class="prop">
-
+        <div v-for="category in dataStore.categoryPath" class="prop">
             <RouterLink :to="'/' + category.name">
                 <span class="text-small">{{ category.name }}</span>
             </RouterLink>

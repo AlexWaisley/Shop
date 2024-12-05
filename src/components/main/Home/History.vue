@@ -49,7 +49,6 @@ const isNeededToShow = computed<boolean>(() => {
         flex-direction: column;
         gap: 15px;
 
-
         & .items-container {
             display: flex;
             overflow-x: auto;
@@ -57,6 +56,12 @@ const isNeededToShow = computed<boolean>(() => {
             gap: 15px;
             padding-bottom: 10px;
             padding-left: 5px;
+            transition: scrollbar-color .6s ease;
+
+            &:not(:hover) {
+                scrollbar-color: transparent transparent;
+                transition-delay: 2s;
+            }
         }
     }
 }
