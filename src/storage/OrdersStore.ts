@@ -118,7 +118,6 @@ export const useOrderRecordStore = defineStore('orderRecordStore', () => {
         if (result === null) {
             return;
         }
-        console.log(orderItemsList.value);
 
         orderItemsList.value.push(
             ...result.filter(

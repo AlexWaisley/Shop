@@ -19,8 +19,16 @@ const setStatus = async (status: string) => {
 </script>
 <template>
     <div class="form">
-        <button @click="setStatus('Available')">Available</button>
-        <button @click="setStatus('Not available')">Not available</button>
+        <button class="text-button" @click="setStatus('Available')">
+            <span class="text-default">
+                Available
+            </span>
+        </button>
+        <button class="text-button" @click="setStatus('Not available')">
+            <span class="text-default">
+                Not available
+            </span>
+        </button>
     </div>
 </template>
 <style scoped lang="scss">
@@ -32,11 +40,6 @@ const setStatus = async (status: string) => {
     width: 50%;
     padding-top: 20px;
     overflow: auto;
-
-    & .buttons-container {
-        width: 100%;
-        display: flex;
-        justify-content: space-around;
-    }
+    @include text-button(50px, 100%);
 }
 </style>

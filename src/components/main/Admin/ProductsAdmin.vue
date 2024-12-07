@@ -1,21 +1,19 @@
 <script setup lang="ts">
 import ItemCard from '@main/Products/ItemCard.vue';
 import Catalog from '@main/General/Catalog.vue';
-import { useAdminFormStatusStore, useDataStore, useProductStore, useSessionStore } from '@storage';
+import { useAdminFormStatusStore, useDataStore, useProductStore } from '@storage';
 import { ProductDto } from '@models';
 import { ref, watch } from 'vue';
 import WindowForm from './WindowForm.vue';
 import Query from '@main/General/Query.vue';
 import { useRoute } from 'vue-router';
 
-const sessionStore = useSessionStore();
 const dataStore = useDataStore();
 const productStore = useProductStore();
 const formStatusStore = useAdminFormStatusStore();
 const route = useRoute();
 
 const items = ref<ProductDto[] | null>(productStore.displayedProducts);
-
 
 watch(() => route.params, async () => {
     if (route.params.name) {
@@ -33,8 +31,6 @@ const changeAddNewItemShowStatus = () => {
 }
 
 const oneMore = async () => {
-    if (sessionStore.pickedCategories !== null)
-        await dataStore.loadCategories(sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id);
 }
 
 </script>

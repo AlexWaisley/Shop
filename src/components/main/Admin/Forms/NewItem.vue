@@ -1,23 +1,28 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import InputField from '@main/General/InputField.vue';
-import { useAdminFormStatusStore, useCreatingStore, useSessionStore } from '@storage';
+import { useAdminFormStatusStore, useCreatingStore, useDataStore } from '@storage';
 import Decimal from 'decimal.js';
 import toastr from 'toastr';
+import { useRoute } from 'vue-router';
 
 const creatingStore = useCreatingStore();
-const sessionStore = useSessionStore();
+const dataStore = useDataStore();
 const formStatusStore = useAdminFormStatusStore();
 
 const itemName = ref<string>("");
 const description = ref<string>("");
 const price = ref<string>("");
+const route = useRoute();
 
 const parentCategoryId = computed<number>(() => {
-    if (sessionStore.pickedCategories === null || sessionStore.pickedCategories.length === 0) {
+    if (!route.params.name)
+        return 0;
+    const pickedCategory = dataStore.findCategoryByName(route.params.name.toString());
+    if (pickedCategory === null) {
         return 0;
     }
-    return sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id;
+    return pickedCategory.id;
 });
 
 const addNewProduct = () => {

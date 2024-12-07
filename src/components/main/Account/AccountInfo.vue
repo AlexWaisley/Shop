@@ -16,7 +16,6 @@ onMounted(async () => {
         userName.value = sessionStore.currUser.name;
 })
 
-
 const userEmail = ref<string>("");
 const changePassRequired = ref<boolean>(false);
 const orderListStatus = ref<boolean>(true);

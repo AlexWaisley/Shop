@@ -139,9 +139,12 @@ export const usePreviewImagesStore = defineStore('previewStore', () => {
         if (categoriesPreviews.value === null || categoriesPreviews.value.length === 0) {
             return [];
         }
+        const loaded = categoriesPreviews.value.filter(x => x.categoryId === id);
+        if (loaded.length !== 0)
+            return loaded;
+        await LoadCategoriesPreviews(id);
         return categoriesPreviews.value.filter(x => x.categoryId === id);
     }
-
 
     return {
         LoadProductsPreviews,

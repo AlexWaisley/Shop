@@ -12,10 +12,6 @@ const fullProductInfo = ref<Product | null>(null);
 const route = useRoute();
 const sessionStore = useSessionStore();
 
-const editItem = () => {
-    displayInfo.changeIsEditItem(true);
-}
-
 onMounted(async () => {
     if (route.params.id) {
         fullProductInfo.value = await productStore.getFullProductById(route.params.id.toString());
@@ -59,7 +55,7 @@ const isProductAvailable = computed(() => {
                 <div class="description">{{ fullProductInfo.description }}</div>
             </div>
             <RouterLink :to="'/admin/item/' + route.params.id">
-                <div @click="editItem" v-if="displayInfo.adminPanelsOn" class="text-button">
+                <div v-if="displayInfo.adminPanelsOn" class="text-button">
                     <span class="text-large">edit</span>
                 </div>
             </RouterLink>

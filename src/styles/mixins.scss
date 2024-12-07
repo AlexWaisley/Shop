@@ -49,8 +49,11 @@
     .image-container {
         display: flex;
         justify-content: center;
-        max-height: $height;
-        max-width: $width;
+        align-items: center;
+        height: $height;
+        width: $width;
+        max-width: 100%;
+        max-height: 100%;
         overflow: hidden;
 
         & .image {

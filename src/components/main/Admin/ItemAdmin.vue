@@ -2,10 +2,10 @@
 import { Category, Product } from '@models';
 import ImageBlockAdmin from './ImageBlockAdmin.vue';
 import SpecsBlock from '../Item/SpecsBlock.vue';
-import { useCreatingStore, useProductStore, useDataStore, useDisplayInfoStore, useAdminFormStatusStore } from '@storage';
+import { useCreatingStore, useProductStore, useDataStore, useAdminFormStatusStore } from '@storage';
 import { computed, onMounted, ref } from 'vue';
 import WindowForm from './WindowForm.vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const createStore = useCreatingStore();
 const productStore = useProductStore();
@@ -14,13 +14,13 @@ const dataStore = useDataStore();
 const fullProductInfo = ref<Product | null>(null);
 const pickedCategory = ref<Category | null>(null);
 const route = useRoute();
+const router = useRouter();
 
 const formStatusStore = useAdminFormStatusStore();
-const displayInfo = useDisplayInfoStore()
 
-const submitProductChanges = () => {
-    if (fullProductInfo.value !== null && pickedCategory.value !== null)
-        createStore.UpdateProduct({
+const submitProductChanges = async () => {
+    if (fullProductInfo.value !== null && pickedCategory.value !== null) {
+        await createStore.UpdateProduct({
             id: fullProductInfo.value.id,
             name: fullProductInfo.value.name,
             description: fullProductInfo.value.description,
@@ -28,8 +28,8 @@ const submitProductChanges = () => {
             price: fullProductInfo.value.price,
             categoryId: pickedCategory.value.id
         });
-
-    displayInfo.changeIsEditItem(false);
+        router.push('/item/' + fullProductInfo.value?.id);
+    }
 }
 
 const switchAvailabilityStatus = () => {

@@ -135,6 +135,7 @@ onMounted(async () => {
             border-radius: 7px;
             border: 1px solid transparent;
             transition: all .5s ease;
+            min-width: 80px;
 
             &:hover {
                 border: 1px solid blue;

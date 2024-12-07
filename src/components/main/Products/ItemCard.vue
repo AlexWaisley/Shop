@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ProductDto } from '@models';
-import { useCartStore, usePreviewImagesStore } from '@storage';
+import { useCartStore, usePreviewImagesStore, useSessionStore } from '@storage';
 import { onMounted, ref, watch } from 'vue';
 
 const cartStore = useCartStore();
+const sessionStore = useSessionStore();
 const imageStore = usePreviewImagesStore();
 const file = ref<string | null>(null);
 
@@ -31,6 +32,11 @@ const previewLoader = async () => {
     file.value = url[0];
 }
 
+const addItemToCart = async () => {
+    sessionStore.addToHistory(props.info.id);
+    await cartStore.addToCart(props.info.id, 1);
+}
+
 </script>
 <template>
     <div class="item-card-container">
@@ -55,7 +61,7 @@ const previewLoader = async () => {
                     <span class="text-large-bold">{{ props.info.price }}$</span>
                 </div>
                 <button :disabled="(!props.info.isAvailable || cartStore.isItemInCart(props.info.id))"
-                    @click="cartStore.addToCart(props.info.id, 1)" class="button">
+                    @click="addItemToCart" class="button">
                     <img src="/cart.svg" width="30px" alt="Buy">
                 </button>
             </div>
@@ -77,7 +83,7 @@ const previewLoader = async () => {
     border-radius: 15px;
     transition: all .5s ease;
 
-    @include center-image(200px, 100%);
+    @include center-image(100%, 100%);
 
     & .info-container {
         display: grid;

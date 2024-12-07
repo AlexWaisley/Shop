@@ -28,7 +28,10 @@ const routes = [
             {
                 name: 'SubcategoriesAdmin',
                 path: 'admin/:name',
-                component: SubcategoriesAdmin
+                component: SubcategoriesAdmin,
+                meta: {
+                    isAdmin: true
+                }
             },
             {
                 name: 'Main',
@@ -50,12 +53,18 @@ const routes = [
     {
         name: 'ItemAdmin',
         path: '/admin/item/:id',
-        component: ItemAdmin
+        component: ItemAdmin,
+        meta: {
+            isAdmin: true
+        }
     },
     {
         name: 'ProductsAdmin',
         path: '/:name/admin/products',
-        component: ProductsAdmin
+        component: ProductsAdmin,
+        meta: {
+            isAdmin: true
+        }
     },
     {
         name: 'Products',
@@ -67,18 +76,30 @@ const routes = [
         path: '/item/:id',
         component: Item
     },
+    {
+        name: 'Search',
+        path: '/search/products/part=:part',
+        component: Products
+    },
 ];
 
 import './styles/style.scss'
 import App from './App.vue'
+import { useSessionStore } from '@storage';
 
 const pinia = createPinia()
 const app = createApp(App)
+app.use(pinia);
+const sessionStore = useSessionStore();
 const router = createRouter({
     history: createWebHistory(),
     routes
 });
+router.beforeEach((to) => {
+    if (to.meta.isAdmin && !sessionStore.isCurrUserAdmin()) {
+        return { name: 'Account' };
+    }
+});
 
-app.use(pinia);
 app.use(router);
 app.mount('#app');

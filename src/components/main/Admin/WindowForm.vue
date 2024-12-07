@@ -43,9 +43,13 @@ watch(() => formStatusStore.newItem, updatePage);
 watch(() => formStatusStore.newPhoto, updatePage, { immediate: true });
 watch(() => formStatusStore.categoryEdit, updatePage, { immediate: true });
 
+const reset = () => {
+    formStatusStore.resetAll();
+}
+
 </script>
 <template>
-    <div class="container">
+    <div @click.self="reset" class="container">
         <div class="form-container">
             <component :is="form"></component>
         </div>
@@ -65,6 +69,7 @@ watch(() => formStatusStore.categoryEdit, updatePage, { immediate: true });
     z-index: 50;
 
     & .form-container {
+        position: absolute;
         width: 50%;
         height: 70%;
         min-height: 200px;
@@ -74,6 +79,7 @@ watch(() => formStatusStore.categoryEdit, updatePage, { immediate: true });
         display: flex;
         justify-content: center;
         align-items: center;
+        z-index: 100;
     }
 }
 </style>

@@ -13,7 +13,6 @@ const isBucketContainsItems = computed<boolean>(() => {
     return cartStore.cart !== null && cartStore.cart.items.length !== 0;
 });
 
-
 const orderSubmitted = ref<boolean>(false);
 
 const submitOrder = () => {
@@ -31,6 +30,7 @@ watch(() => cartStore.cart, async () => {
 }, { deep: true });
 
 onMounted(async () => {
+    await cartStore.loadCart();
     totalPrice.value = await cartStore.calcTotal();
 });
 

@@ -2,12 +2,13 @@
 import { watch, ref, onMounted } from 'vue';
 import SubcategoryCard from './SubcategoryCard.vue';
 import { useDataStore } from '@storage';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { Category } from '@models';
 
 const dataStore = useDataStore();
 const route = useRoute();
 const displayedCategories = ref<Category[] | null>(null);
+const router = useRouter();
 const load = () => {
     if (route.params.name) {
         let parentCategory = dataStore.categories?.find(x => x.name === route.params.name);
@@ -39,10 +40,23 @@ onMounted(async () => {
                 dataStore.loadCategories(category.id);
         }
     }
+    if (displayedCategories.value === null || displayedCategories.value.length < 1) {
+        router.push('/' + route.params.name + "/products");
+    }
 });
 
 watch(() => route.params.name, () => {
     load();
+    if (displayedCategories.value === null) {
+        if (route.params.name) {
+            const category = dataStore.findCategoryByName(route.params.name.toString());
+            if (category !== null)
+                dataStore.loadCategories(category.id);
+        }
+    }
+    if (displayedCategories.value === null || displayedCategories.value.length < 1) {
+        router.push('/' + route.params.name + "/products");
+    }
 }, { immediate: true });
 
 </script>

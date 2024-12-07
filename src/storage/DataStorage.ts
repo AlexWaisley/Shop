@@ -4,14 +4,15 @@ import { defineStore } from "pinia";
 import { categoriesApi, api } from "@api/index";
 import { ref } from "vue";
 import toastr from "toastr";
+import { useProductStore } from "./ProductStore";
 
 export const useDataStore = defineStore('dataStore', () => {
     const categories = useLocalStorage<Category[] | null>('categoryList', null, { serializer: StorageSerializers.object });
     const rootCategories = useLocalStorage<Category[] | null>('rootCategoryList', null, { serializer: StorageSerializers.object });
-    const lastCategory = ref<Category | null>(null);
+
     const pickedCategory = ref<Category | null>(null);
     const shippingAddresses = useLocalStorage<ShippingAddress[] | null>('shippingAddresses', null, { serializer: StorageSerializers.object });
-    const displayedCategories = ref<Category[]>([]);
+    const productStore = useProductStore();
 
     const categoryPath = ref<Category[]>([]);
 
@@ -110,14 +111,10 @@ export const useDataStore = defineStore('dataStore', () => {
         shippingAddresses.value = await api.GetAddresses();
     }
 
-    const getFullCategoryPath = (categoryName: string) => {
+    const getFullCategoryPath = (categoryName: string = "", productId: string = "") => {
         if (!categories.value)
             return;
-
-        let temp = findCategoryByName(categoryName);
-        if (temp === null)
-            return;
-        let categoryId = temp.parentCategory;
+        let categoryId = -1;
 
         if (categoryPath.value.length > 0) {
             const existingId = categoryPath.value.findIndex(x => x.name === categoryName);
@@ -130,7 +127,31 @@ export const useDataStore = defineStore('dataStore', () => {
             }
         }
 
-        categoryPath.value.unshift(temp);
+        if (productId !== "") {
+            let temp = productStore.findProductById(productId);
+            if (temp === null)
+                return;
+            categoryId = temp.categoryId;
+            const category = findCategoryById(categoryId);
+            if (category !== null) {
+                categoryId = category.parentCategory;
+                categoryPath.value.unshift(category);
+            }
+        }
+        if (categoryName !== "") {
+            let temp = findCategoryByName(categoryName);
+            if (temp === null)
+                return;
+            categoryId = temp.parentCategory;
+            categoryPath.value.unshift(temp);
+        }
+        if (categoryId === -1)
+            return;
+
+        let temp = findCategoryById(categoryId);
+        if (temp === null)
+            return;
+
 
         while (categoryId !== 0) {
             let temp = findCategoryById(categoryId);
@@ -145,21 +166,36 @@ export const useDataStore = defineStore('dataStore', () => {
         categoryPath.value = [];
     }
 
+    const isChildExists = (categoryId: number): boolean => {
+        if (categories.value === null)
+            return false;
+        categories.value.forEach(x => () => {
+            if (x.parentCategory === categoryId)
+                return true;
+        })
+        if (rootCategories.value === null)
+            return false;
+        rootCategories.value.forEach(x => () => {
+            if (x.parentCategory === categoryId)
+                return true;
+        })
+        return true;
+    }
+
     return {
         loadCategories,
         rootCategories,
         categories,
         shippingAddresses,
         loadShippingAddresses,
-        displayedCategories,
         findCategoryByName,
         findCategoryById,
         categoryUpdate,
         deleteCategory,
-        lastCategory,
         pickedCategory,
         getFullCategoryPath,
         categoryPath,
-        cleanPath
+        cleanPath,
+        isChildExists
     };
 })

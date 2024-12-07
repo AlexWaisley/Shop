@@ -1,6 +1,6 @@
-import { Category, User } from "@models";
+import { User } from "@models";
 import { defineStore } from "pinia";
-import { ref, watch } from "vue";
+import { watch } from "vue";
 import { useCookies } from '@vueuse/integrations/useCookies';
 import { useLocalStorage, StorageSerializers } from "@vueuse/core";
 import toastr from 'toastr';
@@ -26,8 +26,6 @@ export const useSessionStore = defineStore('sessionStore', () => {
                 logOut();
             }
         }, { immediate: true }); */
-
-    const pickedCategories = ref<Category[] | null>(null);
 
     const initSession = async () => {
         tokenStore.initSession();
@@ -154,14 +152,6 @@ export const useSessionStore = defineStore('sessionStore', () => {
         if (newUser) {
             cookies.set('userSession', newUser, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
             toastr.success('User logged in successfully');
-            if (cartStore.cart !== null) {
-                const itemsToAdd = cartStore.cart.items.filter(cartItem => cartItem.id === "0");
-                itemsToAdd.forEach(cartItem => {
-                    cartStore.addToCart(cartItem.productId, cartItem.quantity);
-                });
-
-                cartStore.cart.items = cartStore.cart.items.filter(cartItem => cartItem.id !== "0");
-            }
         } else {
             cookies.remove('userSession');
             toastr.info('User logged out');
@@ -205,7 +195,6 @@ export const useSessionStore = defineStore('sessionStore', () => {
         register,
         login,
         clearAll,
-        pickedCategories,
         isCurrUserAdmin,
         logOut
     };

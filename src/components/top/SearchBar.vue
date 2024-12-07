@@ -1,28 +1,52 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useProductStore } from '@storage';
+import { useRoute } from 'vue-router';
 
 const productStore = useProductStore();
 
+const route = useRoute();
 const productName = ref<string>("");
+if (route.params.part)
+    productName.value = route.params.part.toString();
 
 const searchProduct = () => {
     if (productName.value !== "")
         productStore.startSearch(productName.value);
 }
+watch(() => route.params.part, () => {
+    if (route.params.part)
+        productName.value = route.params.part.toString();
+    else
+        productName.value = "";
+});
 </script>
 <template>
     <div class="searchbar-container">
         <div class="searchbar">
             <input type="text" class="text-large bar" v-model="productName" placeholder="Write product name">
         </div>
-        <div @click="searchProduct" class="search">
-            <img src="/search.svg" alt="search" class="icon">
-        </div>
+        <Transition>
+            <RouterLink v-if="productName !== ''" :to="'/search/products/part=' + productName">
+                <div @click="searchProduct" class="search">
+                    <img src="/search.svg" alt="search" class="icon">
+                </div>
+            </RouterLink>
+        </Transition>
     </div>
 </template>
 
 <style scoped lang="scss">
+.v-enter-active,
+.v-leave-active {
+    transition: transform 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    transform: translateX(100px);
+}
+
 .searchbar-container {
     display: flex;
     background-color: $input-background;
@@ -32,6 +56,7 @@ const searchProduct = () => {
     gap: 15px;
     width: 50%;
     min-width: 200px;
+    overflow: hidden;
 
     border: 2px solid transparent;
     transition: border .3s ease;

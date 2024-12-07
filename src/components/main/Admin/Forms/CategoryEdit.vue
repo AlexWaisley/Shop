@@ -4,6 +4,7 @@ import { useAdminFormStatusStore, useCreatingStore, useDataStore, usePreviewImag
 import { ref } from 'vue';
 import AddPhoto from './AddPhoto.vue';
 import toastr from 'toastr';
+import { useRoute } from 'vue-router';
 
 const dataStore = useDataStore();
 const creatingStore = useCreatingStore();
@@ -12,8 +13,9 @@ const formStatusStore = useAdminFormStatusStore();
 const name = ref<string>("");
 const parentCategory = ref<string>("");
 const buttonText = ref<string>("Delete");
+const route = useRoute();
 
-const category = dataStore.lastCategory;
+const category = dataStore.findCategoryByName(route.params.name.toString());
 if (category !== null) {
     parentCategory.value = category.name;
 }

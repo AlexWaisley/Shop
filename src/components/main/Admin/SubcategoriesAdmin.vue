@@ -1,21 +1,25 @@
 <script setup lang="ts">
 import SubcategoryCard from './SubcategoryCardAdmin.vue';
-import { useDataStore, useSessionStore, useProductStore, useAdminFormStatusStore } from '@storage';
+import { useDataStore, useProductStore, useAdminFormStatusStore } from '@storage';
 import { computed, ref, watch, } from 'vue';
 import WindowForm from './WindowForm.vue';
 import { useRoute } from 'vue-router';
 import { Category } from '@models';
 
-const sessionStore = useSessionStore();
 const dataStore = useDataStore();
 const productStore = useProductStore();
 const formStatusStore = useAdminFormStatusStore();
+const route = useRoute();
+
 
 const parentCategoryId = computed<number>(() => {
-    if (sessionStore.pickedCategories === null || sessionStore.pickedCategories.length === 0) {
+    if (!route.params.name)
+        return 0;
+    const pickedCategory = dataStore.findCategoryByName(route.params.name.toString());
+    if (pickedCategory === null) {
         return 0;
     }
-    return sessionStore.pickedCategories[sessionStore.pickedCategories.length - 1].id;
+    return pickedCategory.id;
 });
 
 const openProductsPage = async () => {
@@ -26,7 +30,6 @@ const changeAddNewCategoryShowStatus = () => {
     formStatusStore.changeNewCategoryStatus(true);
 }
 
-const route = useRoute();
 const displayedCategories = ref<Category[] | null>(null);
 const load = () => {
     console.log(route.params.name);

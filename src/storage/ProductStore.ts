@@ -116,6 +116,19 @@ export const useProductStore = defineStore('productStore', () => {
         return product;
     }
 
+    const findProductById = (id: string): ProductDto | null => {
+        if (products.value === null || products.value.length === 0) {
+            products.value = [];
+        }
+
+        const product = products.value.find((p) => p.id === id);
+        if (product === undefined) {
+            return null;
+        }
+
+        return product;
+    }
+
     const getFullProductById = async (id: string): Promise<Product | null> => {
         if (productsFullInfo.value === null || productsFullInfo.value.length === 0) {
             const result = await productsApi.GetProductInfoById(id);
@@ -176,6 +189,7 @@ export const useProductStore = defineStore('productStore', () => {
         getProductById,
         displayedProducts,
         displayProductsByCategoryId,
-        updateProduct
+        updateProduct,
+        findProductById
     };
 })

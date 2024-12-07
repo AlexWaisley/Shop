@@ -47,14 +47,22 @@ export const useCartStore = defineStore('cartStore', () => {
         if (result === null) {
             return;
         }
-        cart.value = result;
+        if (cart.value === null)
+            return;
+
         for (const item of cart.value.items) {
             const temp = await productStore.getProductById(item.productId);
             if (temp) {
                 continue;
             }
-
         }
+
+        const itemsToAdd = cart.value.items.filter(cartItem => cartItem.id === "0");
+        cart.value = result;
+        itemsToAdd.forEach(cartItem => {
+            addToCart(cartItem.productId, cartItem.quantity);
+        });
+        cart.value.items = cart.value.items.filter(cartItem => cartItem.id !== "0");
     }
 
     const isItemInCart = (productId: string) => {
@@ -62,14 +70,13 @@ export const useCartStore = defineStore('cartStore', () => {
             return false;
         }
         const cartItem = cart.value.items.find(x => x.productId === productId);
-        if (cartItem === undefined || cartItem.id === "0") {
+        if (cartItem === undefined) {
             return false;
         }
         return true;
     }
 
     const addToCart = async (productId: string, quantity: number = 1) => {
-
         if (sessionStore.currUser !== null) {
             await loadCart();
         }
@@ -78,7 +85,6 @@ export const useCartStore = defineStore('cartStore', () => {
             cart.value = { id: "0", items: [] };
         }
 
-        sessionStore.addToHistory(productId);
         const cartItem = cart.value.items.find(x => x.productId === productId);
         if (cartItem === undefined || cartItem.id === "0") {
             if (sessionStore.currUser === null && cartItem === undefined) {

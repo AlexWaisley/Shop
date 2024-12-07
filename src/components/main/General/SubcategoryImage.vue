@@ -14,14 +14,14 @@ onMounted(async () => {
     await getPreview();
 })
 
-watch(() => props.info, async () => {
+watch(() => props.info.id, async () => {
+    console.log(props.info.id);
     await getPreview();
 })
 
 watch(() => imageStore.categoriesPreviews, async () => {
     await getPreview();
 })
-
 
 const getPreview = async () => {
     const temp = await imageStore.getCategoryImages(props.info.id);
@@ -30,13 +30,9 @@ const getPreview = async () => {
     const url = await imageStore.getImageUrl(temp);
     file.value = url[0];
 }
-
-defineEmits<{
-    (e: 'click'): void
-}>();
 </script>
 <template>
-    <div @click="$emit('click')" class="image-container">
+    <div class="image-container">
         <img v-if="file !== undefined && file !== null" :src="file" alt="Subcategory image" class="image">
         <img v-else src="/logo.jpg" alt="Subcategory image" class="image">
     </div>

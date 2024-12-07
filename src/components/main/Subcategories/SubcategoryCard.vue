@@ -1,15 +1,24 @@
 <script setup lang="ts">
 import { Category } from '@models';
 import SubcategoryImage from '@main/General/SubcategoryImage.vue';
+import { useDataStore } from '@storage';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
     info: Category;
 }>();
 
+const dataStore = useDataStore();
+
+const subCategoriesExists = ref<boolean>(dataStore.isChildExists(props.info.id));
+watch(props.info, () => {
+    subCategoriesExists.value = dataStore.isChildExists(props.info.id);
+})
+
 </script>
 
 <template>
-    <RouterLink :to="'/' + props.info.name + '/products'">
+    <RouterLink :to="'/' + props.info.name + (subCategoriesExists ? '' : '/products')">
         <div class="subcategory-card-container">
             <SubcategoryImage :info="props.info"></SubcategoryImage>
             <div class="info-container">

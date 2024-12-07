@@ -10,10 +10,19 @@ const route = useRoute();
 if (route.params.name) {
     dataStore.getFullCategoryPath(route.params.name.toString());
 }
+if (route.params.id) {
+    dataStore.getFullCategoryPath('', route.params.id.toString());
+}
 
 watch(() => route.params, () => {
+    if (route.params.part) {
+        dataStore.cleanPath();
+    }
     if (route.params.name) {
         dataStore.getFullCategoryPath(route.params.name.toString());
+    }
+    if (route.params.id) {
+        dataStore.getFullCategoryPath('', route.params.id.toString());
     }
 })
 </script>

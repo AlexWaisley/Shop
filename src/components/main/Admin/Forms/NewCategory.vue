@@ -3,18 +3,23 @@ import { ref } from 'vue';
 import InputField from '@main/General/InputField.vue';
 import { useAdminFormStatusStore, useCreatingStore, useDataStore } from '@storage';
 import AddPhoto from './AddPhoto.vue';
+import { useRoute } from 'vue-router';
 const creatingStore = useCreatingStore();
 const dataStore = useDataStore();
 const formStatusStore = useAdminFormStatusStore();
 const categoryName = ref<string>("");
 const file = ref<FormData | null>(null);
+const route = useRoute();
 
 const addNewCategory = async () => {
-    if (dataStore.lastCategory === null) {
+    if (!route.params.name)
+        return;
+    const pickedCategory = dataStore.findCategoryByName(route.params.name.toString());
+    if (pickedCategory === null) {
         await creatingStore.AddNewCategory({ name: categoryName.value, parentCategoryId: 0 });
     }
     else {
-        await creatingStore.AddNewCategory({ name: categoryName.value, parentCategoryId: dataStore.lastCategory.id });
+        await creatingStore.AddNewCategory({ name: categoryName.value, parentCategoryId: pickedCategory.id });
     }
     const category = dataStore.findCategoryByName(categoryName.value);
 
