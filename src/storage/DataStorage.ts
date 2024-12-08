@@ -90,6 +90,7 @@ export const useDataStore = defineStore('dataStore', () => {
     }
 
     const deleteCategory = async () => {
+        console.log(pickedCategory.value);
         if (pickedCategory.value === null)
             return;
 

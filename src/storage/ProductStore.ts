@@ -11,34 +11,34 @@ import { productsApi } from "@api/index";
 import { useDisplayInfoStore } from "./DisplayInfoStore";
 
 export const useProductStore = defineStore('productStore', () => {
-    const displayedProducts = ref<ProductDto[] | null>(null);
     const products = useLocalStorage<ProductDto[] | null>('products', null, { serializer: StorageSerializers.object });
     const productsFullInfo = useLocalStorage<Product[] | null>('productsFullInfo', null, { serializer: StorageSerializers.object });
     const displayStore = useDisplayInfoStore();
 
-    const startSearch = async (name: string) => {
+    const startSearch = async (name: string): Promise<ProductDto[]> => {
         if (products.value === null || products.value.length === 0) {
             products.value = await productsApi.GetProductList(20, 0);
         }
         if (products.value === null || products.value.length === 0) {
-            return;
+            return [];
         }
-        displayedProducts.value = products.value.filter(x => x.name.toLocaleLowerCase().includes(name.toLocaleLowerCase()));
+        let temp = products.value.filter(x => x.name.toLocaleLowerCase().includes(name.toLocaleLowerCase()));
         let page = 1;
-        while (displayedProducts.value.length < 20) {
+        while (temp.length < 20) {
             const additionalProducts = await productsApi.GetProductList(20, page * 20);
             if (additionalProducts === null || additionalProducts.length === 0) {
                 break;
             }
             products.value.push(...additionalProducts);
 
-            displayedProducts.value = products.value.filter(x => x.name.toLocaleLowerCase().includes(name.toLocaleLowerCase()));
+            temp = products.value.filter(x => x.name.toLocaleLowerCase().includes(name.toLocaleLowerCase()));
 
             page++;
         }
+        return temp;
     }
 
-    const displayProductsByCategoryId = async (categoryId: number) => {
+    const displayProductsByCategoryId = async (categoryId: number): Promise<ProductDto[]> => {
         let counter = 0;
         if (products.value === null || products.value.length === 0) {
             products.value = [];
@@ -51,7 +51,6 @@ export const useProductStore = defineStore('productStore', () => {
             counter++;
         }
         product = products.value.filter((p) => p.categoryId === categoryId);
-        displayedProducts.value = product;
         displayStore.resetAll();
 
         return product;
@@ -187,7 +186,6 @@ export const useProductStore = defineStore('productStore', () => {
         loadProducts,
         getFullProductById,
         getProductById,
-        displayedProducts,
         displayProductsByCategoryId,
         updateProduct,
         findProductById

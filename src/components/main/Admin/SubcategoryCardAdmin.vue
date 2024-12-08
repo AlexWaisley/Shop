@@ -1,26 +1,28 @@
 <script setup lang="ts">
 import { Category } from '@models';
-import { useAdminFormStatusStore } from '@storage';
+import { useAdminFormStatusStore, useDataStore } from '@storage';
 import SubcategoryImage from '@main/General/SubcategoryImage.vue';
 import WindowForm from './WindowForm.vue';
 
 const formStatusStore = useAdminFormStatusStore();
+const dataStore = useDataStore();
 
 const props = defineProps<{
     info: Category;
 }>();
 
 const switchMenuStatusChange = () => {
+    dataStore.pickedCategory = props.info;
     formStatusStore.changeCategoryEdit(true);
 }
 </script>
 
 <template>
-    <RouterLink :to="'/admin/' + props.info.name">
-        <div class="subcategory-card-container">
-            <div @click="switchMenuStatusChange" class="edit-button">
-                <img src="/dots.svg" alt="Edit">
-            </div>
+    <div class="subcategory-card-container">
+        <div @click="switchMenuStatusChange" class="edit-button">
+            <img src="/dots.svg" alt="Edit">
+        </div>
+        <RouterLink :to="'/admin/' + props.info.name">
             <SubcategoryImage :info="props.info"></SubcategoryImage>
             <div class="info-container">
                 <div class="info">
@@ -31,11 +33,11 @@ const switchMenuStatusChange = () => {
                     </div>
                 </div>
             </div>
-            <Teleport v-if="formStatusStore.categoryEdit" to="body">
-                <WindowForm></WindowForm>
-            </Teleport>
-        </div>
-    </RouterLink>
+        </RouterLink>
+        <Teleport v-if="formStatusStore.categoryEdit" to="body">
+            <WindowForm></WindowForm>
+        </Teleport>
+    </div>
 </template>
 <style scoped lang="scss">
 .subcategory-card-container {

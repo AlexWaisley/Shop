@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { useProductStore } from '@storage';
+import { useDataStore, useProductStore } from '@storage';
 import { useRoute } from 'vue-router';
 
 const productStore = useProductStore();
-
+const dataStore = useDataStore();
 const route = useRoute();
 const productName = ref<string>("");
 if (route.params.part)
     productName.value = route.params.part.toString();
 
-const searchProduct = () => {
-    if (productName.value !== "")
-        productStore.startSearch(productName.value);
+const searchProduct = async () => {
+    if (productName.value !== "") {
+        await productStore.startSearch(productName.value);
+        dataStore.cleanPath();
+    }
 }
 watch(() => route.params.part, () => {
     if (route.params.part)

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { useSessionStore, useDataStore } from '@storage';
+import { useSessionStore, useDataStore, useDisplayInfoStore } from '@storage';
 import { watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const sessionStore = useSessionStore();
 const dataStore = useDataStore();
 const route = useRoute();
+const displayInfoStore = useDisplayInfoStore();
 
 if (route.params.name) {
     dataStore.getFullCategoryPath(route.params.name.toString());
@@ -14,17 +15,17 @@ if (route.params.id) {
     dataStore.getFullCategoryPath('', route.params.id.toString());
 }
 
-watch(() => route.params, () => {
-    if (route.params.part) {
-        dataStore.cleanPath();
-    }
+watch(() => route.params.name, () => {
     if (route.params.name) {
         dataStore.getFullCategoryPath(route.params.name.toString());
     }
+})
+watch(() => route.params.id, () => {
     if (route.params.id) {
         dataStore.getFullCategoryPath('', route.params.id.toString());
     }
 })
+
 </script>
 
 <template>
@@ -35,7 +36,7 @@ watch(() => route.params, () => {
             </div>
         </RouterLink>
         <div v-for="category in dataStore.categoryPath" class="prop">
-            <RouterLink :to="'/' + category.name">
+            <RouterLink :to="'/' + (displayInfoStore.adminPanelsOn ? 'admin/' : '') + category.name">
                 <span class="text-small">{{ category.name }}</span>
             </RouterLink>
         </div>

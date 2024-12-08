@@ -3,26 +3,28 @@ import ItemCard from '@main/Products/ItemCard.vue';
 import Catalog from '@main/General/Catalog.vue';
 import { useAdminFormStatusStore, useDataStore, useProductStore } from '@storage';
 import { ProductDto } from '@models';
-import { ref, watch } from 'vue';
 import WindowForm from './WindowForm.vue';
 import Query from '@main/General/Query.vue';
 import { useRoute } from 'vue-router';
+import { ref, watch } from 'vue';
 
 const dataStore = useDataStore();
 const productStore = useProductStore();
 const formStatusStore = useAdminFormStatusStore();
 const route = useRoute();
 
-const items = ref<ProductDto[] | null>(productStore.displayedProducts);
+const items = ref<ProductDto[] | null>(null);
 
 watch(() => route.params, async () => {
     if (route.params.name) {
         const category = dataStore.findCategoryByName(route.params.name.toString());
         if (!category)
             return;
-        await productStore.displayProductsByCategoryId(category.id);
+        items.value = await productStore.displayProductsByCategoryId(category.id);
     }
-    items.value = productStore.displayedProducts;
+    if (route.params.part) {
+        items.value = await productStore.startSearch(route.params.part.toString());
+    }
 }, { immediate: true });
 
 

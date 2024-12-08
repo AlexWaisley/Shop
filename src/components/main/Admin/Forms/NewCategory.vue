@@ -12,8 +12,11 @@ const file = ref<FormData | null>(null);
 const route = useRoute();
 
 const addNewCategory = async () => {
-    if (!route.params.name)
+    if (!route.params.name) {
+        await creatingStore.AddNewCategory({ name: categoryName.value, parentCategoryId: 0 });
+        closeWindow();
         return;
+    }
     const pickedCategory = dataStore.findCategoryByName(route.params.name.toString());
     if (pickedCategory === null) {
         await creatingStore.AddNewCategory({ name: categoryName.value, parentCategoryId: 0 });

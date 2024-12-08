@@ -11,16 +11,18 @@ const dataStore = useDataStore();
 const productStore = useProductStore();
 const route = useRoute();
 
-const items = ref<ProductDto[] | null>(productStore.displayedProducts);
+const items = ref<ProductDto[] | null>(null);
 
 watch(() => route.params, async () => {
     if (route.params.name) {
         const category = dataStore.findCategoryByName(route.params.name.toString());
         if (!category)
             return;
-        await productStore.displayProductsByCategoryId(category.id);
+        items.value = await productStore.displayProductsByCategoryId(category.id);
     }
-    items.value = productStore.displayedProducts;
+    if (route.params.part) {
+        items.value = await productStore.startSearch(route.params.part.toString());
+    }
 }, { immediate: true });
 
 const oneMore = async () => {

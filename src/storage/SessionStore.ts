@@ -20,12 +20,11 @@ export const useSessionStore = defineStore('sessionStore', () => {
     const history = useLocalStorage<string[] | null>('userHistory', null, { serializer: StorageSerializers.object });
     const currUser = useLocalStorage<User | null>('currUser', null, { serializer: StorageSerializers.object });
 
-    /* 
-        watch(() => cookies.get('ultra-shop-token-refresh'), async (newVal) => {
-            if (!newVal) {
-                logOut();
-            }
-        }, { immediate: true }); */
+    watch(() => cookies.get('ultra-shop-token-refresh'), async (newVal) => {
+        if (!newVal) {
+            logOut();
+        }
+    }, { immediate: true });
 
     const initSession = async () => {
         tokenStore.initSession();

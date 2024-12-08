@@ -18,7 +18,7 @@ watch(props.info, () => {
 </script>
 
 <template>
-    <RouterLink :to="'/' + props.info.name + (subCategoriesExists ? '' : '/products')">
+    <RouterLink :to="'/' + (props.info.name + (subCategoriesExists ? '' : '/products'))">
         <div class="subcategory-card-container">
             <SubcategoryImage :info="props.info"></SubcategoryImage>
             <div class="info-container">
