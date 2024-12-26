@@ -25,6 +25,7 @@ watch(() => imageStore.categoriesPreviews, async () => {
 
 const getPreview = async () => {
     const temp = await imageStore.getCategoryImages(props.info.id);
+    console.log();
     if (temp.length === 0)
         return;
     const url = await imageStore.getImageUrl(temp);

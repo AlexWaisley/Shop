@@ -5,9 +5,8 @@ import axios from "axios"
 const apiUrl = import.meta.env.VITE_API_URL;
 const apiInstance = axios.create({
     baseURL: apiUrl,
-    withCredentials: true
+    withCredentials: true,
 });
-
 
 import * as userApi from "./user";
 import * as cartApi from "./cart";

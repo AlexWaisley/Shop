@@ -104,6 +104,12 @@ export const useCartStore = defineStore('cartStore', () => {
         if (cart.value === null) {
             cart.value = { id: "0", items: [] };
         }
+
+        const temp = cart.value.items.find(x => x.productId === productId);
+
+        if (temp === undefined) {
+            return;
+        }
         if (cart.value.items.length > 0) {
             const index = cart.value.items.findIndex(x => x.productId === productId);
             if (index !== undefined) {
@@ -112,11 +118,6 @@ export const useCartStore = defineStore('cartStore', () => {
         }
 
         if (sessionStore.currUser === null) {
-            return;
-        }
-
-        const temp = cart.value.items.find(x => x.productId === productId);
-        if (temp === undefined) {
             return;
         }
 
@@ -132,9 +133,17 @@ export const useCartStore = defineStore('cartStore', () => {
         if (cart.value === null) {
             cart.value = { id: "0", items: [] };
         }
-        const index = cart.value.items.find(x => x.id === itemId);
-        if (index === undefined)
+        const cartItem = cart.value.items.find(x => x.id === itemId);
+        if (itemId === '0' || cartItem === undefined) {
+            const altCartItem = cart.value.items.find(x => x.productId === productId);
+            if (altCartItem !== undefined) {
+                const index = cart.value.items.indexOf(altCartItem);
+                cart.value.items[index].quantity = quantity;
+                calcTotal();
+                calcTotalQuantity();
+            }
             return;
+        }
         const result = await cartApi.UpdateCartItemQuantity({ id: itemId, quantity, productId, cartId: "0" })
         if (!result)
             return;

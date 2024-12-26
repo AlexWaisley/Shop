@@ -159,7 +159,6 @@ export const useSessionStore = defineStore('sessionStore', () => {
 
     const clearAll = () => {
         dataStore.cleanPath();
-        displayInfoStore.resetAll();
     }
 
     const addToHistory = (productId: string) => {

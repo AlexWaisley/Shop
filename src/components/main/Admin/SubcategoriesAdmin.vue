@@ -1,61 +1,36 @@
 <script setup lang="ts">
 import SubcategoryCard from './SubcategoryCardAdmin.vue';
-import { useDataStore, useProductStore, useAdminFormStatusStore } from '@storage';
+import { useDataStore, useAdminFormStatusStore } from '@storage';
 import { computed, ref, watch, } from 'vue';
 import WindowForm from './WindowForm.vue';
 import { useRoute } from 'vue-router';
 import { Category } from '@models';
 
 const dataStore = useDataStore();
-const productStore = useProductStore();
 const formStatusStore = useAdminFormStatusStore();
 const route = useRoute();
-
-
-const parentCategoryId = computed<number>(() => {
-    if (!route.params.name)
-        return 0;
-    const pickedCategory = dataStore.findCategoryByName(route.params.name.toString());
-    if (pickedCategory === null) {
-        return 0;
-    }
-    return pickedCategory.id;
-});
-
-const openProductsPage = async () => {
-    await productStore.displayProductsByCategoryId(parentCategoryId.value);
-}
 
 const changeAddNewCategoryShowStatus = () => {
     formStatusStore.changeNewCategoryStatus(true);
 }
 
 const displayedCategories = ref<Category[] | null>(null);
-const load = () => {
-    console.log(route.params.name);
+
+const displayedCategoriesNotEmpty = computed<boolean>((): boolean => {
+    return displayedCategories.value === null || displayedCategories.value.length < 1;
+});
+
+watch(() => route.params.name, async () => {
     if (route.params.name) {
-        let parentCategory = dataStore.categories?.find(x => x.name === route.params.name);
-        if (parentCategory !== undefined) {
-            const res = dataStore.categories?.filter(x => x.parentCategory === parentCategory!.id);
-            if (res) {
-                displayedCategories.value = res;
-                return;
-            }
-        }
-        parentCategory = dataStore.rootCategories?.find(x => x.name === route.params.name);
-        if (parentCategory !== undefined) {
-            const res = dataStore.categories?.filter(x => x.parentCategory === parentCategory!.id);
-            if (res) {
-                displayedCategories.value = res;
-                return;
+        displayedCategories.value = dataStore.findSubCategoriesByName(route.params.name.toString());
+        if (displayedCategoriesNotEmpty.value) {
+            const category = dataStore.findCategoryByName(route.params.name.toString());
+            if (category !== null) {
+                await dataStore.loadCategories(category.id);
+                displayedCategories.value = dataStore.findSubCategoriesByName(route.params.name.toString());
             }
         }
     }
-    displayedCategories.value = [];
-};
-
-watch(() => route.params.name, () => {
-    load();
 }, { immediate: true });
 </script>
 <template>
@@ -63,11 +38,9 @@ watch(() => route.params.name, () => {
         <div @click="changeAddNewCategoryShowStatus" class="button add">
             <img src="/cross.svg" alt="add new subcategory">
         </div>
-        <SubcategoryCard v-if="displayedCategories !== null && displayedCategories.length !== 0"
-            v-for="value in displayedCategories" :info="value" />
+        <SubcategoryCard v-if="displayedCategoriesNotEmpty" v-for="value in displayedCategories" :info="value" />
         <RouterLink :to="'/' + route.params.name + '/admin/products'">
-            <div v-if="!displayedCategories || displayedCategories.length < 1" @click="openProductsPage"
-                class="button continue">
+            <div v-if="!displayedCategoriesNotEmpty" class="button continue">
                 <img src="/switch.svg" alt="Go to products">
             </div>
         </RouterLink>

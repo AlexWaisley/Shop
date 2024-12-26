@@ -115,6 +115,25 @@ export const usePreviewImagesStore = defineStore('previewStore', () => {
         return productsPreviews.value.filter(x => x.productId === id);
     }
 
+    const getProductPreview = async (id: string): Promise<string | null> => {
+        if (productsPreviews.value === null || (productsPreviews.value !== null && productsPreviews.value.length < 1)) {
+            await LoadProductsPreviews(id);
+        }
+        if (productsPreviews.value !== null) {
+            let preview = productsPreviews.value.filter(x => x.productId === id)[0];
+            if (preview === undefined) {
+                await LoadProductsPreviews(id);
+                preview = productsPreviews.value.filter(x => x.productId === id)[0];
+                if (preview === undefined)
+                    return null;
+            }
+            const previewUrl = await loadPreview(preview.imageId);
+            if (previewUrl !== null)
+                return previewUrl;
+        }
+        return null;
+    }
+
     const deleteProductImage = async (id: number) => {
         if (productsPreviews.value === null)
             return
@@ -157,6 +176,7 @@ export const usePreviewImagesStore = defineStore('previewStore', () => {
         LoadCategoriesPreviews,
         getCategoryImages,
         loadCategoryPreviewByCategoryId,
-        deleteProductImage
+        deleteProductImage,
+        getProductPreview
     };
 })

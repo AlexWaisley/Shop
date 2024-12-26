@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import ItemCard from '../Products/ItemCard.vue';
+import ProductCard from '../Products/ProductCard.vue';
 import { useProductStore, useSessionStore } from '@storage';
 import { ProductDto } from '@models';
 
@@ -29,7 +29,7 @@ const isNeededToShow = computed<boolean>(() => {
                 <span class="text-large-bold">History</span>
             </div>
             <div class="items-container">
-                <ItemCard v-for="value in history" :info="value"></ItemCard>
+                <ProductCard v-for="value in history" :info="value"></ProductCard>
             </div>
         </div>
     </div>

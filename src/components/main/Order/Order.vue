@@ -15,7 +15,7 @@ const isExpandOrder = ref<boolean>(false);
 const ordersItemsList = ref<OrderItemDto[]>([]);
 
 watch(isExpandOrder, async () => {
-    const itemList = orderStore.orderItemsList?.filter(x => x.orderId === props.info.id);
+    const itemList = orderStore.orderItemsList!.filter(x => x.orderId === props.info.id);
     if (itemList === undefined) {
         return;
     }
@@ -28,7 +28,7 @@ const toggleExpand = () => {
 
 const addressInfo = ref<string>("");
 
-const address = dataStore.shippingAddresses?.find(x => x.id === props.info.shippingAddress);
+const address = dataStore.shippingAddresses!.find(x => x.id === props.info.shippingAddress);
 
 if (address !== undefined)
     addressInfo.value = address.street + ", " + address.house;

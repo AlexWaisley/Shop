@@ -9,7 +9,7 @@ const props = defineProps<{
 }>();
 
 const dataStore = useDataStore();
-
+console.log(props.info.id);
 const subCategoriesExists = ref<boolean>(dataStore.isChildExists(props.info.id));
 watch(props.info, () => {
     subCategoriesExists.value = dataStore.isChildExists(props.info.id);

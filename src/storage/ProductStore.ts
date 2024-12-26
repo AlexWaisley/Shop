@@ -8,12 +8,11 @@ import Decimal from "decimal.js";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { productsApi } from "@api/index";
-import { useDisplayInfoStore } from "./DisplayInfoStore";
 
 export const useProductStore = defineStore('productStore', () => {
     const products = useLocalStorage<ProductDto[] | null>('products', null, { serializer: StorageSerializers.object });
     const productsFullInfo = useLocalStorage<Product[] | null>('productsFullInfo', null, { serializer: StorageSerializers.object });
-    const displayStore = useDisplayInfoStore();
+
 
     const startSearch = async (name: string): Promise<ProductDto[]> => {
         if (products.value === null || products.value.length === 0) {
@@ -51,7 +50,6 @@ export const useProductStore = defineStore('productStore', () => {
             counter++;
         }
         product = products.value.filter((p) => p.categoryId === categoryId);
-        displayStore.resetAll();
 
         return product;
     }

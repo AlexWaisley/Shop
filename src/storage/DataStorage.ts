@@ -40,6 +40,28 @@ export const useDataStore = defineStore('dataStore', () => {
         return category;
     }
 
+    const findSubCategoriesByName = (parentCategoryName: string): Category[] => {
+        if (categories.value === null)
+            return [];
+        let parentCategory = categories.value.find(x => x.name === parentCategoryName);
+        if (parentCategory !== undefined) {
+            const res = categories.value.filter(x => x.parentCategory === parentCategory!.id);
+            if (res) {
+                return res;
+            }
+        }
+        if (rootCategories.value === null)
+            return [];
+        parentCategory = rootCategories.value.find(x => x.name === parentCategoryName);
+        if (parentCategory !== undefined) {
+            const res = categories.value.filter(x => x.parentCategory === parentCategory!.id);
+            if (res) {
+                return res;
+            }
+        }
+        return [];
+    }
+
     const loadCategories = async (parentCategoryId: number) => {
         const result = await categoriesApi.LoadCategories(parentCategoryId);
 
@@ -197,6 +219,7 @@ export const useDataStore = defineStore('dataStore', () => {
         getFullCategoryPath,
         categoryPath,
         cleanPath,
-        isChildExists
+        isChildExists,
+        findSubCategoriesByName
     };
 })

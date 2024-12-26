@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import ItemCard from './ItemCard.vue';
-import Catalog from '../General/Catalog.vue';
+import ProductCard from './ProductCard.vue';
+import Catalog from '@main/General/Catalog.vue';
+import Query from '@main/General/Query.vue';
 import { useDataStore, useProductStore } from '@storage';
 import { ProductDto } from '@models';
 import { ref, watch } from 'vue';
-import Query from '@main/General/Query.vue';
 import { useRoute } from 'vue-router';
 
 const dataStore = useDataStore();
@@ -39,7 +39,8 @@ const oneMore = async () => {
                 <Query />
             </div>
             <div class="products-main">
-                <ItemCard v-if="items !== null && items.length !== 0" v-for="value in items" :info="value"></ItemCard>
+                <ProductCard v-if="items !== null && items.length !== 0" v-for="value in items" :info="value">
+                </ProductCard>
                 <span v-else class="text-large">Sorry, there doesn't seem to be
                     anything like that</span>
                 <div v-if="items && items.length % 20 === 0 && items.length !== 0" @click="oneMore"

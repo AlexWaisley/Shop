@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useCartStore, usePreviewImagesStore, useProductStore } from '@storage';
 import { CartItemDto, ProductDto } from '@models';
 import Decimal from 'decimal.js';
@@ -22,49 +22,17 @@ const totalCost = computed<Decimal>(() => {
     return new Decimal(product.value.price).times(new Decimal(quantity.value));
 });
 
-
 defineEmits<{
     (e: 'changeQuantity', cartItemId: string, quantity: number, productId: string): void
 }>();
 
-
 const file = ref<string | null>(null);
-
-onMounted(async () => {
-    product.value = await productStore.getProductById(props.info.productId);
-    if (imageStore.productsPreviews === null) {
-        await imageStore.LoadProductsPreviews(props.info.productId);
-    }
-    if (imageStore.productsPreviews !== null && imageStore.productsPreviews.length < 1) {
-        await imageStore.LoadProductsPreviews(props.info.productId);
-    }
-    if (imageStore.productsPreviews !== null) {
-        const preview = imageStore.productsPreviews.filter(x => x.productId === props.info.productId)[0];
-        if (preview === undefined)
-            return;
-        const previewUrl = await imageStore.loadPreview(preview.imageId);
-        if (previewUrl !== null)
-            file.value = previewUrl;
-    }
-})
 
 watch(() => props.info, async () => {
     product.value = await productStore.getProductById(props.info.productId);
-    if (imageStore.productsPreviews === null) {
-        await imageStore.LoadProductsPreviews(props.info.productId);
-    }
-    if (imageStore.productsPreviews !== null && imageStore.productsPreviews.length < 1) {
-        await imageStore.LoadProductsPreviews(props.info.productId);
-    }
-    if (imageStore.productsPreviews !== null) {
-        const preview = imageStore.productsPreviews.filter(x => x.productId === props.info.productId)[0];
-        if (preview === undefined)
-            return;
-        const previewUrl = await imageStore.loadPreview(preview.imageId);
-        if (previewUrl !== null)
-            file.value = previewUrl;
-    }
-})
+    if (product.value !== null)
+        file.value = await imageStore.getProductPreview(product.value.id);
+}, { immediate: true });
 </script>
 
 <template>

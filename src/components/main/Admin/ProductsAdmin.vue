@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ItemCard from '@main/Products/ItemCard.vue';
+import ItemCard from '@main/Products/ProductCard.vue';
 import Catalog from '@main/General/Catalog.vue';
 import { useAdminFormStatusStore, useDataStore, useProductStore } from '@storage';
 import { ProductDto } from '@models';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch, ref, onMounted } from 'vue';
+import { watch, ref, computed } from 'vue';
 import SubcategoryCard from './SubcategoryCard.vue';
 import { useDataStore } from '@storage';
 import { useRoute, useRouter } from 'vue-router';
@@ -9,62 +9,32 @@ const dataStore = useDataStore();
 const route = useRoute();
 const displayedCategories = ref<Category[] | null>(null);
 const router = useRouter();
-const load = () => {
-    if (route.params.name) {
-        let parentCategory = dataStore.categories?.find(x => x.name === route.params.name);
-        if (parentCategory !== undefined) {
-            const res = dataStore.categories?.filter(x => x.parentCategory === parentCategory!.id);
-            if (res) {
-                displayedCategories.value = res;
-                return;
-            }
-        }
-        parentCategory = dataStore.rootCategories?.find(x => x.name === route.params.name);
-        if (parentCategory !== undefined) {
-            const res = dataStore.categories?.filter(x => x.parentCategory === parentCategory!.id);
-            if (res) {
-                displayedCategories.value = res;
-                return;
-            }
-        }
-    }
-    displayedCategories.value = [];
-};
-
-onMounted(async () => {
-    load();
-    if (displayedCategories.value === null) {
-        if (route.params.name) {
-            const category = dataStore.findCategoryByName(route.params.name.toString());
-            if (category !== null)
-                dataStore.loadCategories(category.id);
-        }
-    }
-    if (displayedCategories.value === null || displayedCategories.value.length < 1) {
-        router.push('/' + route.params.name + "/products");
-    }
+const displayedCategoriesNotEmpty = computed<boolean>((): boolean => {
+    return displayedCategories.value === null || displayedCategories.value.length < 1;
 });
 
-watch(() => route.params.name, () => {
-    load();
-    if (displayedCategories.value === null) {
-        if (route.params.name) {
+watch(() => route.params.name, async () => {
+    if (route.params.name) {
+        displayedCategories.value = dataStore.findSubCategoriesByName(route.params.name.toString());
+        if (displayedCategoriesNotEmpty) {
             const category = dataStore.findCategoryByName(route.params.name.toString());
-            if (category !== null)
-                dataStore.loadCategories(category.id);
+            if (category !== null) {
+                await dataStore.loadCategories(category.id);
+                displayedCategories.value = dataStore.findSubCategoriesByName(route.params.name.toString());
+            }
+        }
+        if (displayedCategories.value === null || displayedCategories.value.length < 1) {
+            router.push('/' + route.params.name + "/products");
         }
     }
-    if (displayedCategories.value === null || displayedCategories.value.length < 1) {
-        router.push('/' + route.params.name + "/products");
-    }
+    console.log(displayedCategories);
 }, { immediate: true });
 
 </script>
 
 <template>
     <div class="subcategories-container">
-        <SubcategoryCard v-if="displayedCategories !== null && displayedCategories.length !== 0"
-            v-for="value in displayedCategories" :info="value" />
+        <SubcategoryCard v-if="!displayedCategoriesNotEmpty" v-for="value in displayedCategories" :info="value" />
     </div>
 </template>
 
