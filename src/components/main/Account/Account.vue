@@ -60,7 +60,10 @@ const isRegister = ref<boolean>(false);
 
             &.forms {
                 position: relative;
-                height: 500px;
+                height: 300px;
+                padding-top: 20px;
+                overflow-y: auto;
+
 
                 & .login-container,
                 & .register-container {

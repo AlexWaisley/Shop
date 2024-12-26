@@ -1,17 +1,13 @@
 import { defineStore } from "pinia";
-import { ref, watch } from "vue";
+import { watch } from "vue";
 import { useCookies } from '@vueuse/integrations/useCookies';
 import { api } from "../api";
 
 export const useTokenStore = defineStore('tokenStore', () => {
     const cookies = useCookies();
 
-    const jwt = ref<string>(cookies.get('ultra-shop-token'));
-    const jwtRefresh = ref<string>(cookies.get('ultra-shop-token-refresh'));
-
-
     const initSession = async () => {
-        if (jwt.value === undefined && jwtRefresh.value !== undefined) {
+        if (cookies.get('ultra-shop-token') === undefined && cookies.get('ultra-shop-token-refresh') !== undefined) {
             await refresh();
         }
     };
@@ -36,9 +32,7 @@ export const useTokenStore = defineStore('tokenStore', () => {
     }
 
     return {
-        jwt,
         initSession,
-        jwtRefresh,
         refresh,
         logOut
     };

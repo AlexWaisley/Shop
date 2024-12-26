@@ -27,7 +27,6 @@ watch(() => route.params.name, async () => {
             router.push('/' + route.params.name + "/products");
         }
     }
-    console.log(displayedCategories);
 }, { immediate: true });
 
 </script>

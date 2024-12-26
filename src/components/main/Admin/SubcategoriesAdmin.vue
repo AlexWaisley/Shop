@@ -23,7 +23,7 @@ const displayedCategoriesNotEmpty = computed<boolean>((): boolean => {
 watch(() => route.params.name, async () => {
     if (route.params.name) {
         displayedCategories.value = dataStore.findSubCategoriesByName(route.params.name.toString());
-        if (displayedCategoriesNotEmpty.value) {
+        if (displayedCategoriesNotEmpty) {
             const category = dataStore.findCategoryByName(route.params.name.toString());
             if (category !== null) {
                 await dataStore.loadCategories(category.id);
@@ -38,7 +38,7 @@ watch(() => route.params.name, async () => {
         <div @click="changeAddNewCategoryShowStatus" class="button add">
             <img src="/cross.svg" alt="add new subcategory">
         </div>
-        <SubcategoryCard v-if="displayedCategoriesNotEmpty" v-for="value in displayedCategories" :info="value" />
+        <SubcategoryCard v-if="!displayedCategoriesNotEmpty" v-for="value in displayedCategories" :info="value" />
         <RouterLink :to="'/' + route.params.name + '/admin/products'">
             <div v-if="!displayedCategoriesNotEmpty" class="button continue">
                 <img src="/switch.svg" alt="Go to products">

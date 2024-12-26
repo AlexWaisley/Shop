@@ -4,6 +4,7 @@ import apiInstance from "./apiInstance";
 export const login = async (userLoginRequest: UserLoginRequest): Promise<User | null> => {
     try {
         const { data, status } = await apiInstance.post(`/login`, userLoginRequest);
+
         console.log('[api]', 'User valid status:', status);
         return data;
     } catch (e) {
